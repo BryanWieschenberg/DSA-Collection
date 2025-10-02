@@ -195,6 +195,54 @@ class Solution:
                 self._remove(lru)
                 del self.cache[lru.key]
 
+    def mergeKLists(self, lists: List[Optional[Node]]) -> Optional[Node]:
+        def mergeList(l1, l2):
+            dummy = tail = Node()
+            
+            while l1 and l2:
+                if l1.val < l2.val:
+                    tail.next = l1
+                    l1 = l1.next
+                else:
+                    tail.next = l2
+                    l2 = l2.next
+                tail = tail.next
+            tail.next = l1 or l2
+            return dummy.next
+        
+        if len(lists) < 1:
+            return None
+        
+        for i in range(1, len(lists)):
+            lists[i] = mergeList(lists[i-1], lists[i])
+
+        return lists[-1]
+    
+    def reverseKGroup(self, head: Optional[Node], k: int) -> Optional[Node]:        
+        def getKth(curr, k):
+            while curr and k > 0:
+                curr = curr.next
+                k -= 1
+            return curr
+
+        dummy = groupPrev = Node(val=0, next=head)
+        while True:
+            kth = getKth(groupPrev, k)
+            if not kth:
+                break
+            groupNext = kth.next
+
+            prv, cur = kth.next, groupPrev.next
+            while cur != groupNext:
+                tmp = cur.next
+                cur.next = prv
+                prv = cur
+                cur = tmp
+            tmp = groupPrev.next
+            groupPrev.next = kth
+            groupPrev = tmp
+        return dummy.next
+    
 s = Solution()
 h = Helper()
 
@@ -222,3 +270,7 @@ h = Helper()
 # print(LRUCache.get(2)) # 20
 # print(LRUCache.get(1)) # 10
 # print(LRUCache.get(3)) # 30
+
+# h.printLL( s. mergeKLists ( lists=[h.toLL([1,3,5]), h.toLL([2,4,6]), h.toLL([0,7])] )) # 1 -> 1 -> 2 -> 3 -> 3 -> 4 -> 5 -> 6
+
+# h.printLL( s. reverseKGroup ( head=h.toLL([1,2,3,4,5,6,7,8]), k=3 )) # 2 -> 1 -> 4 -> 3 -> 6 -> 5 -> 7 -> 8
