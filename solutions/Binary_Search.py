@@ -141,9 +141,9 @@ s = Solution()
 
 # timeMap = s.TimeMap()
 # timeMap.set("alice", "happy", 1)
-# timeMap.get("alice", 1) # "happy"
-# timeMap.get("alice", 2) # "happy"
+# print(timeMap.get("alice", 1)) # "happy"
+# print(timeMap.get("alice", 2)) # "happy"
 # timeMap.set("alice", "sad", 3)
-# timeMap.get("alice", 3) # "sad"
+# print(timeMap.get("alice", 3)) # "sad"
 
 # print(s. findMedianSortedArrays ( nums1=[1,3], nums2=[2,4] )) # 2.5
