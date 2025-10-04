@@ -39,19 +39,28 @@ class Helper:
         depth = getHeight(root)
         vals = bottomUp(root)
 
-        lines = ["" for _ in range(depth)]
-        offsets = [0] * depth
-
-        for val, d in vals:
+        lines = ["" for _ in range(depth * 2 - 1)]
+        offsets = [0] * (depth * 2 - 1)
+        
+        for i, (val, d) in enumerate(vals):
             text = str(val)
             w = len(text)
 
-            lines[d] += " " * (offsets[d] - len(lines[d])) + text
-            offsets[d] = len(lines[d])  # update only its own line
+            line_index = d * 2
+            
+            lsp, rsp = 0, 0
+            if i-1 >= 0 and vals[i-1][1] == d-1:
+                lsp = 1
+            elif i+1 < len(vals) and vals[i+1][1] == d-1:
+                rsp = 1
+
+            lines[line_index] += " " * (offsets[line_index] - len(lines[line_index]) + lsp) + text + " " * rsp
+            offsets[line_index] = len(lines[line_index])
 
             for i in range(depth):
-                if i != d:
-                    offsets[i] += w
+                li = i * 2
+                if li != line_index:
+                    offsets[li] += w + lsp + rsp
 
         print(f"Depth: {depth}")
         for line in lines:
@@ -81,5 +90,6 @@ h.printTree( h.toTree([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14]) ) # [1, 2, 3, None, 
 # 1: [1, 1],
 # 2: [1, 1, 1, 1],
 # 3: [1, 1, 1, 2, 2, 2, 2, 2]
+
 
 
