@@ -1,0 +1,85 @@
+from collections import defaultdict, deque
+from typing import List, Optional
+
+
+class Node:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+class Helper:
+    def toTree(self, values: List):
+        nodes = [Node(v) if v is not None else None for v in values]
+        for i in range(len(values)):
+            if nodes[i] is not None:
+                left = 2*i + 1
+                right = 2*i + 2
+                if left < len(values):
+                    nodes[i].left = nodes[left]
+                if right < len(values):
+                    nodes[i].right = nodes[right]
+        return nodes[0]
+
+    def printTree(self, root):
+        def getHeight(node):
+            if node is None:
+                return 0
+            return 1 + max(getHeight(node.left), getHeight(node.right))
+
+        def bottomUp(node, depth=0):
+            if node is None:
+                return []
+            return (
+                bottomUp(node.left, depth+1)
+                + [(node.val, depth)]
+                + bottomUp(node.right, depth+1)
+            )
+
+        depth = getHeight(root)
+        vals = bottomUp(root)
+
+        lines = ["" for _ in range(depth)]
+        offsets = [0] * depth
+
+        for val, d in vals:
+            text = str(val)
+            w = len(text)
+
+            lines[d] += " " * (offsets[d] - len(lines[d])) + text
+            offsets[d] = len(lines[d])  # update only its own line
+
+            for i in range(depth):
+                if i != d:
+                    offsets[i] += w
+
+        print(f"Depth: {depth}")
+        for line in lines:
+            print(line)
+
+
+class Solution:
+    def invertTree(self, root: Optional[Node]) -> Optional[Node]:
+        pass
+
+s = Solution()
+h = Helper()
+
+h.printTree( h.toTree([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14]) ) # [1, 2, 3, None, 4, 5, None]
+
+#             0
+#       /            \
+#      1              2
+#    /   \         /     \
+#   3     4       5       6
+#  / \   / \     / \     / \
+# 7   8 9   10 11   12 13   14
+
+# [(7,3),(3,2),(8,3),(1,1),(9,3),(4,2),(10,3),(0,0),(11,3),(5,2),(12,3),(2,1),(13,3),(6,2),(14,3)]
+
+# 0: [1],
+# 1: [1, 1],
+# 2: [1, 1, 1, 1],
+# 3: [1, 1, 1, 2, 2, 2, 2, 2]
+
+
