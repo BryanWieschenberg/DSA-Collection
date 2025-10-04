@@ -78,9 +78,25 @@ class Helper:
 
 class Solution:
     def invertTree(self, root: Optional[Node]) -> Optional[Node]:
-        pass
+        if not root: return None
 
+        tmp = root.left
+        root.left = root.right
+        root.right = tmp
+
+        self.invertTree(root.left)
+        self.invertTree(root.right)
+        
+        return root
+
+    def maxDepth(self, root: Optional[Node]) -> int:
+        if not root:
+            return 0
+        return 1 + max(self.maxDepth(root.left), self.maxDepth(root.right))
+    
 s = Solution()
 h = Helper()
 
-h.printTree( h.toTree([3,2,1]) ) # [3,1,2]
+# h.printTree( s. invertTree ( root=h.toTree([1,2,3,4,5,6,7]) )) # [3,1,2]
+
+print( s. maxDepth ( root=h.toTree([1,2,3,None,None,4]) )) # 3
