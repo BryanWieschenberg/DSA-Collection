@@ -1,4 +1,5 @@
 from collections import defaultdict, deque
+import math
 from typing import List, Optional
 
 
@@ -27,53 +28,75 @@ class Helper:
                 return 0
             return 1 + max(getHeight(node.left), getHeight(node.right))
 
-        def bottomUp(node, depth=0, is_left=False, is_right=False):
-            if node is None:
-                return []
-            left_vals = bottomUp(node.left, depth+1, False, True)
-            right_vals = bottomUp(node.right, depth+1, True, False)
-            
-            return (
-                left_vals
-                + [(node.val, depth, is_left, is_right)]
-                + right_vals
-            )
+        def bottomUp(root):
+            tmp = []
+
+            def dfs(node, depth=0, connector="", parent=None):
+                if not node:
+                    return
+                dfs(node.left, depth + 1, 'L', node)
+                tmp.append([None, node, depth, connector, parent])  # [id, node_ref, depth, conn, parent_ref]
+                dfs(node.right, depth + 1, 'R', node)
+
+            dfs(root, 0, "", None)
+
+            for i, it in enumerate(tmp):
+                it[0] = i
+
+            idx = {it[1]: it[0] for it in tmp}
+
+            vals = [(it[0], it[1].val, it[2], it[3], (idx[it[4]] if it[4] is not None else None)) for it in tmp]
+            return vals
 
         depth = getHeight(root)
         vals = bottomUp(root)
 
         lines = ["" for _ in range(depth * 2 - 1)]
         offsets = [0] * (depth * 2 - 1)
+        positions = {}
 
-        for i, (val, d, Lparent, Rparent) in enumerate(vals):
+        for i, (id, val, d, connector_sign, _) in enumerate(vals):
             text = str(val)
             w = len(text)
 
             line_index = d * 2
             
             lsp, rsp = 0, 0
-            if i-1 >= 0 and vals[i-1][1] == d-1:
+            if i-1 >= 0 and vals[i-1][2] == d-1:
                 lsp = 1
-            elif i+1 < len(vals) and vals[i+1][1] == d-1:
+            elif i+1 < len(vals) and vals[i+1][2] == d-1:
                 rsp = 1
 
-            lines[line_index] += " " * (offsets[line_index] - len(lines[line_index]))
-            
-            if Lparent:
-                lines[line_index-1] += " " * (offsets[line_index] - len(lines[line_index-1]) + lsp - 1) + "\\"
-            elif Rparent:
-                lines[line_index-1] += " " * (offsets[line_index] - len(lines[line_index-1]) + w) + "/"
-
-            lines[line_index] += " " * lsp + text + " " * rsp
+            lines[line_index] += " " * (offsets[line_index] - len(lines[line_index]) + lsp) + text + " " * rsp
             offsets[line_index] = len(lines[line_index])
+
+            if connector_sign == 'L':
+                positions[id] = offsets[line_index] - rsp - 1
+            else:
+                positions[id] = offsets[line_index] - w - rsp
 
             for i in range(depth):
                 li = i * 2
                 if li != line_index:
                     offsets[li] += w + lsp + rsp
+        
+        for (id, val, d, connector, cid) in vals:
+            if cid is None:
+                continue
+            ppos = positions[cid]
+            cpos = positions[id]
+            mid = (ppos + cpos) / 2
+            mid = math.ceil(mid) if connector == 'L' else math.floor(mid)
+            connectorLine = d * 2 - 1
+            lines[connectorLine] += " " * (mid - len(lines[connectorLine])) + ('/' if connector == 'L' else '\\')
 
-        for line in lines:
-            print(line)
+        output = """"""
+        for i in range(len(lines)):
+            output += lines[i]
+            if i + 1 < len(lines):
+                output += "\n"
+
+        print(output)
 
 
 class Solution:
@@ -99,4 +122,4 @@ h = Helper()
 
 # h.printTree( s. invertTree ( root=h.toTree([1,2,3,4,5,6,7]) )) # [3,1,2]
 
-print( s. maxDepth ( root=h.toTree([1,2,3,None,None,4]) )) # 3
+# print( s. maxDepth ( root=h.toTree([1,2,3,None,None,4]) )) # 3
