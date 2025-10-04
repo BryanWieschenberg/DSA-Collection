@@ -27,13 +27,16 @@ class Helper:
                 return 0
             return 1 + max(getHeight(node.left), getHeight(node.right))
 
-        def bottomUp(node, depth=0):
+        def bottomUp(node, depth=0, is_left=False, is_right=False):
             if node is None:
                 return []
+            left_vals = bottomUp(node.left, depth+1, False, True)
+            right_vals = bottomUp(node.right, depth+1, True, False)
+            
             return (
-                bottomUp(node.left, depth+1)
-                + [(node.val, depth)]
-                + bottomUp(node.right, depth+1)
+                left_vals
+                + [(node.val, depth, is_left, is_right)]
+                + right_vals
             )
 
         depth = getHeight(root)
@@ -41,8 +44,8 @@ class Helper:
 
         lines = ["" for _ in range(depth * 2 - 1)]
         offsets = [0] * (depth * 2 - 1)
-        
-        for i, (val, d) in enumerate(vals):
+
+        for i, (val, d, Lparent, Rparent) in enumerate(vals):
             text = str(val)
             w = len(text)
 
@@ -54,7 +57,14 @@ class Helper:
             elif i+1 < len(vals) and vals[i+1][1] == d-1:
                 rsp = 1
 
-            lines[line_index] += " " * (offsets[line_index] - len(lines[line_index]) + lsp) + text + " " * rsp
+            lines[line_index] += " " * (offsets[line_index] - len(lines[line_index]))
+            
+            if Lparent:
+                lines[line_index-1] += " " * (offsets[line_index] - len(lines[line_index-1]) + lsp - 1) + "\\"
+            elif Rparent:
+                lines[line_index-1] += " " * (offsets[line_index] - len(lines[line_index-1]) + w) + "/"
+
+            lines[line_index] += " " * lsp + text + " " * rsp
             offsets[line_index] = len(lines[line_index])
 
             for i in range(depth):
@@ -62,7 +72,6 @@ class Helper:
                 if li != line_index:
                     offsets[li] += w + lsp + rsp
 
-        print(f"Depth: {depth}")
         for line in lines:
             print(line)
 
@@ -74,22 +83,4 @@ class Solution:
 s = Solution()
 h = Helper()
 
-h.printTree( h.toTree([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14]) ) # [1, 2, 3, None, 4, 5, None]
-
-#             0
-#       /            \
-#      1              2
-#    /   \         /     \
-#   3     4       5       6
-#  / \   / \     / \     / \
-# 7   8 9   10 11   12 13   14
-
-# [(7,3),(3,2),(8,3),(1,1),(9,3),(4,2),(10,3),(0,0),(11,3),(5,2),(12,3),(2,1),(13,3),(6,2),(14,3)]
-
-# 0: [1],
-# 1: [1, 1],
-# 2: [1, 1, 1, 1],
-# 3: [1, 1, 1, 2, 2, 2, 2, 2]
-
-
-
+h.printTree( h.toTree([3,2,1]) ) # [3,1,2]
