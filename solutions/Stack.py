@@ -1,3 +1,4 @@
+from collections import deque
 import time
 from typing import List
 
@@ -111,7 +112,41 @@ class Solution:
             maxArea = max(maxArea, h * (len(heights) - i))
         
         return maxArea
+
+    def countStudents(self, students: List[int], sandwiches: List[int]) -> int:
+        stuindex, sanindex = 0, 0
+        resetctr = 0
+
+        while resetctr < len(students):
+            if students[stuindex] == sandwiches[sanindex]:
+                students.pop(stuindex)
+                sandwiches.pop(sanindex)
+                stuindex = 0 if stuindex >= len(students) else stuindex
+                resetctr = 0
+            else:
+                stuindex = stuindex + 1 if stuindex < len(students) - 1 else 0
+                resetctr += 1
         
+        return len(students)
+
+    class MyStack:
+        def __init__(self):
+            self.q = deque()
+
+        def push(self, x: int) -> None:
+            self.q.append(x)
+            for _ in range(len(self.q)-1):
+                self.q.append(self.q.popleft())
+
+        def pop(self) -> int:
+            return self.q.popleft()
+
+        def top(self) -> int:
+            return self.q[0]
+
+        def empty(self) -> bool:
+            return not self.q
+
 s = Solution()
 
 # print(s. isValid ( "([{}])" )) # True
@@ -133,3 +168,12 @@ s = Solution()
 # print(s. carFleet ( target=10, position=[1,4], speed=[3,2] )) # 1
 
 # print(s. largestRectangleArea ( heights=[7,1,7,2,2,4] )) # 8
+
+# print(s. countStudents ( students=[1,1,0,0], sandwiches=[0,1,0,1] )) # 0
+
+# myStack = s.MyStack()
+# myStack.push(1)
+# myStack.push(2)
+# print(myStack.top()) # 2
+# print(myStack.pop()) # 2
+# print(myStack.empty()) # False

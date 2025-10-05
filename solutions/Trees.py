@@ -50,7 +50,10 @@ class Helper:
 
         depth = getHeight(root)
         vals = bottomUp(root)
-
+        if not vals:
+            print("< Empty tree >")
+            return
+        
         lines = ["" for _ in range(depth * 2 - 1)]
         offsets = [0] * (depth * 2 - 1)
         positions = {}
@@ -90,7 +93,7 @@ class Helper:
             connectorLine = d * 2 - 1
             lines[connectorLine] += " " * (mid - len(lines[connectorLine])) + ('/' if connector == 'L' else '\\')
 
-        output = """"""
+        output = ""
         for i in range(len(lines)):
             output += lines[i]
             if i + 1 < len(lines):
@@ -98,14 +101,42 @@ class Helper:
 
         print(output)
 
-
 class Solution:
-    def invertTree(self, root: Optional[Node]) -> Optional[Node]:
-        if not root: return None
+    class Traverse:
+        def dfs(self, root):
+            if not root:
+                return []
+            return [root.val] + self.dfs(root.left) + self.dfs(root.right)
 
-        tmp = root.left
-        root.left = root.right
-        root.right = tmp
+        def dfs_inorder(self, root):
+            if not root:
+                return []
+            return self.dfs_inorder(root.left) + [root.val] + self.dfs_inorder(root.right)
+
+        def dfs_postorder(self, root):
+            if not root:
+                return []
+            return self.dfs_postorder(root.left) + self.dfs_postorder(root.right) + [root.val]
+
+        def bfs(self, root):
+            if not root:
+                return []
+            res = []
+            q = deque([root])
+            while q:
+                node = q.popleft()
+                res.append(node.val)
+                if node.left:
+                    q.append(node.left)
+                if node.right:
+                    q.append(node.right)
+            return res
+
+    def invertTree(self, root: Optional[Node]) -> Optional[Node]:
+        if not root:
+            return None
+
+        root.left, root.right = root.right, root.left
 
         self.invertTree(root.left)
         self.invertTree(root.right)
@@ -117,9 +148,74 @@ class Solution:
             return 0
         return 1 + max(self.maxDepth(root.left), self.maxDepth(root.right))
     
+    def diameterOfBinaryTree(self, root: Optional[Node]) -> int:
+        res = 0
+        def dfs(root):
+            if not root:
+                return 0
+            left = dfs(root.left)
+            right = dfs(root.right)
+            
+            nonlocal res
+            res = max(res, left + right)
+            return 1 + max(left, right)
+
+        dfs(root)
+        return res
+    
+    def isBalanced(self, root: Optional[Node]) -> bool:
+        def dfs(root):
+            if not root:
+                return [True, 0]
+            left, right = dfs(root.left), dfs(root.right)
+            balanced = (
+                left[0] and right[0] and
+                abs(left[1] - right[1]) <= 1
+            )
+            return [balanced, 1 + max(left[1], right[1])]
+        
+        return dfs(root)[0]
+    
+    def isSameTree(self, p: Optional[Node], q: Optional[Node]) -> bool:
+        if not (p or q):
+            return True
+        if p and q and p.val == q.val:
+            return self.isSameTree(p.left, q.left) and self.isSameTree(p.right, q.right)
+        else:
+            return False
+
+    def searchBST(self, root: Optional[Node], val: int) -> Optional[Node]:
+        if not root:
+            return None
+        if root.val < val:
+            return self.searchBST(root.right, val)
+        elif root.val > val:
+            return self.searchBST(root.left, val)
+        else:
+            return root
+            
+    def isSubtree(self, root: Optional[Node], subRoot: Optional[Node]) -> bool:
+        pass
+
 s = Solution()
 h = Helper()
+
+t = s.Traverse()
+iterable = range(1, 2**3)
+h.printTree( h.toTree([i for i in iterable]) )
+print("DFS:            ", t. dfs ( h.toTree([i for i in iterable]) ))
+print("DFS (Inorder):  ", t. dfs_inorder ( h.toTree([i for i in iterable]) ))
+print("DFS (Postorder):", t. dfs_postorder ( h.toTree([i for i in iterable]) ))
+print("BFS:            ", t. bfs ( h.toTree([i for i in iterable]) ))
 
 # h.printTree( s. invertTree ( root=h.toTree([1,2,3,4,5,6,7]) )) # [3,1,2]
 
 # print( s. maxDepth ( root=h.toTree([1,2,3,None,None,4]) )) # 3
+
+# print( s. isBalanced ( root=h.toTree([1,2,3,None,None,4]) )) # True
+
+# print( s. isSameTree ( p=h.toTree([1,2,3]), q=h.toTree([1,2,3]) )) # True
+
+# h.printTree( s. searchBST ( root=h.toTree([4,2,7,1,3]), val=2 ) ) # [2,1,3]
+
+# print( s. isSubtree ( p=h.toTree([1,2,3]), q=h.toTree([1,2,3]) )) # True

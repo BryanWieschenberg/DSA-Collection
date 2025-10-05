@@ -243,6 +243,98 @@ class Solution:
             groupPrev = tmp
         return dummy.next
     
+    class MyLinkedList:
+        def __init__(self):
+            self.left = Node()
+            self.right = Node()
+            self.left.next = self.right
+            self.right.prev = self.left
+            self.leng = 0
+
+        def _toIndex(self, index):
+            curr = None
+            if index < self.leng // 2:
+                curr = self.left.next
+                i = 0
+                while i < index:
+                    curr = curr.next
+                    i += 1
+            else:
+                curr = self.right.prev
+                i = 0
+                while i < self.leng - index - 1:
+                    curr = curr.prev
+                    i += 1
+            return curr
+
+        def get(self, index: int) -> int:
+            if index >= self.leng:
+                return -1
+            node = self._toIndex(index)
+            return node.val
+
+        def addAtHead(self, val: int) -> None:
+            node = Node(val)
+            node.next = self.left.next
+            node.prev = self.left
+            self.left.next.prev = node
+            self.left.next = node
+            self.leng += 1
+
+        def addAtTail(self, val: int) -> None:
+            node = Node(val)
+            node.prev = self.right.prev
+            node.next = self.right
+            self.right.prev.next = node
+            self.right.prev = node
+            self.leng += 1
+
+        def addAtIndex(self, index: int, val: int) -> None:
+            if index > self.leng:
+                return
+            if index == self.leng:
+                self.addAtTail(val)
+                return
+            right = self._toIndex(index)
+            left = right.prev
+            node = Node(val)
+            left.next = node
+            node.prev = left
+            node.next = right
+            right.prev = node
+            self.leng += 1
+
+        def deleteAtIndex(self, index: int) -> None:
+            if index >= self.leng:
+                return
+            node = self._toIndex(index)
+            node.prev.next = node.next
+            node.next.prev = node.prev
+            self.leng -= 1
+
+    class BrowserHistory:
+        def __init__(self, homepage: str):
+            self.curr = Node(homepage)
+
+        def visit(self, url: str) -> None:
+            self.curr.next = None
+            self.curr.next = Node(url)
+            self.curr.next.prev = self.curr
+            self.curr = self.curr.next
+            return self.curr.val
+
+        def back(self, steps: int) -> str:
+            while self.curr.prev and steps:
+                self.curr = self.curr.prev
+                steps -= 1
+            return self.curr.val
+
+        def forward(self, steps: int) -> str:
+            while self.curr.next and steps:
+                self.curr = self.curr.next
+                steps -= 1
+            return self.curr.val    
+
 s = Solution()
 h = Helper()
 
@@ -274,3 +366,23 @@ h = Helper()
 # h.printLL( s. mergeKLists ( lists=[h.toLL([1,3,5]), h.toLL([2,4,6]), h.toLL([0,7])] )) # 1 -> 1 -> 2 -> 3 -> 3 -> 4 -> 5 -> 6
 
 # h.printLL( s. reverseKGroup ( head=h.toLL([1,2,3,4,5,6,7,8]), k=3 )) # 2 -> 1 -> 4 -> 3 -> 6 -> 5 -> 7 -> 8
+
+# myLinkedList = s.MyLinkedList()
+# myLinkedList.addAtHead(1)
+# myLinkedList.addAtTail(3)
+# myLinkedList.addAtIndex(1, 2) # 1 -> 2 -> 3
+# print(myLinkedList.get(1)) # 2
+# myLinkedList.deleteAtIndex(1) # 1 -> 3
+# print(myLinkedList.get(1)) # 3
+
+# browserHistory = s.BrowserHistory("leetcode.com")
+# print(browserHistory.visit("google.com")) # google.com
+# print(browserHistory.visit("facebook.com")) # facebook.com
+# print(browserHistory.visit("youtube.com")) # youtube.com
+# print(browserHistory.back(1)) # facebook.com
+# print(browserHistory.back(1)) # google.com
+# print(browserHistory.forward(1)) # facebook.com
+# print(browserHistory.visit("linkedin.com")) # linkedin.com
+# print(browserHistory.forward(2)) # linkedin.com
+# print(browserHistory.back(2)) # google.com
+# print(browserHistory.back(7)) # leetcode.com

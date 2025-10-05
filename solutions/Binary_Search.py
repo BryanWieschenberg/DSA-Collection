@@ -128,7 +128,46 @@ class Solution:
                 r = i - 1
             else:
                 l = i + 1
+
+    def firstBadVersion(self, n: int, bad: int) -> int:
+        def isBadVersion(mid):
+            return mid >= bad
+        
+        l, r = 1, n
+        mid = 0
+        while l <= r:
+            mid = (l + r) // 2
+            if isBadVersion(mid):
+                r = mid - 1
+            else:
+                l = mid + 1
+        return l
     
+    def guessNumber(self, n: int, pick: int) -> int:
+        def guess(mid):
+            if mid < pick:
+                return 1
+            elif mid > pick:
+                return -1
+            else:
+                return 0
+
+        l, r = 1, n
+        while True:
+            m1 = l + (r - l) // 3
+            m2 = r - (r - l) // 3
+            if guess(m1) == 0:
+                return m1
+            if guess(m2) == 0:
+                return m2
+            if guess(m1) + guess(m2) == 0:
+                l = m1 + 1
+                r = m2 - 1
+            elif guess(m1) == -1:
+                r = m1 - 1
+            else:
+                l = m2 + 1
+
 s = Solution()
 
 # print(s. search ( nums=[2,5], target=5 )) # 3
@@ -147,3 +186,7 @@ s = Solution()
 # print(timeMap.get("alice", 3)) # "sad"
 
 # print(s. findMedianSortedArrays ( nums1=[1,3], nums2=[2,4] )) # 2.5
+
+# print(s. firstBadVersion ( n=5, bad=4 )) # 4
+
+# print(s. guessNumber ( n=5, pick=3 )) # 3

@@ -2,15 +2,9 @@ from typing import List
 from collections import defaultdict
 
 class Solution:
-    # https://neetcode.io/problems/duplicate-integer?list=neetcode150
-    # Time: O(n)
-    # Space: O(n)
     def hasDuplicate(self, nums: List[int]) -> bool:
         return not(len(set(nums)) == len(nums))
     
-    # https://neetcode.io/problems/is-anagram?list=neetcode150
-    # Time: O(n)
-    # Space: O(1)
     def isAnagram(self, s: str, t: str) -> bool:
         if len(s) != len(t):
             return False
@@ -23,9 +17,6 @@ class Solution:
                 return False
         return True
     
-    # https://neetcode.io/problems/two-sum?list=neetcode150
-    # Time: O(n)
-    # Space: O(n)
     def twoSum(self, nums: List[int], target: int) -> List[int]:
         map = {}
 
@@ -37,9 +28,6 @@ class Solution:
 
         return None
 
-    # https://neetcode.io/problems/group-anagrams?list=neetcode150
-    # Time: O(n * m), n = number of words, m = length of longest word
-    # Space: O(n * m)
     def groupAnagrams(self, strs: List[str]) -> List[List[str]]:
         lst = defaultdict(list)
 
@@ -52,9 +40,6 @@ class Solution:
         
         return list(lst.values())
     
-    # https://neetcode.io/problems/top-k-frequent-elements?list=neetcode150
-    # Time: O(n)
-    # Space: O(n)
     def topKFrequent(self, nums: List[int], k: int) -> List[int]:
         cts = {}
         freq = [[] for _ in range(len(nums))]
@@ -71,9 +56,6 @@ class Solution:
                     return res
         return None
 
-    # https://neetcode.io/problems/encode-and-decode-strings?list=neetcode150
-    # Time: O(n)
-    # Space: O(n)
     class encodeDecode:
         def encode(self, strs: List[str]) -> str:
             final_str = ""
@@ -98,9 +80,6 @@ class Solution:
                 res.append(word)
             return res
 
-    # https://neetcode.io/problems/product-of-array-except-self?list=neetcode150
-    # Time: O(n)
-    # Space: O(n)
     def productExceptSelf(self, nums: List[int]) -> List[int]:
         res = [1] * len(nums)
         pre, suf = nums[0], nums[-1]
@@ -114,9 +93,6 @@ class Solution:
         
         return res
 
-    # https://neetcode.io/problems/valid-sudoku?list=neetcode150
-    # Time: O(n^2)
-    # Space: O(n)
     def isValidSudoku(self, board: List[List[str]]) -> bool:
         for i in range(9):
             row_set, col_set, sub_set = set(), set(), set()
@@ -140,9 +116,6 @@ class Solution:
                     sub_set.add(sub_check)
         return True
     
-    # https://neetcode.io/problems/longest-consecutive-sequence?list=neetcode150
-    # Time: O(n)
-    # Space: O(n)
     def longestConsecutive(self, nums: List[int]) -> int:
         num_set = set(nums)
         longest = 0
@@ -154,6 +127,34 @@ class Solution:
                 longest = max(longest, length)
         return longest
         
+    def removeDuplicates(self, nums: List[int]) -> int:
+        if len(nums) == 1:
+            return 1
+        k = 0
+        for i in range(1, len(nums)):
+            if nums[k] != nums[i]:
+                k += 1
+            nums[k] = nums[i]
+        return k+1
+
+    def removeElement(self, nums: List[int], val: int) -> int:
+        if len(nums) == 1:
+            return 1 if val != nums[0] else 0
+        k = 0
+        for i in range(len(nums)):
+            if nums[i] != val:
+                nums[k] = nums[i]
+                k += 1
+        return k
+    
+    def getConcatenation(self, nums: List[int]) -> List[int]:
+        leng = len(nums)
+        ans = [0] * (leng * 2)
+        for i in range(leng):
+            ans[i] = nums[i]
+            ans[i + leng] = nums[i]
+        return ans
+    
 s = Solution()
 
 # print(s. hasDuplicate ( nums=[1,2,3,3] )) # True
@@ -185,3 +186,9 @@ s = Solution()
 # print(s. isValidSudoku ( board=board )) # True
 
 # print(s. longestConsecutive ( nums=[2,20,4,10,3,4,5] )) # 4
+
+# print(s. removeDuplicates ( nums=[1,1,2,3,4] )) # 4
+
+# print(s. removeElement ( nums=[1,1,2,3,4], val=1 )) # 3
+
+# print(s. getConcatenation ( nums=[1,4,1,2] )) # [1,4,1,2,1,4,1,2]
