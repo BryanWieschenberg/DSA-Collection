@@ -1,7 +1,7 @@
 from collections import defaultdict
 from typing import List, Optional
 
-class Node:
+class ListNode:
     def __init__(self, val=0, next=None, prev=None, random=None, key=0):
         self.val = val
         self.next = next
@@ -10,17 +10,17 @@ class Node:
         self.key = key
 
 class Helper:
-    def printLL(self, head: Optional[Node], end="\n"):
+    def printLL(self, head: Optional[ListNode], end="\n"):
         curr = head
         while curr:
             print(f"{curr.val},{curr.random.val}" if curr.random else f"{curr.val}", end=" -> " if curr.next else end)
             curr = curr.next
     
-    def toLL(self, values: List, cycle_index: Optional[int] = None) -> Optional[Node]:
+    def toLL(self, values: List, cycle_index: Optional[int] = None) -> Optional[ListNode]:
         if isinstance(values[0], int):
-            nodes = [Node(val=v) for v in values]
+            nodes = [ListNode(val=v) for v in values]
         else:
-            nodes = [Node(val=pair[0]) for pair in values]
+            nodes = [ListNode(val=pair[0]) for pair in values]
 
         for i in range(len(nodes)-1):
             nodes[i].next = nodes[i + 1]
@@ -41,7 +41,7 @@ class Helper:
         return nodes[0]
 
 class Solution:
-    def reverseList(self, head: Optional[Node]) -> Optional[Node]:
+    def reverseList(self, head: Optional[ListNode]) -> Optional[ListNode]:
         curr, prev = head, None
         while curr:
             temp = curr.next
@@ -50,8 +50,8 @@ class Solution:
             curr = temp
         return prev
 
-    def mergeTwoLists(self, list1: Optional[Node], list2: Optional[Node]) -> Optional[Node]:
-        dummy = node = Node()
+    def mergeTwoLists(self, list1: Optional[ListNode], list2: Optional[ListNode]) -> Optional[ListNode]:
+        dummy = node = ListNode()
         
         while list1 and list2:
             if list1.val <= list2.val:
@@ -66,7 +66,7 @@ class Solution:
 
         return dummy.next
     
-    def hasCycle(self, head: Optional[Node]) -> bool:
+    def hasCycle(self, head: Optional[ListNode]) -> bool:
         slow, fast = head, head.next
         while fast and fast.next:
             slow = slow.next
@@ -75,7 +75,7 @@ class Solution:
                 return True
         return False
     
-    def reorderList(self, head: Optional[Node]) -> Optional[Node]:
+    def reorderList(self, head: Optional[ListNode]) -> Optional[ListNode]:
         slow, fast = head, head.next
         while fast and fast.next:
             slow = slow.next
@@ -96,8 +96,8 @@ class Solution:
             first, second = temp1, temp2
         return head
 
-    def removeNthFromEnd(self, head: Optional[Node], n: int) -> Optional[Node]:
-        dummy = Node(0, head)
+    def removeNthFromEnd(self, head: Optional[ListNode], n: int) -> Optional[ListNode]:
+        dummy = ListNode(0, head)
         left = dummy
         right = head
 
@@ -112,8 +112,8 @@ class Solution:
         left.next = left.next.next
         return dummy.next
     
-    def copyRandomList(self, head: 'Optional[Node]') -> 'Optional[Node]':
-        old = defaultdict(lambda: Node(0))
+    def copyRandomList(self, head: 'Optional[ListNode]') -> 'Optional[ListNode]':
+        old = defaultdict(lambda: ListNode(0))
         old[None] = None
         curr = head
         while curr:
@@ -124,7 +124,7 @@ class Solution:
         return old[head]
     
     # could be optimized with by making the curr OoM sum the .next, while remembering the carry val
-    def addTwoNumbers(self, l1: Optional[Node], l2: Optional[Node]) -> Optional[Node]:
+    def addTwoNumbers(self, l1: Optional[ListNode], l2: Optional[ListNode]) -> Optional[ListNode]:
         curr1, curr2 = l1, l2
         OoM = 0
         totalSum = 0
@@ -136,11 +136,11 @@ class Solution:
                 totalSum += curr2.val * (10**OoM)
                 curr2 = curr2.next
             OoM += 1
-        dummy = node = Node()
+        dummy = node = ListNode()
         totalSum = str(totalSum)
         
         for i in range(len(totalSum)-1, -1, -1):
-            node.next = Node(val=int(totalSum[i]))
+            node.next = ListNode(val=int(totalSum[i]))
             node = node.next
 
         return dummy.next
@@ -163,7 +163,7 @@ class Solution:
         def __init__(self, capacity: int):
             self.cap = capacity
             self.cache = {}
-            self.left, self.right = Node(0, 0), Node(0, 0)
+            self.left, self.right = ListNode(0, 0), ListNode(0, 0)
             self.left.next = self.right
             self.right.prev = self.left
 
@@ -187,7 +187,7 @@ class Solution:
         def put(self, key: int, value: int) -> None:
             if key in self.cache:
                 self._remove(self.cache[key])
-            self.cache[key] = Node(key=key, val=value)
+            self.cache[key] = ListNode(key=key, val=value)
             self._insert(self.cache[key])
 
             if len(self.cache) > self.cap:
@@ -195,9 +195,9 @@ class Solution:
                 self._remove(lru)
                 del self.cache[lru.key]
 
-    def mergeKLists(self, lists: List[Optional[Node]]) -> Optional[Node]:
+    def mergeKLists(self, lists: List[Optional[ListNode]]) -> Optional[ListNode]:
         def mergeList(l1, l2):
-            dummy = tail = Node()
+            dummy = tail = ListNode()
             
             while l1 and l2:
                 if l1.val < l2.val:
@@ -218,14 +218,14 @@ class Solution:
 
         return lists[-1]
     
-    def reverseKGroup(self, head: Optional[Node], k: int) -> Optional[Node]:        
+    def reverseKGroup(self, head: Optional[ListNode], k: int) -> Optional[ListNode]:        
         def getKth(curr, k):
             while curr and k > 0:
                 curr = curr.next
                 k -= 1
             return curr
 
-        dummy = groupPrev = Node(val=0, next=head)
+        dummy = groupPrev = ListNode(val=0, next=head)
         while True:
             kth = getKth(groupPrev, k)
             if not kth:
@@ -245,8 +245,8 @@ class Solution:
     
     class MyLinkedList:
         def __init__(self):
-            self.left = Node()
-            self.right = Node()
+            self.left = ListNode()
+            self.right = ListNode()
             self.left.next = self.right
             self.right.prev = self.left
             self.leng = 0
@@ -274,7 +274,7 @@ class Solution:
             return node.val
 
         def addAtHead(self, val: int) -> None:
-            node = Node(val)
+            node = ListNode(val)
             node.next = self.left.next
             node.prev = self.left
             self.left.next.prev = node
@@ -282,7 +282,7 @@ class Solution:
             self.leng += 1
 
         def addAtTail(self, val: int) -> None:
-            node = Node(val)
+            node = ListNode(val)
             node.prev = self.right.prev
             node.next = self.right
             self.right.prev.next = node
@@ -297,7 +297,7 @@ class Solution:
                 return
             right = self._toIndex(index)
             left = right.prev
-            node = Node(val)
+            node = ListNode(val)
             left.next = node
             node.prev = left
             node.next = right
@@ -314,11 +314,11 @@ class Solution:
 
     class BrowserHistory:
         def __init__(self, homepage: str):
-            self.curr = Node(homepage)
+            self.curr = ListNode(homepage)
 
         def visit(self, url: str) -> None:
             self.curr.next = None
-            self.curr.next = Node(url)
+            self.curr.next = ListNode(url)
             self.curr.next.prev = self.curr
             self.curr = self.curr.next
             return self.curr.val

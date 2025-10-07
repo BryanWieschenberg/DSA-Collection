@@ -3,7 +3,7 @@ import math
 from typing import List, Optional
 
 
-class Node:
+class TreeNode:
     def __init__(self, val=0, left=None, right=None):
         self.val = val
         self.left = left
@@ -11,7 +11,7 @@ class Node:
 
 class Helper:
     def toTree(self, values: List):
-        nodes = [Node(v) if v is not None else None for v in values]
+        nodes = [TreeNode(v) if v is not None else None for v in values]
         for i in range(len(values)):
             if nodes[i] is not None:
                 left = 2*i + 1
@@ -103,7 +103,7 @@ class Helper:
 
 class Solution:
     class Traverse:
-        def dfs(self, root):
+        def dfs(self, root): # Preorder traversal
             if not root:
                 return []
             return [root.val] + self.dfs(root.left) + self.dfs(root.right)
@@ -132,7 +132,7 @@ class Solution:
                     q.append(node.right)
             return res
 
-    def invertTree(self, root: Optional[Node]) -> Optional[Node]:
+    def invertTree(self, root: Optional[TreeNode]) -> Optional[TreeNode]:
         if not root:
             return None
 
@@ -143,13 +143,12 @@ class Solution:
         
         return root
 
-    def maxDepth(self, root: Optional[Node]) -> int:
+    def maxDepth(self, root: Optional[TreeNode]) -> int:
         if not root:
             return 0
         return 1 + max(self.maxDepth(root.left), self.maxDepth(root.right))
     
-    def diameterOfBinaryTree(self, root: Optional[Node]) -> int:
-        res = 0
+    def diameterOfBinaryTree(self, root: Optional[TreeNode]) -> int:
         def dfs(root):
             if not root:
                 return 0
@@ -160,10 +159,11 @@ class Solution:
             res = max(res, left + right)
             return 1 + max(left, right)
 
+        res = 0
         dfs(root)
         return res
     
-    def isBalanced(self, root: Optional[Node]) -> bool:
+    def isBalanced(self, root: Optional[TreeNode]) -> bool:
         def dfs(root):
             if not root:
                 return [True, 0]
@@ -176,15 +176,15 @@ class Solution:
         
         return dfs(root)[0]
     
-    def isSameTree(self, p: Optional[Node], q: Optional[Node]) -> bool:
-        if not (p or q):
+    def isSameTree(self, p: Optional[TreeNode], q: Optional[TreeNode]) -> bool:
+        if not p and not q:
             return True
-        if p and q and p.val == q.val:
+        elif p and q and p.val == q.val:
             return self.isSameTree(p.left, q.left) and self.isSameTree(p.right, q.right)
         else:
             return False
 
-    def searchBST(self, root: Optional[Node], val: int) -> Optional[Node]:
+    def searchBST(self, root: Optional[TreeNode], val: int) -> Optional[TreeNode]:
         if not root:
             return None
         if root.val < val:
@@ -193,20 +193,137 @@ class Solution:
             return self.searchBST(root.left, val)
         else:
             return root
-            
-    def isSubtree(self, root: Optional[Node], subRoot: Optional[Node]) -> bool:
-        pass
+    
+    class Codec:
+        def serialize(self, root: Optional[TreeNode]) -> str:
+            def dfs(root):
+                nonlocal s
+                if not root:
+                    s.append("#")
+                    return
+                s.append(str(root.val))
 
+                dfs(root.left)
+                dfs(root.right)
+        
+            s = []
+            dfs(root)
+            return ",".join(s)
+            
+        def deserialize(self, data: str) -> Optional[TreeNode]:
+            def dfs():
+                if not q:
+                    return None
+                val = q.popleft()
+                if val == '#':
+                    return None
+                node = TreeNode(int(val))
+                node.left = dfs()
+                node.right = dfs()
+                return node
+            
+            q = deque(data.split(","))
+            return dfs()
+
+    def isSubtree(self, root: Optional[TreeNode], subRoot: Optional[TreeNode]) -> bool:
+        def serialize(root):
+            if not root:
+                return "$#"
+            return "$" + str(root.val) + serialize(root.left) + serialize(root.right)
+        
+        def z_func(s):
+            z = [0] * len(s)
+            l, r, n = 0, 0, len(s)
+            for i in range(1, n):
+                if i <= r:
+                    z[i] = min(r - i + 1, z[i - l])
+                while i + z[i] < n and s[z[i]] == s[i + z[i]]:
+                    z[i] += 1
+                if i + z[i] - 1 > r:
+                    l, r = i, i + z[i] - 1
+            return z
+        
+        rootSer = serialize(root)
+        subRootSer = serialize(subRoot)
+        z_vals = z_func(subRootSer + "|" + rootSer)
+
+        for z in z_vals:
+            if z == len(subRootSer):
+                return True
+        
+        return False
+    
+    def lowestCommonAncestor(self, root: Optional[TreeNode], p: Optional[TreeNode], q: Optional[TreeNode]) -> Optional[TreeNode]:
+        curr = root
+        while curr:
+            if curr.val > p.val and curr.val > q.val:
+                curr = curr.left
+            elif curr.val < p.val and curr.val < q.val:
+                curr = curr.right
+            else:
+                return curr
+        
+    def levelOrder(self, root: Optional[TreeNode]) -> List[List[int]]:
+        if not root: return []
+        res = []
+        q = deque()
+        q.append(root)
+        while q:
+            qLen = len(q)
+            level = []
+            for i in range(qLen):
+                node = q.popleft()
+                if node:
+                    level.append(node.val)
+                    q.append(node.left)
+                    q.append(node.right)
+            if level:
+                res.append(level)
+        return res
+    
+    def rightSideView(self, root: Optional[TreeNode]) -> List[int]:
+        res = []
+        def dfs(root, height):
+            if not root: return None
+            if len(res) == height:
+                res.append(root.val)
+            
+            dfs(root.right, height+1)
+            dfs(root.left, height+1)
+            
+        dfs(root, 0)
+        return res
+    
+    def goodNodes(self, root: TreeNode) -> int:
+        if not root: return 0
+        res = 1
+        def dfs(root):
+            if not root: return None
+
+            nonlocal res
+            if root.left and root.left.val >= root.val:
+                res += 1
+            if root.right and root.right.val >= root.val:
+                res += 1
+
+            dfs(root.left)
+            dfs(root.right)
+
+        dfs(root)
+        return res
+    
 s = Solution()
 h = Helper()
 
-t = s.Traverse()
-iterable = range(1, 2**3)
-h.printTree( h.toTree([i for i in iterable]) )
-print("DFS:            ", t. dfs ( h.toTree([i for i in iterable]) ))
-print("DFS (Inorder):  ", t. dfs_inorder ( h.toTree([i for i in iterable]) ))
-print("DFS (Postorder):", t. dfs_postorder ( h.toTree([i for i in iterable]) ))
-print("BFS:            ", t. bfs ( h.toTree([i for i in iterable]) ))
+# t = s.Traverse()
+# iterable = range(1, 2**3)
+# h.printTree( h.toTree([i for i in iterable]) )
+# print("DFS:            ", t. dfs ( h.toTree([i for i in iterable]) ))
+# print("DFS (Inorder):  ", t. dfs_inorder ( h.toTree([i for i in iterable]) ))
+# print("DFS (Postorder):", t. dfs_postorder ( h.toTree([i for i in iterable]) ))
+# print("BFS:            ", t. bfs ( h.toTree([i for i in iterable]) ))
+
+h.printTree( h.toTree([1,2,-1,3,4]) )
 
 # h.printTree( s. invertTree ( root=h.toTree([1,2,3,4,5,6,7]) )) # [3,1,2]
 
@@ -218,4 +335,17 @@ print("BFS:            ", t. bfs ( h.toTree([i for i in iterable]) ))
 
 # h.printTree( s. searchBST ( root=h.toTree([4,2,7,1,3]), val=2 ) ) # [2,1,3]
 
-# print( s. isSubtree ( p=h.toTree([1,2,3]), q=h.toTree([1,2,3]) )) # True
+# codec = s.Codec()
+# serialized = ( codec.serialize ( root=h.toTree([1,2,3,None,None,4,5,6,7,8,None,None,None,12,15]) )) # "1,2,#,#,3,4,#,#,5,#,#"
+# print(serialized)
+# h.printTree( codec.deserialize ( data=serialized )) # [1,2,3,None,None,4,5]
+
+# print( s. isSubtree ( root=h.toTree([1,2,3,4,5]), subRoot=h.toTree([2,4,5]) )) # True
+
+# h.printTree( s. lowestCommonAncestor ( root=h.toTree([5,3,8,1,4,7,9,None,2]), p=3, q=8 )) # [3,1,2,4]
+
+# print( s. levelOrder ( root=h.toTree([1,2,3,4,5,6,7]) )) # [[1],[2,3],[4,5,6,7]]
+
+# print( s. rightSideView ( root=h.toTree([1,2,3,4]) )) # [1,3,4]
+
+print( s. goodNodes ( root=h.toTree([1,2,-1,3,4]) )) # 3
