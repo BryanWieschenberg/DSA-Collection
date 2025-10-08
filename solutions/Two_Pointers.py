@@ -8,7 +8,7 @@ class Solution:
     def isPalindrome(self, s: str) -> bool:
         l, r = 0, len(s)-1
 
-        while l < len(s) / 2:
+        while l < r:
             if not s[l].isalnum():
                 l += 1
                 continue

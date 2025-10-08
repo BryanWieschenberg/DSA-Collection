@@ -4,15 +4,20 @@ class Solution:
             return 1
         return n * self.factorial(n - 1)
 
-    def fibbonacci(self, n: int) -> int:
+    def fib(self, n: int) -> int:
         if n <= 1:
             return n
-        return self.fibbonacci(n - 1) + self.fibbonacci(n - 2)
+        return self.fib(n - 1) + self.fib(n - 2)
 
     def climbStairs(self, n: int) -> int:
-        if n <= 2:
-            return n
-        return self.climbStairs(n - 1) + self.climbStairs(n - 2)
+        def helper(k):
+            if k in cache:
+                return cache[k]
+            cache[k] = helper(k - 1) + helper(k - 2)
+            return cache[k]
+
+        cache = {1: 1, 2: 2}
+        return helper(n)
 
 s = Solution()
 

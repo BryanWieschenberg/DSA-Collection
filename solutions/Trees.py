@@ -118,7 +118,7 @@ class Solution:
                 return []
             return self.dfs_postorder(root.left) + self.dfs_postorder(root.right) + [root.val]
 
-        def bfs(self, root):
+        def bfs(self, root): # Level order traversal
             if not root:
                 return []
             res = []
@@ -187,10 +187,10 @@ class Solution:
     def searchBST(self, root: Optional[TreeNode], val: int) -> Optional[TreeNode]:
         if not root:
             return None
-        if root.val < val:
-            return self.searchBST(root.right, val)
-        elif root.val > val:
+        if root.val > val:
             return self.searchBST(root.left, val)
+        elif root.val < val:
+            return self.searchBST(root.right, val)
         else:
             return root
     
@@ -282,7 +282,6 @@ class Solution:
         return res
     
     def rightSideView(self, root: Optional[TreeNode]) -> List[int]:
-        res = []
         def dfs(root, height):
             if not root: return None
             if len(res) == height:
@@ -291,26 +290,62 @@ class Solution:
             dfs(root.right, height+1)
             dfs(root.left, height+1)
             
+        res = []
         dfs(root, 0)
         return res
-    
+        
     def goodNodes(self, root: TreeNode) -> int:
-        if not root: return 0
-        res = 1
-        def dfs(root):
-            if not root: return None
+        def dfs(node, maxVal):
+            if not node: return 0
 
-            nonlocal res
-            if root.left and root.left.val >= root.val:
-                res += 1
-            if root.right and root.right.val >= root.val:
-                res += 1
+            res = 1 if node.val >= maxVal else 0
+            maxVal = max(maxVal, node.val)
 
-            dfs(root.left)
-            dfs(root.right)
+            res += dfs(node.left, maxVal)
+            res += dfs(node.right, maxVal)
+            
+            return res
 
-        dfs(root)
-        return res
+        return dfs(root, root.val)
+    
+    def isValidBST(self, root: Optional[TreeNode]) -> bool:
+        def dfs(node, left, right):
+            if not node: return True
+
+            if not (left < node.val < right): return False
+            
+            return (
+                dfs(node.left, left, node.val) and
+                dfs(node.right, node.val, right)
+            )
+
+        return dfs(root, float('-inf'), float('inf'))
+    
+    def kthSmallest(self, root: Optional[TreeNode], k: int) -> int:
+        def dfs(node):
+            if not node: return []
+            return dfs(node.left) + [node.val] + dfs(node.right)
+
+        res = dfs(root)
+        return res[k - 1]
+    
+    def isSymmetric(self, root: Optional[TreeNode]) -> bool:
+        def dfs(root1, root2):
+            if not (root1 or root2):
+                return True
+            if (
+                root1 and not root2 or
+                root2 and not root1
+            ):
+                return False
+            if root1.val != root2.val:
+                return False
+            return (
+                dfs(root1.left, root2.right) and
+                dfs(root1.right, root2.left)
+            )
+
+        return dfs(root, root)
     
 s = Solution()
 h = Helper()
@@ -323,7 +358,7 @@ h = Helper()
 # print("DFS (Postorder):", t. dfs_postorder ( h.toTree([i for i in iterable]) ))
 # print("BFS:            ", t. bfs ( h.toTree([i for i in iterable]) ))
 
-h.printTree( h.toTree([1,2,-1,3,4]) )
+h.printTree( h.toTree([5,4,8,3,5,9,None,None,None,None,7]) )
 
 # h.printTree( s. invertTree ( root=h.toTree([1,2,3,4,5,6,7]) )) # [3,1,2]
 
@@ -348,4 +383,10 @@ h.printTree( h.toTree([1,2,-1,3,4]) )
 
 # print( s. rightSideView ( root=h.toTree([1,2,3,4]) )) # [1,3,4]
 
-print( s. goodNodes ( root=h.toTree([1,2,-1,3,4]) )) # 3
+# print( s. goodNodes ( root=h.toTree([1,2,-1,3,4]) )) # 3
+
+# print( s. isValidBST ( root=h.toTree([5,4,6,None,None,3,7]) )) # False
+
+print( s. kthSmallest ( root=h.toTree([4,3,5,2,None]), k=2 )) # 1
+
+# print( s. isSymmetric ( root=h.toTree([1,2,2,3,4,4,3]) )) # True

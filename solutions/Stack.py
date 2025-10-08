@@ -51,20 +51,20 @@ class Solution:
         stack = []
 
         for i in range(len(tokens)):
-            print(stack)
             if not tokens[i] in ['+', '-', '*', '/']:
                 stack.append(int(tokens[i]))
+                continue
             else:
                 operand2 = stack.pop()
                 operand1 = stack.pop()
             
-            op = tokens[i]
+                op = tokens[i]
 
-            match op:
-                case '+': stack.append(operand1 + operand2)
-                case '-': stack.append(operand1 - operand2)
-                case '*': stack.append(operand1 * operand2)
-                case '/': stack.append(int(operand1 / operand2))
+                match op:
+                    case '+': stack.append(operand1 + operand2)
+                    case '-': stack.append(operand1 - operand2)
+                    case '*': stack.append(operand1 * operand2)
+                    case '/': stack.append(int(operand1 / operand2))
 
         if len(stack) != 1:
             return None
@@ -88,7 +88,6 @@ class Solution:
     def carFleet(self, target: int, position: List[int], speed: List[int]) -> int:
         pair = [(p, s) for p, s in zip(position, speed)]
         stack = []
-        fleets = 0
         for p, s in sorted(pair)[::-1]:
             time = (target - p) / s
             stack.append(time)
