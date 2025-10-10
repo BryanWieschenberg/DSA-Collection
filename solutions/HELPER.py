@@ -138,9 +138,9 @@ class TreeHelper:
         print(output)
 
 class TrieNode:
-    def __init__(self, isEnd=False):
+    def __init__(self):
         self.children = {}
-        self.isEnd = isEnd
+        self.end = False
 
 class TrieHelper:
     def toTrie(self, words):
