@@ -82,11 +82,10 @@ class Helper:
                 li = i * 2
                 if li != line_index:
                     offsets[li] += w + lsp + rsp
-        
         for (id, val, d, connector, cid) in vals:
             if cid is None:
                 continue
-            ppos = positions[cid]
+            ppos = positions[cid] + (len(str(vals[cid][1])) - 1 if connector == 'R' else -len(str(vals[cid][1])) // 2)
             cpos = positions[id]
             mid = (ppos + cpos) / 2
             mid = math.ceil(mid) if connector == 'L' else math.floor(mid)
@@ -322,12 +321,29 @@ class Solution:
         return dfs(root, float('-inf'), float('inf'))
     
     def kthSmallest(self, root: Optional[TreeNode], k: int) -> int:
-        def dfs(node):
-            if not node: return []
-            return dfs(node.left) + [node.val] + dfs(node.right)
+        curr = root
 
-        res = dfs(root)
-        return res[k - 1]
+        while curr:
+            if not curr.left:
+                k -= 1
+                if k == 0:
+                    return curr.val
+                curr = curr.right
+            else:
+                pred = curr.left
+                while pred.right and pred.right != curr:
+                    pred = pred.right
+
+                if not pred.right:
+                    pred.right = curr
+                    curr = curr.left
+                else:
+                    pred.right = None
+                    k -= 1
+                    if k == 0:
+                        return curr.val
+                    curr = curr.right
+        return -1
     
     def isSymmetric(self, root: Optional[TreeNode]) -> bool:
         def dfs(root1, root2):
@@ -346,19 +362,85 @@ class Solution:
             )
 
         return dfs(root, root)
+
+    def insertIntoBST(self, root: Optional[TreeNode], val: int) -> Optional[TreeNode]:
+        if not root: return TreeNode(val)
+
+        cur = root
+        while True:
+            if val > cur.val:
+                if not cur.right:
+                    cur.right = TreeNode(val)
+                    return root
+                cur = cur.right
+            else:
+                if not cur.left:
+                    cur.left = TreeNode(val)
+                    return root
+                cur = cur.left
+
+    def buildTree(self, preorder: List[int], inorder: List[int]) -> Optional[TreeNode]:
+        if not (preorder and inorder):
+            return None
+
+        root = TreeNode(preorder[0])
+        mid = inorder.index(preorder[0])
+        root.left = self.buildTree(preorder[1 : mid + 1], inorder[:mid])
+        root.right = self.buildTree(preorder[mid + 1 :], inorder[mid + 1 :])
+
+        return root
+
+    def maxPathSum(self, root: Optional[TreeNode]) -> int:
+        def dfs(root):
+            if not root: return 0
+
+            leftMax = dfs(root.left)
+            rightMax = dfs(root.right)
+            leftMax = max(leftMax, 0)
+            rightMax = max(rightMax, 0)
+
+            res[0] = max(res[0], root.val + leftMax + rightMax)
+            return root.val + max(leftMax, rightMax)
+        res = [root.val]
+        dfs(root)
+        return res[0]
     
+    def deleteNode(self, root: Optional[TreeNode], key: int) -> Optional[TreeNode]:
+        if not root:
+            return root
+
+        if key > root.val:
+            root.right = self.deleteNode(root.right, key)
+        elif key < root.val:
+            root.left = self.deleteNode(root.left, key)
+        else:
+            if not root.left:
+                return root.right
+            elif not root.right:
+                return root.left
+
+            cur = root.right
+            while cur.left:
+                cur = cur.left
+            cur.left = root.left
+            res = root.right
+            del root
+            return res
+
+        return root
+
 s = Solution()
 h = Helper()
 
 # t = s.Traverse()
-# iterable = range(1, 2**3)
+# iterable = range(1, 2**7+10)
 # h.printTree( h.toTree([i for i in iterable]) )
 # print("DFS:            ", t. dfs ( h.toTree([i for i in iterable]) ))
 # print("DFS (Inorder):  ", t. dfs_inorder ( h.toTree([i for i in iterable]) ))
 # print("DFS (Postorder):", t. dfs_postorder ( h.toTree([i for i in iterable]) ))
 # print("BFS:            ", t. bfs ( h.toTree([i for i in iterable]) ))
 
-h.printTree( h.toTree([5,4,8,3,5,9,None,None,None,None,7]) )
+# h.printTree( root=h.toTree([5,3,6,None,4,None,10,None,None,7]) )
 
 # h.printTree( s. invertTree ( root=h.toTree([1,2,3,4,5,6,7]) )) # [3,1,2]
 
@@ -387,6 +469,14 @@ h.printTree( h.toTree([5,4,8,3,5,9,None,None,None,None,7]) )
 
 # print( s. isValidBST ( root=h.toTree([5,4,6,None,None,3,7]) )) # False
 
-print( s. kthSmallest ( root=h.toTree([4,3,5,2,None]), k=2 )) # 1
+# print( s. kthSmallest ( root=h.toTree([4,3,5,2,None]), k=2 )) # 1
 
 # print( s. isSymmetric ( root=h.toTree([1,2,2,3,4,4,3]) )) # True
+
+# h.printTree( s. insertIntoBST ( root=h.toTree([5,3,6,None,4,None,10,None,None,7]), val=1000 )) # True
+
+# h.printTree( s. buildTree ( preorder=[1,2,30,4], inorder=[2,1,30,4] )) # [1,2,3,None,None,None,4]
+
+# print( s. maxPathSum ( root=h.toTree([1,2,3]) )) # 6
+
+# h.printTree( s. deleteNode ( root=h.toTree([5,3,6,None,4,None,10,None,None,7]), key=3 )) # [5,4,6,None,None,None,10,7]
