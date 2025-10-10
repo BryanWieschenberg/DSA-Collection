@@ -1,44 +1,7 @@
 from collections import defaultdict
 from typing import List, Optional
 
-class ListNode:
-    def __init__(self, val=0, next=None, prev=None, random=None, key=0):
-        self.val = val
-        self.next = next
-        self.prev = prev
-        self.random = random
-        self.key = key
-
-class Helper:
-    def printLL(self, head: Optional[ListNode], end="\n"):
-        curr = head
-        while curr:
-            print(f"{curr.val},{curr.random.val}" if curr.random else f"{curr.val}", end=" -> " if curr.next else end)
-            curr = curr.next
-    
-    def toLL(self, values: List, cycle_index: Optional[int] = None) -> Optional[ListNode]:
-        if isinstance(values[0], int):
-            nodes = [ListNode(val=v) for v in values]
-        else:
-            nodes = [ListNode(val=pair[0]) for pair in values]
-
-        for i in range(len(nodes)-1):
-            nodes[i].next = nodes[i + 1]
-
-        if cycle_index is not None and 0 <= cycle_index < len(nodes):
-            nodes[-1].next = nodes[cycle_index]
-
-        if isinstance(values[0], list):
-            for i, pair in enumerate(values):
-                randID = pair[1]
-                if randID is None:
-                    continue
-                if 0 <= randID < len(nodes):
-                    nodes[i].random = nodes[randID]
-                else:
-                    raise ValueError(f"Invalid random index {randID} for node {i}")
-
-        return nodes[0]
+from HELPER import ListNode, ListHelper
 
 class Solution:
     def reverseList(self, head: Optional[ListNode]) -> Optional[ListNode]:
@@ -337,7 +300,7 @@ class Solution:
             return self.curr.val    
 
 s = Solution()
-h = Helper()
+h = ListHelper()
 
 # h.printLL( s. reverseList ( list1=h.toLL([1,2,3,4,5]) )) # 5 -> 4 -> 3 -> 2 -> 1
 
