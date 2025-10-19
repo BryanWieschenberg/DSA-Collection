@@ -72,7 +72,7 @@ class TreeHelper:
                 if not node:
                     return
                 dfs(node.left, depth + 1, 'L', node)
-                tmp.append([None, node, depth, connector, parent])  # [id, node_ref, depth, conn, parent_ref]
+                tmp.append([None, node, depth, connector, parent])
                 dfs(node.right, depth + 1, 'R', node)
 
             dfs(root, 0, "", None)
@@ -151,17 +151,17 @@ class TrieHelper:
                 if char not in node.children:
                     node.children[char] = TrieNode()
                 node = node.children[char]
-            node.isEnd = True
+            node.end = True
         return root
   
     def printTrie(self, root):
         def helper(node, prefix, indent, is_last, is_root_child=False):
-            while len(node.children) == 1 and not node.isEnd:
+            while len(node.children) == 1 and not node.end:
                 char = next(iter(node.children))
                 prefix += char
                 node = node.children[char]
             
-            if is_root_child:  # Direct children of root
+            if is_root_child:
                 lines.append(prefix)
                 new_indent = ""
             else:

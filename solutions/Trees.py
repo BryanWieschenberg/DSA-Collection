@@ -336,14 +336,14 @@ s = Solution()
 h = TreeHelper()
 
 # t = s.Traverse()
-# iterable = range(1, 2**7+10)
+# iterable = range(1, 2**8)
 # h.printTree( h.toTree([i for i in iterable]) )
 # print("DFS:            ", t. dfs ( h.toTree([i for i in iterable]) ))
 # print("DFS (Inorder):  ", t. dfs_inorder ( h.toTree([i for i in iterable]) ))
 # print("DFS (Postorder):", t. dfs_postorder ( h.toTree([i for i in iterable]) ))
 # print("BFS:            ", t. bfs ( h.toTree([i for i in iterable]) ))
 
-# h.printTree( root=h.toTree([5,3,6,None,4,None,10,None,None,7]) )
+# h.printTree( root=h.toTree([5,4,6,None,None,3,7]) )
 
 # h.printTree( s. invertTree ( root=h.toTree([1,2,3,4,5,6,7]) )) # [3,1,2]
 
