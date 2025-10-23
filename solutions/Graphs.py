@@ -32,4 +32,4 @@ class Solution:
 
 s = Solution()
 
-# print(s.exist([["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]], "ABCCED")) # True
+# print( s. exist ( board=[["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]], word="ABCCED" )) # True
