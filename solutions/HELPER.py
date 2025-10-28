@@ -1,6 +1,36 @@
 import math
 from typing import List, Optional
 
+class Test:
+    @staticmethod
+    def test(fn, tests, verbose=False):
+        passed = 0
+        total = len(tests)
+        green, red, reset = "\033[92m", "\033[91m", "\033[0m"
+
+        for (args, expected) in tests:
+            if not isinstance(args, tuple):
+                args = (args,)
+
+            if len(args) == 1:
+                arg_str = f"({args[0]!r},)" if isinstance(args[0], tuple) else f"({args[0]!r})"
+            else:
+                arg_str = str(args)
+            result = fn(*args)
+
+            if result == expected:
+                if verbose: print(f"    ✅ {fn.__name__}{arg_str} == {expected}")
+                passed += 1
+            else:
+                if verbose: print(f"    ❌ {fn.__name__}{arg_str} returned {result}, expected {expected}")
+
+        print(f"{fn.__name__} - ", end="")
+        if passed == total:
+            print(f"{green}✅ Nice, all {total} tests passed{reset}")
+        else:
+            print(f"{red}❌ WRONG, {total - passed}/{total} tests failed{reset}")
+        return
+    
 class ListNode:
     def __init__(self, val=0, next=None, prev=None, random=None, key=0):
         self.val = val
@@ -183,3 +213,51 @@ class TrieHelper:
             helper(root.children[char], char, "", is_last, True)
 
         print("\n".join(lines))
+
+class Node:
+    def __init__(self, val=0, neighbors=None):
+        self.val = val
+        self.neighbors = neighbors if neighbors is not None else []
+
+class GraphHelper:
+    def toGraph(self, adjList: List[List[int]]) -> Optional[Node]:
+        if not adjList:
+            return None
+
+        nodes = {i + 1: Node(i + 1) for i in range(len(adjList))}
+
+        for i, neighbors in enumerate(adjList):
+            node = nodes[i + 1]
+            for entry in neighbors:
+                if isinstance(entry, int): # Unweighted edge
+                    node.neighbors.append((nodes[entry], None))
+                else: # Weighted edge
+                    neighbor, weight = entry
+                    node.neighbors.append((nodes[neighbor], weight))
+
+            return nodes[1]
+  
+    def printGraph(self, node: Optional[Node]):
+        if not node:
+            print("< Empty graph >")
+            return
+
+        visited = set()
+        queue = [node]
+        visited.add(node.val)
+
+        while queue:
+            current = queue.pop(0)
+
+            # Format neighbors differently depending on weight
+            neighbors_info = [
+                (n.val if w is None else (n.val, w))
+                for n, w in current.neighbors
+            ]
+
+            print(f"{current.val} -> {neighbors_info}")
+
+            for neighbor, _ in current.neighbors:
+                if neighbor.val not in visited:
+                    visited.add(neighbor.val)
+                    queue.append(neighbor)

@@ -1,7 +1,23 @@
 from typing import List
 from collections import defaultdict
+from time import perf_counter
+
+from HELPER import Test
 
 class Solution:
+    def maximum(self, numbers: List[int]) -> int:
+        start = perf_counter()
+        
+        biggest = numbers[0]
+
+        for number in numbers:
+            if number > biggest:
+                biggest = number
+        
+        print(f"Time: {perf_counter() - start:.8f} seconds")
+
+        return biggest
+    
     def hasDuplicate(self, nums: List[int]) -> bool:
         return not(len(set(nums)) == len(nums))
     
@@ -156,10 +172,32 @@ class Solution:
         return ans
     
 s = Solution()
+t = Test()
 
-# print(s. hasDuplicate ( nums=[1,2,3,3] )) # True
+# print(s.maximum([
+#     -999999, 42, 873, 5000000, -284, 192837, 9999999, 10, 58291, -10293,
+#     385, 720183, 3, 9123456, 28374, 999, 205, 3847, 700000, 1945,
+#     -450, 320, 888888, 1, 938475, 583920, -50000, 1234567, 43928, 2,
+#     912, 348590, 56789, 875, 3984571, 657483, 324, 745920, 4444, 27,
+#     3920, 43210, 9000001, 576, 38192, 564738, 810283, 109283, 778899, 4581,
+#     1290384, 9081723, 123, 598273, 384920, 1024, 839, 2048, 16384, 8192,
+#     9999998, 38475, 32000, 478392, 28475, 9021834, 4000000, 5000001, 912398, 2837465,
+#     918273, 987654, 321098, 7654321, 6543210, 5432109, 13579, 24680, 112233, 556677,
+#     -789, 19283, 383920, 473829, 82918, 120398, 203984, 91827, 59403, 7000001,
+#     857493, 2345678, 876543, 97531, 24681012, 1357911, 19283746, 37482910, 918273645, 99999999
+# ]))
 
-# print(s. isAnagram ( s="racecar", t="carrace" )) # True
+t.test(s. hasDuplicate , [
+    (( [1,2,3,4] ), False),
+    (( [1,2,3,3] ), True),
+    (( [] ), False)
+])
+
+# t.test(s. isAnagram , [
+#     (( "racecar", "carrace" ), True),
+#     (( "hello", "billion" ), False),
+#     (( "anagram", "nagaram" ), True)
+# ])
 
 # print(s. twoSum ( nums=[3,4,5,6], target=7 )) # [0,1]
 
