@@ -1,3 +1,4 @@
+from collections import deque
 from typing import Counter, List
 import heapq
 
@@ -50,11 +51,23 @@ class Solution:
 
     def leastInterval(self, tasks: List[str], n: int) -> int:
         count = Counter(tasks)
-        print(count)
         maxHeap = [-cnt for cnt in count.values()]
         heapq.heapify(maxHeap)
-        print(maxHeap)
-            
+
+        time = 0
+        q = deque() # (-cnt, tilTilUseAgain)
+        while maxHeap or q:
+            time += 1
+            if not maxHeap:
+                time = q[0][1]
+            else:
+                cnt = heapq.heappop(maxHeap) + 1
+                if cnt:
+                    q.append((cnt, time + n))
+            if q and q[0][1] == time:
+                heapq.heappush(maxHeap, q.popleft()[0])
+        return time
+                
 s = Solution()
 
 # kthLargest = s.KthLargest(3, [1, 2, 3, 3])
