@@ -1,6 +1,7 @@
 *__pycache__/*
 *test*
 *temp*
+*.code-workspace
 *.txt
 !Makefile
 

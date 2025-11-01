@@ -8,7 +8,7 @@ template <typename T>
 class DynamicArray {
 private:
     T* data;
-    size_t size;
+    size_t _size;
     size_t capacity;
 
     void resize(size_t new_capacity);
@@ -24,9 +24,10 @@ public:
     
     T& operator[](size_t index);
     const T& operator[](size_t index) const;
+    T& at(size_t index);
+    const T& at(size_t index) const;
 
-    size_t get_size() const;
-    size_t get_capacity() const;
+    size_t size() const;
     void print() const;
 };
 
