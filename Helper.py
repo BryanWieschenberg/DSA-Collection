@@ -33,15 +33,16 @@ class Test:
         print("\n".join(lines))
     
     @staticmethod
-    def test_class(cls, init_args, steps, verbose=True):
+    def testcls(cls, init_args, steps, verbose=True):
         if not isinstance(init_args, tuple):
             init_args = (init_args,)
+
         instance = cls(*init_args)
         passed = 0
         total = len(steps)
         green, red, blue, bold, reset = "\033[92m", "\033[91m", "\033[94m", "\033[1m", "\033[0m"
         clsname = instance.__class__.__name__
-        lines = [(f"{blue}Results for {bold}{clsname} scenario{reset}:")]
+        lines = [(f"{blue}Results for {bold}{clsname}{reset}:")]
 
         for method_name, args, expected in steps:
             if not isinstance(args, tuple):
@@ -69,12 +70,6 @@ class Test:
             lines.append(f"{red}❌ {passed}/{total} tests passed{reset}")
         
         print("\n".join(lines))
-
-class HashNode:
-    def __init__(self, key: int, val: int):
-        self.key = key
-        self.val = val
-        self.next = None
 
 class ListNode:
     def __init__(self, val=0, next=None, prev=None, random=None, key=0):
