@@ -551,12 +551,12 @@ class GraphHelper:
         if verbose: print(out)
         return "g" + str(adj)
 
-class Interval():
+class Interval:
     def __init__(self, start, end):
         self.start = start
         self.end = end
 
-class IntervalHelper():
+class IntervalHelper:
     @staticmethod
     def to(intervals):
         if not intervals:
@@ -589,3 +589,10 @@ class IntervalHelper():
         out = ",".join(out)
         if verbose: print(out)
         return "v[" + out + "]"
+
+class API:
+    @staticmethod
+    def guess(n: int, pick: int) -> int:
+        if n < pick: return 1
+        elif n > pick: return -1
+        return 0

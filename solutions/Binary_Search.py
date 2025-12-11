@@ -1,5 +1,6 @@
 from sys import path; from os import path as ospath; path.append(ospath.dirname(ospath.dirname(__file__)))
 from typing import List
+from Helper import API
 
 class Solution:
     # 59
@@ -12,13 +13,6 @@ class Solution:
 
     # 61
     def guessNumber(self, n: int, pick: int) -> int:
-        def guess(num: int) -> int:
-            if num < pick:
-                return 1
-            elif num > pick:
-                return -1
-            else:
-                return 0
         pass
 
     # 62

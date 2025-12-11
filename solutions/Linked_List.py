@@ -1,7 +1,6 @@
 from sys import path; from os import path as ospath; path.append(ospath.dirname(ospath.dirname(__file__)))
 from typing import List, Optional
 from Helper import ListNode, ListHelper
-hl = ListHelper()
 
 class Solution:
     # 73

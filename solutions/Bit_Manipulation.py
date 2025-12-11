@@ -1,5 +1,6 @@
 from sys import path; from os import path as ospath; path.append(ospath.dirname(ospath.dirname(__file__)))
 from Helper import List
+
 class Solution:
     # 241
     def singleNumber(self, nums: List[int]) -> int:
