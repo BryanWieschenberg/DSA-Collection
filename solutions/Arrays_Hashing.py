@@ -5,6 +5,8 @@ from collections import defaultdict
 class Solution:
     # 1
     def getConcatenation(self, nums: List[int]) -> List[int]:
+        while True:
+            pass
         return nums * 2
     
     # 2

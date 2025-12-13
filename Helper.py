@@ -80,10 +80,12 @@ class Tester:
                 alarm(time)
                 result = fn(*args)
             except TimeLimitExceeded:
-                print(f"{red}❌ Time Limit Exceeded on {arg_display}{reset}")
+                lines.append(f"{red}❌ Time Limit Exceeded on {arg_display}{reset}")
+                print(f"{"\n".join(lines)}")
                 return
             except MemoryError:
-                print(f"{red}❌ Memory Limit Exceeded on {arg_display}{reset}")
+                lines.append(f"{red}❌ Memory Limit Exceeded on {arg_display}{reset}")
+                print(f"{"\n".join(lines)}")
                 return
             finally:
                 alarm(0)
@@ -131,10 +133,12 @@ class Tester:
                 alarm(time)
                 result = method(*args)
             except TimeLimitExceeded:
-                print(f"{red}❌ Time Limit Exceeded on {arg_display}{reset}")
+                lines.append(f"{red}❌ Time Limit Exceeded on {arg_display}{reset}")
+                print(f"{"\n".join(lines)}")
                 return
             except MemoryError:
-                print(f"{red}❌ Memory Limit Exceeded on {arg_display}{reset}")
+                lines.append(f"{red}❌ Memory Limit Exceeded on {arg_display}{reset}")
+                print(f"{"\n".join(lines)}")
                 return
             finally:
                 alarm(0)
