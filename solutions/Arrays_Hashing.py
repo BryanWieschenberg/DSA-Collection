@@ -1,22 +1,43 @@
 from sys import path; from os import path as ospath; path.append(ospath.dirname(ospath.dirname(__file__)))
 from typing import List
+from collections import defaultdict
 
 class Solution:
     # 1
     def getConcatenation(self, nums: List[int]) -> List[int]:
-        pass
+        return nums * 2
     
     # 2
     def hasDuplicate(self, nums: List[int]) -> bool:
-        pass
-    
+        seen = set()
+        for n in nums:
+            if n in seen:
+                return True
+            seen.add(n)
+        return False
+        
     # 3
     def isAnagram(self, s: str, t: str) -> bool:
-        pass
-    
+        if len(s) != len(t): return False
+        ct = [0] * 26
+        for s, t in zip(s, t):
+            ct[ord(s) - ord('a')] += 1
+            ct[ord(t) - ord('a')] -= 1
+        for i in range(26):
+            if ct[i]: return False
+        return True
+        
     # 4
     def twoSum(self, nums: List[int], target: int) -> List[int]:
-        pass
+        seen = {}
+        i1 = i2 = 0
+        for i in range(len(nums)):
+            diff = target - nums[i]
+            if diff in seen:
+                i1, i2 = seen[diff], i
+                break
+            seen[nums[i]] = i
+        return [i1, i2]
     
     # 5
     def longestCommonPrefix(self, strs: List[str]) -> str:
@@ -24,7 +45,13 @@ class Solution:
     
     # 6
     def groupAnagrams(self, strs: List[str]) -> List[List[str]]:
-        pass
+        res = defaultdict(list)
+        for s in strs:
+            ct = [0] * 26
+            for c in s:
+                ct[ord(c) - ord('a')] += 1
+            res[tuple(ct)].append(s)
+        return list(res.values())
     
     # 7
     def removeElement(self, nums: List[int], val: int) -> int:

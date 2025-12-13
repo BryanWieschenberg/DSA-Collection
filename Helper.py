@@ -1,6 +1,11 @@
 from typing import List, Optional
 from collections import deque
 from math import floor, ceil
+from signal import signal, alarm, SIGALRM
+import resource
+
+class TimeLimitExceeded(Exception):
+    pass
 
 class Tester:
     def __init__(self):
@@ -10,6 +15,13 @@ class Tester:
         self.hi = TrieHelper()
         self.hg = GraphHelper()
         self.hv = IntervalHelper()
+
+    def _timeout_handler(self, signum, frame):
+        raise TimeLimitExceeded()
+    
+    def _set_memory_limit(self, mb):
+        bytes_ = mb * 1024 * 1024
+        resource.setrlimit(resource.RLIMIT_AS, (bytes_, bytes_))
 
     def _eq(self, a, b):
         if isinstance(a, ListNode) and isinstance(b, ListNode):
@@ -49,11 +61,14 @@ class Tester:
             return self.hv.print(x, verbose=False)
         return str(x)
     
-    def test(self, fn, tests, verbose=True):
+    def test(self, fn, tests, time=1, space=256, verbose=True):
         passed = 0
         total = len(tests)
         green, red, blue, bold, reset = "\033[92m", "\033[91m", "\033[94m", "\033[1m", "\033[0m"
         lines = [(f"{blue}Results for {bold}{fn.__name__}{reset}:")]
+
+        signal(SIGALRM, self._timeout_handler)
+        self._set_memory_limit(space)
 
         for (args, expected) in tests:
             if not isinstance(args, tuple):
@@ -61,7 +76,18 @@ class Tester:
 
             arg_display = f"({self._fmt(args[0])})" if len(args) == 1 else f"({', '.join(str(self._fmt(a)) for a in args)})"
 
-            result = fn(*args)
+            try:
+                alarm(time)
+                result = fn(*args)
+            except TimeLimitExceeded:
+                print(f"{red}❌ Time Limit Exceeded on {arg_display}{reset}")
+                return
+            except MemoryError:
+                print(f"{red}❌ Memory Limit Exceeded on {arg_display}{reset}")
+                return
+            finally:
+                alarm(0)
+
             ok = self._eq(result, expected)
             rfmt = self._fmt(result)
             efmt = self._fmt(expected)
@@ -78,8 +104,8 @@ class Tester:
             lines.append(f"{red}❌ {passed}/{total} tests passed{reset}")
         
         print("\n".join(lines))
-    
-    def testcls(self, cls, init_args, steps, verbose=True):
+
+    def testcls(self, cls, init_args, steps, time=1, space=256, verbose=True):
         if not isinstance(init_args, tuple):
             init_args = (init_args,)
 
@@ -90,15 +116,28 @@ class Tester:
         clsname = instance.__class__.__name__
         lines = [(f"{blue}Results for {bold}{clsname}{reset}:")]
 
+        signal(SIGALRM, self._timeout_handler)
+        self._set_memory_limit(space)
+
         for method_name, args, expected in steps:
             if not isinstance(args, tuple):
                 args = (args,)
 
             method = getattr(instance, method_name)
-            result = method(*args)
-
             arg_display = f"({self._fmt(args[0])})" if len(args) == 1 else f"({', '.join(str(self._fmt(a)) for a in args)})"
             call_str = f"{method_name}{arg_display}"
+
+            try:
+                alarm(time)
+                result = method(*args)
+            except TimeLimitExceeded:
+                print(f"{red}❌ Time Limit Exceeded on {arg_display}{reset}")
+                return
+            except MemoryError:
+                print(f"{red}❌ Memory Limit Exceeded on {arg_display}{reset}")
+                return
+            finally:
+                alarm(0)
 
             ok = self._eq(result, expected)
             rfmt = self._fmt(result)
