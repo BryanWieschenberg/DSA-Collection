@@ -81,11 +81,11 @@ class Tester:
                 result = fn(*args)
             except TimeLimitExceeded:
                 lines.append(f"{red}❌ Time Limit Exceeded on {arg_display}{reset}")
-                print(f"{"\n".join(lines)}")
+                print("\n".join(lines))
                 return
             except MemoryError:
                 lines.append(f"{red}❌ Memory Limit Exceeded on {arg_display}{reset}")
-                print(f"{"\n".join(lines)}")
+                print("\n".join(lines))
                 return
             finally:
                 alarm(0)
@@ -134,11 +134,11 @@ class Tester:
                 result = method(*args)
             except TimeLimitExceeded:
                 lines.append(f"{red}❌ Time Limit Exceeded on {arg_display}{reset}")
-                print(f"{"\n".join(lines)}")
+                print("\n".join(lines))
                 return
             except MemoryError:
                 lines.append(f"{red}❌ Memory Limit Exceeded on {arg_display}{reset}")
-                print(f"{"\n".join(lines)}")
+                print("\n".join(lines))
                 return
             finally:
                 alarm(0)
