@@ -1,8 +1,10 @@
 from typing import List, Optional
 from collections import deque
 from math import floor, ceil
+from random import shuffle
+from time import perf_counter
 from signal import signal, alarm, SIGALRM
-import resource
+from resource import setrlimit, RLIMIT_AS, getrusage, RUSAGE_SELF
 
 class TimeLimitExceeded(Exception):
     pass
@@ -20,8 +22,8 @@ class Tester:
         raise TimeLimitExceeded()
     
     def _set_memory_limit(self, mb):
-        bytes_ = mb * 1024 * 1024
-        resource.setrlimit(resource.RLIMIT_AS, (bytes_, bytes_))
+        bytes = mb * 1024 * 1024
+        setrlimit(RLIMIT_AS, (bytes, bytes))
 
     def _eq(self, a, b):
         if isinstance(a, ListNode) and isinstance(b, ListNode):
@@ -61,7 +63,7 @@ class Tester:
             return self.hv.print(x, verbose=False)
         return str(x)
     
-    def test(self, fn, tests, time=1, space=256, verbose=True):
+    def test(self, fn: callable, tests: list[tuple], time: int = 1, space: int = 256, verbose: bool = True) -> None:
         passed = 0
         total = len(tests)
         green, red, blue, bold, reset = "\033[92m", "\033[91m", "\033[94m", "\033[1m", "\033[0m"
@@ -69,6 +71,7 @@ class Tester:
 
         signal(SIGALRM, self._timeout_handler)
         self._set_memory_limit(space)
+        start_time = perf_counter()
 
         for (args, expected) in tests:
             if not isinstance(args, tuple):
@@ -100,14 +103,21 @@ class Tester:
             else:
                 if verbose: lines.append(f"  > ❌ {arg_display} != {rfmt}, expected {efmt}")
 
+        end_time = perf_counter()
+        elapsed = end_time - start_time
+        peak_mb = getrusage(RUSAGE_SELF).ru_maxrss / 1024
+
         if passed == total:
-            lines.append(f"{green}✅ {total}/{total} tests passed{reset}")
+            lines.append(
+                f"{green}✅ {total}/{total} tests passed{reset}  "
+                f"{blue}Time: {elapsed:.3f} seconds  Space: {peak_mb:.1f} MB"
+            )
         else:
             lines.append(f"{red}❌ {passed}/{total} tests passed{reset}")
         
         print("\n".join(lines))
 
-    def testcls(self, cls, init_args, steps, time=1, space=256, verbose=True):
+    def testcls(self, cls: type, init_args: tuple, steps: list[tuple], time=1, space=256, verbose=True) -> None:
         if not isinstance(init_args, tuple):
             init_args = (init_args,)
 
@@ -120,6 +130,7 @@ class Tester:
 
         signal(SIGALRM, self._timeout_handler)
         self._set_memory_limit(space)
+        start_time = perf_counter()
 
         for method_name, args, expected in steps:
             if not isinstance(args, tuple):
@@ -153,18 +164,26 @@ class Tester:
             else:
                 if verbose: lines.append(f"  > ❌ {call_str} != {rfmt}, expected {efmt}")
 
+        end_time = perf_counter()
+        elapsed = end_time - start_time
+        peak_mb = getrusage(RUSAGE_SELF).ru_maxrss / 1024
+
         if passed == total:
-            lines.append(f"{green}✅ {total}/{total} tests passed{reset}")
+            lines.append(
+                f"{green}✅ {total}/{total} tests passed{reset}  "
+                f"{blue}Time: {elapsed:.3f} seconds  Space: {peak_mb:.1f} MB"
+            )
         else:
             lines.append(f"{red}❌ {passed}/{total} tests passed{reset}")
         
         print("\n".join(lines))
 
 class ListNode:
-    def __init__(self, val=0, next=None, prev=None, cycle=None, random=None):
+    def __init__(self, val=0, next=None, prev=None, key=None, cycle=None, random=None):
         self.val = val
         self.next = next
         self.prev = prev
+        self.key = key
         self.cycle = cycle
         self.random = random
 
@@ -639,3 +658,7 @@ class API:
         if n < pick: return 1
         elif n > pick: return -1
         return 0
+
+shuffled_size = 1*10**6
+shuffled = list(range(shuffled_size))
+shuffle(shuffled)

@@ -19,7 +19,7 @@ from solutions.Bit_Manipulation    import Solution as Bit_Manipulation
 from solutions.Finale              import Solution as Finale
 
 from sys import argv
-from Helper import Tester, ListHelper, TreeHelper, QuadTreeHelper, GraphHelper, IntervalHelper
+from Helper import Tester, ListHelper, TreeHelper, QuadTreeHelper, GraphHelper, IntervalHelper, shuffled, shuffled_size
 t = Tester(); hl = ListHelper(); ht = TreeHelper(); hq = QuadTreeHelper(); hg = GraphHelper(); hv = IntervalHelper()
 
 TESTS = [
@@ -94,7 +94,8 @@ TESTS = [
     lambda: t.test(Arrays_Hashing().sortArray, [
         (( [10,9,1,1,1,2,3,1] ), [1,1,1,1,2,3,9,10] ),
         (( [5,10,2,1,3] ), [1,2,3,5,10] ),
-    ]),
+        (( shuffled ), list(range(shuffled_size)) ),
+    ], time=2),
     # 12
     lambda: t.test(Arrays_Hashing().sortColors, [
         (( [1,0,1,2] ), [0,1,1,2] ),
