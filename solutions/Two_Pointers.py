@@ -133,31 +133,57 @@ class Solution:
     
     # 32
     def rotate(self, nums: List[int], k: int) -> List[int]:
-        n = len(nums)
-        ct = start = 0
-        while ct < n:
-            curr = start
-            prev = nums[start]
-            while True:
-                next = (curr + k) % n
-                nums[next], prev = prev, nums[next]
-                curr = next
-                ct += 1
-                if start == curr: break
-            start += 1
-        return nums
+        def reverse(l, r):
+            for i in range(l, (l + r + 1) // 2):
+                nums[i], nums[(l+r)-i] = nums[(l+r)-i], nums[i]
         
+        n = len(nums)
+        k %= n
+        reverse(0, n-1)
+        reverse(0, k-1)
+        reverse(k, n-1)
+        return nums
+    
     # 33
     def maxArea(self, heights: List[int]) -> int:
-        pass
-
+        l, r = 0, len(heights)-1
+        maxArea = 0
+        while l < r:
+            area = min(heights[l], heights[r]) * (r - l)
+            maxArea = max(maxArea, area)
+            if heights[l] < heights[r]:
+                l += 1
+            else:
+                r -= 1
+        return maxArea
+    
     # 34
     def numRescueBoats(self, people: List[int], limit: int) -> int:
-        pass
-
+        people.sort()
+        l, r = 0, len(people)-1
+        res = 0
+        while l <= r:
+            if people[l] + people[r] <= limit:
+                l += 1
+            r -= 1
+            res += 1
+        return res
+        
     # 35
     def trap(self, height: List[int]) -> int:
-        pass
-
+        l, r = 0, len(height)-1
+        highL, highR = height[l], height[r]
+        res = 0
+        while l < r:
+            if highL < highR:
+                l += 1
+                highL = max(highL, height[l])
+                res += highL - height[l]
+            else:
+                r -= 1
+                highR = max(highR, height[r])
+                res += highR - height[r]
+        return res
+        
 if __name__ == "__main__":
     s = Solution()
