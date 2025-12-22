@@ -4,12 +4,44 @@ from typing import List
 class Solution:
     # 45
     def calPoints(self, operations: List[str]) -> int:
-        pass
-
+        stack = []
+        res = 0
+        for o in operations:
+            if o == '+':
+                tmp = stack.pop()
+                add = stack[-1] + tmp
+                stack.append(tmp)
+                stack.append(add)
+                res += add
+            elif o == 'C':
+                res -= stack.pop()
+            elif o == 'D':
+                stack.append(stack[-1] * 2)
+                res += stack[-1]
+            else:
+                stack.append(int(o))
+                res += stack[-1]
+        return res
+    
     # 46
     def isValid(self, s: str) -> bool:
-        pass
-
+        stack = []
+        opn, cls = ['[', '(', '{'], [']', ')', '}']
+        for c in s:
+            if not stack and c in cls:
+                return False
+            elif c in opn:
+                stack.append(c)
+            elif (
+                (c == ']' and stack[-1] == '[') or
+                (c == ')' and stack[-1] == '(') or
+                (c == '}' and stack[-1] == '{')
+            ):
+                stack.pop()
+            else:
+                return False
+        return not stack
+    
     # 47
     class MyStack:
         def __init__(self):
@@ -110,3 +142,4 @@ class Solution:
 
 if __name__ == "__main__":
     s = Solution()
+    s.isValid("[]")
