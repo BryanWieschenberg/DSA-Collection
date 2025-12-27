@@ -173,4 +173,3 @@ class Solution:
         
 if __name__ == "__main__":
     s = Solution()
-    print(s.findClosestElements(arr=[1,1,1,10,10,10], k=1, x=9))

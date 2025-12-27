@@ -332,7 +332,7 @@ class Solution:
                 nums[i], nums[correctPos] = nums[correctPos], nums[i]
             else:
                 i += 1
-        
+
         for i in range(n):
             if nums[i] != i + 1:
                 return i + 1
