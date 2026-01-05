@@ -129,4 +129,4 @@ class Sorter:
 
         while not is_sorted(nums):
             random.shuffle(nums)
-            yield 0, len(nums) - 1
+            yield range(len(nums))

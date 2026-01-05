@@ -1,6 +1,6 @@
 import numpy as np
 import random
-import simpleaudio as sa
+import pygame
 import pyglet
 from enum import Enum
 from Sorter import Sorter
@@ -8,43 +8,30 @@ import sys
 import time
 
 class Speed(Enum):
-    xxs = 1
-    xxsmall = 1
-    xsmall = 0.07    
-    xs = 0.07
-    s = 0.009
-    small = 0.009
-    m = 0.003
-    medium = 0.003
-    l = 0.001
-    large = 0.001
-    f = 0.001
-    fast = 0.001
-    xl = 0
-    xlarge = 0
-    xf = 0
-    xfast = 0
-    u = 0
-    uncapped = 0
-    unlimited = 0
+    xxs = 1; xxsmall = 1;
+    xsmall = 0.07; xs = 0.07;
+    s = 0.009; small = 0.009
+    m = 0.003; medium = 0.003
+    l = 0.001; large = 0.001
+    f = 0.001; fast = 0.001
+    xl = 0; xlarge = 0
+    xf = 0; xfast = 0
+    u = 0; uncapped = 0; unlimited = 0
 
 class Size(Enum):
-    xxs = 10
-    xxsmall = 10
-    xs = 25
-    xsmall = 25
-    s = 50
-    small = 50
-    m = 100
-    medium = 100
-    l = 250
-    large = 250
-    xl = 500
-    xlarge = 500
+    xxxs = 7; xxxsmall = 7
+    xxs = 10; xxsmall = 10
+    xs = 25; xsmall = 25
+    s = 50; small = 50
+    m = 100; medium = 100
+    l = 250; large = 250
+    xl = 500; xlarge = 500
+    xxl = 1000; xxlarge = 1000
+    xxxl = 2000; xxxlarge = 2000
 
 if len(sys.argv) < 2:
-    print("Usage: python sort_visualizer.py <algorithm> <size?> <speed?>")
-    print("> Algorithms: bubble, selection, insertion, merge, quick, heap, counting, bucket, radix, shell, tim, bitonic, introspective, bogo, gnome, cocktail_shaker, comb")
+    print("Usage: python sort_visualizer.py <algorithm> <size ?? m> <speed ?? m>")
+    print("> Algorithms: bogo, bubble, selection, insertion, merge, quick, heap, counting, bucket, radix, shell, tim, bitonic, introspective, bogo, gnome, cocktail_shaker, comb")
     print("> Sizes/Speeds: xxs, xs, s, m, l, xl")
     exit(1)
 
@@ -104,6 +91,11 @@ class SortVisualizer(mglw.WindowConfig):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         
+        # Initialize pygame mixer for audio
+        pygame.mixer.pre_init(44100, -16, 2, 512)  # Stereo output
+        pygame.mixer.init()
+        pygame.mixer.set_num_channels(8)  # Multiple channels for smooth playback
+        
         self.wnd.vsync = False
         
         self.prog = self.ctx.program(
@@ -133,7 +125,14 @@ class SortVisualizer(mglw.WindowConfig):
         self.operation_count = 0
         self.start_time = None
         self.elapsed_time = 0.0
+        self.final_seen = set()
 
+        # Audio optimization
+        self.sample_rate = 44100
+        self.audio_duration = 0.03
+        self.sound_cache = {}
+        self.last_sound_time = 0
+        
         self.label = pyglet.text.Label(
             f"{self.current_algo.replace('_',' ').title()} Sort        Input Size: {SIZE}        Operations: {self.operation_count}        Time: {self.elapsed_time:.3f}s",
             font_name='Arial',
@@ -146,13 +145,10 @@ class SortVisualizer(mglw.WindowConfig):
 
     def on_resize(self, width: int, height: int):
         self.ctx.viewport = (0, 0, width, height)
-
         self.build_vertex_data()
 
         if hasattr(self, "label"):
             self.label.y = height - 30
-        elif hasattr(self, "text_writer"):
-            self.text_writer.pos = (10, height - 30)
 
         self.window_size = (width, height)
 
@@ -163,8 +159,10 @@ class SortVisualizer(mglw.WindowConfig):
         for i, val in enumerate(self.nums):
             x = -1.0 + i * bar_width
             height = (val / self.array_size) * 2.0
-            
-            if i in self.highlight_indices:
+
+            if i in self.final_seen:
+                color = [0.0, 1.0, 0.0]
+            elif i in self.highlight_indices:
                 color = [1.0, 0.0, 0.0]
             else:
                 color = [1.0, 1.0, 1.0]
@@ -184,12 +182,48 @@ class SortVisualizer(mglw.WindowConfig):
         
         self.vbo.write(self.vertex_data.tobytes())
 
-    def play_tone(self, freq, duration=0.05):
-        sample_rate = 44100
-        t = np.linspace(0, duration, int(sample_rate * duration), False)
-        wave = np.sin(freq * t * 2 * np.pi)
-        audio = (wave * 32767).astype(np.int16)
-        sa.play_buffer(audio, 1, 2, sample_rate)
+    def generate_tone(self, freq):
+        """Generate a tone and cache it as a pygame Sound object"""
+        freq_key = int(freq)
+        
+        if freq_key not in self.sound_cache:
+            # Generate waveform
+            samples = int(self.sample_rate * self.audio_duration)
+            t = np.linspace(0, self.audio_duration, samples, False)
+            
+            # Create sine wave with fade out to prevent clicking
+            wave = np.sin(freq * t * 2 * np.pi)
+            
+            # Apply fade envelope (quick fade out at end)
+            fade_samples = int(samples * 0.1)  # Last 10% fades out
+            fade = np.ones(samples)
+            fade[-fade_samples:] = np.linspace(1, 0, fade_samples)
+            wave = wave * fade
+            
+            # Convert to 16-bit stereo
+            audio = (wave * 32767 * 0.5).astype(np.int16)  # 50% volume
+            stereo = np.repeat(audio.reshape(-1, 1), 2, axis=1)
+            
+            # Create pygame Sound object
+            sound = pygame.sndarray.make_sound(stereo)
+            
+            self.sound_cache[freq_key] = sound
+            
+            # Limit cache size
+            if len(self.sound_cache) > 100:
+                # Remove oldest entry
+                self.sound_cache.pop(next(iter(self.sound_cache)))
+        
+        return self.sound_cache[freq_key]
+
+    def play_tone(self, freq):
+        """Play a tone using pygame mixer"""
+        try:
+            sound = self.generate_tone(freq)
+            # Play on any available channel
+            sound.play()
+        except Exception as e:
+            pass  # Silently fail if audio doesn't work
     
     def on_render(self, timer, frame_time):
         self.ctx.clear(0.1, 0.1, 0.1)
@@ -198,6 +232,9 @@ class SortVisualizer(mglw.WindowConfig):
             if not self.sorting and not hasattr(self, 'space_pressed'):
                 self.sorting = True
                 self.sorted = False
+                self.final_seen.clear()
+                self.final_pass = False
+                self.final_index = 0
                 self.start_time = time.time()
                 self.elapsed_time = 0.0
                 if hasattr(self, 'sort_state'):
@@ -251,7 +288,8 @@ class SortVisualizer(mglw.WindowConfig):
         else:
             if self.final_index < len(self.nums):
                 i = self.final_index
-                self.highlight_indices = list(range(self.final_index + 1))
+                self.final_seen.add(i)
+                self.highlight_indices = []
                 freq = np.interp(self.nums[i], [1, self.array_size], [150, 1200])
                 self.play_tone(freq)
                 self.build_vertex_data()
@@ -268,5 +306,15 @@ class SortVisualizer(mglw.WindowConfig):
                 self.sorted = False
                 if hasattr(self, 'sort_state'):
                     del self.sort_state
+    
+    def destroy(self):
+        """Cleanup on exit"""
+        try:
+            pygame.mixer.stop()
+            self.sound_cache.clear()
+            pygame.mixer.quit()
+        except:
+            pass
+        super().destroy()
 
 SortVisualizer.run()

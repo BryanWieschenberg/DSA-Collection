@@ -144,6 +144,12 @@ class Solution:
         reverse(k, n-1)
         return nums
     
+        # n = len(nums)
+        # k %= n
+        # rotated = nums[-k:] + nums[:-k]
+        # nums[:] = rotated
+        # return nums
+    
     # 33
     def maxArea(self, heights: List[int]) -> int:
         l, r = 0, len(heights)-1

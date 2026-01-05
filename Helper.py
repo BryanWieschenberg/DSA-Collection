@@ -14,7 +14,7 @@ class Tester:
         self.hl = ListHelper()
         self.ht = TreeHelper()
         self.hq = QuadTreeHelper()
-        self.hi = TrieHelper()
+        self.hi = TrieHelper() # are these how real judgement sites like leetcode or hackerrank do it
         self.hg = GraphHelper()
         self.hv = IntervalHelper()
 
@@ -43,8 +43,14 @@ class Tester:
         return a == b
 
     def _fmt(self, x):
-        if isinstance(x, list) and not len(x):
-            return "[]"
+        if isinstance(x, list):
+            if not x:
+                return "[]"
+            if len(x) >  50:
+                head = ", ".join(str(self._fmt(v)) for v in x[:3])
+                tail = ", ".join(str(self._fmt(v)) for v in x[-3:])
+                return f"[{head}, ..., {tail}](len={len(x)})"
+            
         if isinstance(x, list) and all(isinstance(item, ListNode) for item in x):
             return ", ".join(str(self._fmt(item)) for item in x)
         elif isinstance(x, ListNode):
