@@ -157,15 +157,15 @@ class SortVisualizer(mglw.WindowConfig):
         
         self.array_size = SIZE
 
-        # self.nums = list(range(1, self.array_size + 1))
-        # random.shuffle(self.nums)
+        self.nums = list(range(1, self.array_size + 1))
+        random.shuffle(self.nums)
 
         # self.nums = [random.randint(1, 100) for _ in range(self.array_size)]
 
-        self.nums = [
-            min(self.array_size, int(math.exp(random.random() * math.log(self.array_size))))
-            for _ in range(self.array_size)
-        ]
+        # self.nums = [
+        #     min(self.array_size, int(math.exp(random.random() * math.log(self.array_size))))
+        #     for _ in range(self.array_size)
+        # ]
 
         # self.nums = list(range(1, self.array_size + 1))
         # self.nums.reverse()

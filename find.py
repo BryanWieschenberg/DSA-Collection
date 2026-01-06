@@ -61,9 +61,19 @@ class MazeVisualizer:
         self.PURPLE = (200, 100, 255)
         self.PURPLE_SLOW = (140, 70, 190)
         self.ORANGE = (255, 220, 0)
+        self.TEXT_COLOR = (240, 240, 240)
+        self.BG = (50, 50, 50)
 
         self.clock = pygame.time.Clock()
         self.font = pygame.font.SysFont("Fira Sans", 48)
+
+        # Initialize sound mixer (use stereo for compatibility)
+        pygame.mixer.quit()
+        pygame.mixer.init(frequency=22050, size=-16, channels=2, buffer=512)
+        
+        # Sound throttling
+        self.last_beep_time = 0
+        self.beep_throttle_ms = 30  # Minimum time between beeps
 
         self.start = (1, 1)
         self.goal = (self.maze_rows - 2, self.maze_cols - 2)
@@ -71,6 +81,15 @@ class MazeVisualizer:
         self.maze = self.generate_maze()
         self.build_static_surface()
         self.reset_frame()
+        
+        # Test audio system
+        try:
+            if pygame.mixer.get_init():
+                test_sound = self._generate_beep(440, 100)
+                test_sound.set_volume(0.5)
+                test_sound.play()
+        except Exception as e:
+            print(f"Audio test failed: {e}")
 
     # ---------- Maze generation (dense, solvable, 16:9) ----------
 
@@ -138,9 +157,16 @@ class MazeVisualizer:
     def build_static_surface(self):
         """Cache background (walls + slow tiles) once."""
         self.static_surf = pygame.Surface((self.width, self.height))
-        self.static_surf.fill(self.WHITE)
-        pygame.draw.rect(self.static_surf, self.WHITE, (0, 0, self.width, self.hud_h))
+        self.static_surf.fill(self.BG)  # dark gray everywhere first
 
+        # HUD background (also dark gray)
+        pygame.draw.rect(
+            self.static_surf,
+            self.BG,
+            (0, 0, self.width, self.hud_h)
+        )
+
+        # Draw maze cells
         for i in range(self.maze_rows):
             for j in range(self.maze_cols):
                 x = self.off_x + j * self.cell_size
@@ -149,8 +175,12 @@ class MazeVisualizer:
 
                 if self.maze[i, j] == 1:
                     pygame.draw.rect(self.static_surf, self.BLACK, r)
-                elif self.weights[i, j] > 1:
-                    pygame.draw.rect(self.static_surf, self.ORANGE, r)
+                else:
+                    # walkable floor stays WHITE
+                    pygame.draw.rect(self.static_surf, self.WHITE, r)
+
+                    if self.weights[i, j] > 1:
+                        pygame.draw.rect(self.static_surf, self.ORANGE, r)
 
     def reset_frame(self):
         """Blit cached background and draw start/goal."""
@@ -168,7 +198,7 @@ class MazeVisualizer:
         pygame.draw.rect(self.screen, color, self.cell_rect(pos))
 
     def draw_text(self, text, pos):
-        surf = self.font.render(text, True, self.BLACK)
+        surf = self.font.render(text, True, self.TEXT_COLOR)
         self.screen.blit(surf, pos)
 
     def draw_hud(self, algo_name, visited_count, cost=None, elapsed_s=None, extra=None):
@@ -234,6 +264,80 @@ class MazeVisualizer:
             return 0
         return min(1000, max(30, 1000 // delay_ms))
 
+    # ---------- Sound effects ----------
+
+    def _generate_beep(self, frequency: int, duration_ms: int) -> pygame.mixer.Sound:
+        """Generate a simple beep sound."""
+        sample_rate = 22050
+        duration_samples = int(sample_rate * duration_ms / 1000.0)
+        if duration_samples == 0:
+            duration_samples = 1
+        # Create stereo array (2D: samples x channels)
+        arr = np.zeros((duration_samples, 2), dtype=np.int16)
+        max_sample = 2**(16 - 1) - 1
+        
+        for i in range(duration_samples):
+            t = float(i) / sample_rate
+            wave = np.sin(2.0 * np.pi * frequency * t)
+            # Apply envelope to avoid clicks
+            envelope = 1.0
+            if i < duration_samples * 0.1:
+                envelope = float(i) / (duration_samples * 0.1)
+            elif i > duration_samples * 0.9:
+                envelope = float(duration_samples - i) / (duration_samples * 0.1)
+            sample_value = int(wave * max_sample * 0.1 * envelope)
+            arr[i, 0] = sample_value  # Left channel
+            arr[i, 1] = sample_value  # Right channel
+        
+        sound = pygame.sndarray.make_sound(arr)
+        return sound
+
+    def _play_beep(self, frequency: int = 440, duration_ms: int = 50):
+        """Play a short beep sound."""
+        try:
+            if not pygame.mixer.get_init():
+                return
+            # Throttle beeps to prevent overlap
+            current_time = pygame.time.get_ticks()
+            if current_time - self.last_beep_time < self.beep_throttle_ms:
+                return
+            self.last_beep_time = current_time
+            
+            sound = self._generate_beep(frequency, duration_ms)
+            sound.set_volume(0.5)
+            sound.play()
+        except Exception as e:
+            print(f"Sound error: {e}")
+
+    def _play_final_boop(self):
+        """Play a satisfying final boop when path is found."""
+        try:
+            if not pygame.mixer.get_init():
+                return
+            sample_rate = 22050
+            duration_ms = 300
+            duration_samples = int(sample_rate * duration_ms / 1000.0)
+            # Create stereo array (2D: samples x channels)
+            arr = np.zeros((duration_samples, 2), dtype=np.int16)
+            max_sample = 2**(16 - 1) - 1
+            
+            for i in range(duration_samples):
+                t = float(i) / sample_rate
+                # Rising frequency from 220Hz to 660Hz
+                freq = 220 + (660 - 220) * min(1.0, t * 3.0)
+                wave = np.sin(2.0 * np.pi * freq * t)
+                # Fade out envelope
+                envelope = 1.0 - min(1.0, t * 2.0)
+                sample_value = int(wave * max_sample * 0.3 * envelope)
+                arr[i, 0] = sample_value  # Left channel
+                arr[i, 1] = sample_value  # Right channel
+            
+            sound = pygame.sndarray.make_sound(arr)
+            sound.set_volume(0.5)
+            sound.play()
+        except Exception as e:
+            print(f"Final boop error: {e}")
+
     # ---------- Algorithms (incremental drawing + realtime timer) ----------
 
     def bfs(self, visualize=True, delay=1):
@@ -258,6 +362,7 @@ class MazeVisualizer:
 
                 if current != self.start and current != self.goal:
                     self.draw_cell(current, self.YELLOW)
+                    self._play_beep(440 + (len(visited) % 3) * 20, 50)
 
                 self.draw_cell(self.start, self.GREEN)
                 self.draw_cell(self.goal, self.RED)
@@ -279,6 +384,7 @@ class MazeVisualizer:
                     cur = prev[cur]
                 path.reverse()
                 elapsed_s = (pygame.time.get_ticks() - start_ms) / 1000.0
+                self._play_final_boop()
                 return path, len(visited), self.path_cost(path), elapsed_s
 
             for n in self.get_neighbors(current):
@@ -315,6 +421,7 @@ class MazeVisualizer:
 
                 if current != self.start and current != self.goal:
                     self.draw_cell(current, self.YELLOW)
+                    self._play_beep(440 + (len(visited) % 3) * 20, 50)
 
                 self.draw_cell(self.start, self.GREEN)
                 self.draw_cell(self.goal, self.RED)
@@ -336,6 +443,7 @@ class MazeVisualizer:
                     cur = prev[cur]
                 path.reverse()
                 elapsed_s = (pygame.time.get_ticks() - start_ms) / 1000.0
+                self._play_final_boop()
                 return path, len(visited), self.path_cost(path), elapsed_s
 
             for n in self.get_neighbors(current):
@@ -373,6 +481,7 @@ class MazeVisualizer:
 
                 if current != self.start and current != self.goal:
                     self.draw_cell(current, self.YELLOW)
+                    self._play_beep(440 + (len(visited) % 3) * 20, 50)
 
                 self.draw_cell(self.start, self.GREEN)
                 self.draw_cell(self.goal, self.RED)
@@ -395,6 +504,7 @@ class MazeVisualizer:
                 path.append(self.start)
                 path.reverse()
                 elapsed_s = (pygame.time.get_ticks() - start_ms) / 1000.0
+                self._play_final_boop()
                 return path, len(visited), int(d), elapsed_s
 
             for n in self.get_neighbors(current):
@@ -458,6 +568,7 @@ class MazeVisualizer:
 
                 if cur != self.start and cur != self.goal:
                     self.draw_cell(cur, self.YELLOW)
+                    self._play_beep(440 + (visited_count % 3) * 20, 50)
 
                 self.draw_cell(self.start, self.GREEN)
                 self.draw_cell(self.goal, self.RED)
@@ -481,6 +592,7 @@ class MazeVisualizer:
                 path.append((sx, sy))
                 path.reverse()
                 elapsed_s = (pygame.time.get_ticks() - start_ms) / 1000.0
+                self._play_final_boop()
                 return path, visited_count, int(g[gx, gy]), elapsed_s
 
             gcur = g[x, y]
@@ -556,6 +668,10 @@ class MazeVisualizer:
         return path
 
     def compare_all(self, delay=1):
+        self.draw_hud("Ready", 0, extra="Press any key to start")
+        pygame.display.update()
+        if not self.wait_for_keypress():
+            return
         for algo in ["bfs", "dfs", "dijkstra", "astar"]:
             out = self.run_algorithm(algo, delay=delay)
             if out is None:
