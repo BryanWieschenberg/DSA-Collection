@@ -3,35 +3,34 @@ import random
 import sounddevice as sd
 import pyglet
 from enum import Enum
-from Sorter import Sorter
+from Sorter import RealSorter, VisualSorter
 import sys
 import time
 import threading
+import logging
+import math
+
+logging.disable(logging.CRITICAL)
 
 class Speed(Enum):
-    xxs = 1; xs = 0.07; s = 0.009;
+    xxs = .7; xs = 0.07; s = 0.009;
     m = 0.003
-    l = 0.001; u = 0
-
-class Size(Enum):
-    xxs = 8; xs = 32
-    m = 64
-    l = 256; xl = 512; xxl = 1024; xxxl = 2048; xxxxl = 4096
+    f = 0.001; u = 0
 
 if len(sys.argv) < 2:
     print("Usage: python sort_visualizer.py <algorithm> <size ?? m> <speed ?? m>")
-    print("> Algorithms: selection insertion bubble bogo merge quick bucket radix tim heap bitonic comb cycle pancake cocktail shell gravity oddeven flash")
+    print("> Algorithms: selection insertion bubble bogo merge quick radix tim heap bitonic comb cycle pancake cocktail_shaker shell gravity odd_even flash")
     print("> Sizes/Speeds: xxs, xs, s, m, l, xl, xxl")
     exit(1)
 
 ALGORITHM = sys.argv[1]
-SIZE = Size.medium.value
-SPEED = Speed.medium.value
+SIZE = 128
+SPEED = Speed.m.value
 
 if len(sys.argv) > 2:
     size_arg = sys.argv[2].lower()
-    if size_arg in Size.__members__:
-        SIZE = Size[size_arg].value
+    if size_arg.isdigit():
+        SIZE = int(size_arg)
     else:
         print(f"Invalid size '{size_arg}', valid: xxs, xs, s, m, l, xl, xxl")
         exit(1)
@@ -157,9 +156,20 @@ class SortVisualizer(mglw.WindowConfig):
         )
         
         self.array_size = SIZE
-        self.nums = list(range(1, self.array_size + 1))
-        random.shuffle(self.nums)
-        
+
+        # self.nums = list(range(1, self.array_size + 1))
+        # random.shuffle(self.nums)
+
+        # self.nums = [random.randint(1, 100) for _ in range(self.array_size)]
+
+        self.nums = [
+            min(self.array_size, int(math.exp(random.random() * math.log(self.array_size))))
+            for _ in range(self.array_size)
+        ]
+
+        # self.nums = list(range(1, self.array_size + 1))
+        # self.nums.reverse()
+
         self.vertex_data = np.zeros(self.array_size * 6 * 5, dtype='f4')
         self.vbo = self.ctx.buffer(self.vertex_data.tobytes())
         self.vao = self.ctx.vertex_array(
@@ -180,12 +190,16 @@ class SortVisualizer(mglw.WindowConfig):
         self.final_index = 0
         self.operation_count = 0
         self.start_time = None
+        self.sort_time = 0
         self.elapsed_time = 0.0
         self.final_seen = set()
         self.needs_full_update = True
+        self.scale_max = max(self.nums)
+        self.sort_time = 0.0
+        self.measure_sort_time()
         
+        self.sp = " " * 8
         self.label = pyglet.text.Label(
-            f"{self.current_algo.replace('_',' ').title()} Sort        Input Size: {SIZE}        Operations: {self.operation_count}        Time: {self.elapsed_time:.3f}s",
             font_name='Arial',
             font_size=20,
             x=10, y=self.window_size[1] - 30,
@@ -206,10 +220,11 @@ class SortVisualizer(mglw.WindowConfig):
         self.window_size = (width, height)
 
     def update_bar(self, idx):
-        """Update a single bar's vertices efficiently"""
         x = self.bar_positions[idx]
         val = self.nums[idx]
-        height = (val / self.array_size) * 2.0
+        usable_height = 2.0 - 0.07
+        height = (val / self.scale_max) * usable_height
+        top_y = -1.0 + height
         
         if idx in self.final_seen:
             color = [0.0, 1.0, 0.0]
@@ -223,28 +238,26 @@ class SortVisualizer(mglw.WindowConfig):
         vertices = np.array([
             x, -1.0, *color,
             x + self.bar_width, -1.0, *color,
-            x, -1.0 + height, *color,
+            x, top_y, *color,
             x + self.bar_width, -1.0, *color,
-            x + self.bar_width, -1.0 + height, *color,
-            x, -1.0 + height, *color,
+            x + self.bar_width, top_y, *color,
+            x, top_y, *color,
         ], dtype='f4')
         
         self.vertex_data[offset:offset+30] = vertices
 
     def build_vertex_data(self):
-        """Rebuild all vertices"""
         for i in range(self.array_size):
             self.update_bar(i)
         self.vbo.write(self.vertex_data.tobytes())
         self.needs_full_update = False
 
     def update_changed_bars(self, indices):
-        """Only update bars that changed"""
         if self.needs_full_update:
             self.build_vertex_data()
             return
             
-        unique_indices = set(indices) | set(self.highlight_indices) | self.final_seen
+        unique_indices = set(indices) | set(self.highlight_indices)
         
         for idx in unique_indices:
             if idx < len(self.nums):
@@ -253,15 +266,20 @@ class SortVisualizer(mglw.WindowConfig):
         self.vbo.write(self.vertex_data.tobytes())
 
     def play_tone(self, freq):
-        """Update continuous audio frequency"""
         if self.audio:
             self.audio.set_frequency(freq)
     
     def stop_tone(self):
-        """Stop audio"""
         if self.audio:
             self.audio.stop()
     
+    def measure_sort_time(self):
+        nums_copy = self.nums.copy()
+        start = time.perf_counter()
+        getattr(RealSorter, self.current_algo)(nums_copy)
+        end = time.perf_counter()
+        self.sort_time = end - start
+
     def on_render(self, timer, frame_time):
         self.ctx.clear(0.1, 0.1, 0.1)
         
@@ -292,14 +310,15 @@ class SortVisualizer(mglw.WindowConfig):
         if self.sorting and self.start_time:
             self.elapsed_time = time.time() - self.start_time
 
-        self.label.text = f"{self.current_algo.replace('_',' ').title()} Sort        Input Size: {SIZE}        Operations: {self.operation_count}        Time: {self.elapsed_time:.3f}"
+        self.sp = " " * 8
+        self.label.text = f"{self.current_algo.replace('_',' ').title()} Sort{self.sp}Input Size: {SIZE}{self.sp}Real Time: {self.sort_time*1000:.3f}ms{self.sp}Visual Time: {self.elapsed_time:.3f}s"
         self.label.draw()
         self.vao.render(moderngl.TRIANGLES)
 
     def sort_step(self):
         if not self.final_pass:
             if not hasattr(self, 'sort_gen'):
-                self.sort_gen = getattr(Sorter, self.current_algo)(self.nums)
+                self.sort_gen = getattr(VisualSorter, self.current_algo)(self.nums)
 
             try:
                 prev_indices = set(self.highlight_indices)
@@ -342,7 +361,11 @@ class SortVisualizer(mglw.WindowConfig):
                 self.highlight_indices = []
                 freq = np.interp(self.nums[i], [1, self.array_size], [150, 600])  # Lower frequency range
                 self.play_tone(freq)
-                self.update_changed_bars({i})
+                self.update_bar(i)
+                self.vbo.write(
+                    self.vertex_data[i * 30:(i + 1) * 30].tobytes(),
+                    offset=i * 30 * 4
+                )
                 self.final_index += 1
             else:
                 self.final_pass = False
