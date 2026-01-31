@@ -8,8 +8,20 @@ class Solution:
     
     # 46
     def isValid(self, s: str) -> bool:
-        pass
-    
+        st = []
+        for c in s:
+            if c in ['(','{','[']:
+                st.append(c)
+            elif st and (
+                (c == ')' and st[-1] == '(') or
+                (c == '}' and st[-1] == '{') or
+                (c == ']' and st[-1] == '[')
+            ):
+                st.pop()
+            else:
+                return False
+        return True if not st else False
+        
     # 47
     class MyStack:
         def __init__(self):

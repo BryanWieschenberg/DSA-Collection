@@ -1,31 +1,53 @@
 from sys import path; from os import path as ospath; path.append(ospath.dirname(ospath.dirname(__file__)))
 from typing import List
+from collections import defaultdict
 
 class Solution:
     # 1
     def getConcatenation(self, nums: List[int]) -> List[int]:
         pass
-    
+
     # 2
     def hasDuplicate(self, nums: List[int]) -> bool:
-        pass
-            
+        return len(nums) != len(set(nums))
+
     # 3
     def isAnagram(self, s: str, t: str) -> bool:
-        pass
-            
+        if len(s) != len(t):
+            return False
+        ct = [0] * 26
+        for i in range(len(s)):
+            ct[ord(s[i]) - ord('a')] += 1
+            ct[ord(t[i]) - ord('a')] -= 1
+        for i in range(26):
+            if ct[i] > 0:
+                return False
+        return True
+    
     # 4
     def twoSum(self, nums: List[int], target: int) -> List[int]:
-        pass
-    
+        mp = {}
+        for i, n in enumerate(nums):
+            diff = target - n
+            if diff in mp:
+                return [mp[diff], i]
+            mp[n] = i
+        return []
+        
     # 5
     def longestCommonPrefix(self, strs: List[str]) -> str:
         pass
     
     # 6
     def groupAnagrams(self, strs: List[str]) -> List[List[str]]:
-        pass
-        
+        res = defaultdict(list)
+        for s in strs:
+            ct = [0] * 26
+            for c in s:
+                ct[ord(c) - ord('a')] += 1
+            res[tuple(ct)].append(s)
+        return list(res.values())
+            
     # 7
     def removeElement(self, nums: List[int], val: int) -> int:
         pass
@@ -72,16 +94,41 @@ class Solution:
     
     # 13
     def topKFrequent(self, nums: List[int], k: int) -> List[int]:
-        pass
-        
+        freq = defaultdict(int)
+        for n in nums:
+            freq[n] += 1
+        ct = [[] for _ in range(len(nums)+1)]
+        for f in freq:
+            ct[freq[f]].append(f)
+        res = []
+        for i in range(len(ct)-1, -1, -1):
+            for j in range(len(ct[i])):
+                res.append(ct[i][j])
+                if len(res) >= k:
+                    return res
+        return res
+            
     # 14
     class EncodeDecode:
         def encode(self, strs: List[str]) -> str:
-            pass
-
-        def decode(self, s: str) -> List[str]:
-            pass
+            res = []
+            for s in strs:
+                res.append(f'{len(s)}#{s}')
+            return "".join(res)
         
+        def decode(self, s: str) -> List[str]:
+            i = 0
+            res = []
+            while i < len(s):
+                start = i
+                while s[i].isdigit():
+                    i += 1
+                dist = int(s[start : i])
+                i += 1
+                res.append(s[i : i+dist])
+                i += dist
+            return res
+            
     # 15
     class NumMatrix:
         def __init__(self, matrix: List[List[int]]):
@@ -92,16 +139,33 @@ class Solution:
     
     # 16
     def productExceptSelf(self, nums: List[int]) -> List[int]:
-        pass
-        
+        res = [1] * len(nums)
+        prod = 1
+        for i in range(1, len(nums)):
+            prod *= nums[i-1]
+            res[i] *= prod
+        prod = 1
+        for i in range(len(nums)-2, -1, -1):
+            prod *= nums[i+1]
+            res[i] *= prod
+        return res
+            
     # 17
     def isValidSudoku(self, board: List[List[str]]) -> bool:
         pass
     
     # 18
     def longestConsecutive(self, nums: List[int]) -> int:
-        pass
-        
+        numsSet = set(nums)
+        res = 0
+        for n in nums:
+            if n-1 not in numsSet:
+                i = 1
+                while n+i in numsSet:
+                    i += 1
+                res = max(res, i)
+        return res
+            
     # 19
     def maxProfit(self, prices: List[int]) -> int:
         pass
