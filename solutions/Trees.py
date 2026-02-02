@@ -17,12 +17,23 @@ class Solution:
 
     # 90
     def invertTree(self, root: Optional[TreeNode]) -> Optional[TreeNode]:
-        pass
-
+        def dfs(node):
+            if not node:
+                return
+            node.left, node.right = node.right, node.left
+            dfs(node.left)
+            dfs(node.right)
+        dfs(root)
+        return root
+    
     # 91
     def maxDepth(self, root: Optional[TreeNode]) -> int:
-        pass
-    
+        def dfs(node):
+            if not node:
+                return 0
+            return 1 + max(dfs(node.left), dfs(node.right))
+        return dfs(root)
+        
     # 92
     def diameterOfBinaryTree(self, root: Optional[TreeNode]) -> int:
         pass
@@ -33,12 +44,32 @@ class Solution:
 
     # 94
     def isSameTree(self, p: Optional[TreeNode], q: Optional[TreeNode]) -> bool:
-        pass
-
+        def dfs(p, q):
+            if not (p or q):
+                return True
+            if p and q and p.val == q.val:
+                return dfs(p.left, q.left) and dfs(p.right, q.right)
+            return False
+        return dfs(p, q)
+    
     # 95
     def isSubtree(self, root: Optional[TreeNode], subRoot: Optional[TreeNode]) -> bool:
-        pass
+        def isSameTree(p, q):
+            if not (p or q):
+                return True
+            if p and q and p.val == q.val:
+                return isSameTree(p.left, q.left) and isSameTree(p.right, q.right)
+            return False
+        
+        def dfs(root, subRoot):
+            if not root:
+                return False
+            if isSameTree(root, subRoot):
+                return True
+            return dfs(root.left, subRoot) or dfs(root.right, subRoot)
 
+        return dfs(root, subRoot)
+    
     # 96
     def lowestCommonAncestor(self, root: TreeNode, p: TreeNode, q: TreeNode) -> TreeNode:
         pass

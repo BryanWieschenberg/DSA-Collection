@@ -33,12 +33,35 @@ class Solution:
     
     # 66
     def findMin(self, nums: List[int]) -> int:
-        pass
-    
+        l, r = 0, len(nums)-1
+        while l < r:
+            m = l + (r - l) // 2
+            if nums[m] >= nums[r]:
+                l = m + 1
+            else:
+                r = m
+        return nums[l]
+        
     # 67
     def searchRotated(self, nums: List[int], target: int) -> int:
-        pass
-    
+        l, r = 0, len(nums)-1
+        while l <= r:
+            m = l + (r - l) // 2
+            if nums[m] == target:
+                return m
+
+            if nums[l] <= nums[m]:
+                if target > nums[m] or target < nums[l]:
+                    l = m + 1
+                else:
+                    r = m - 1
+            else:
+                if target < nums[m] or target > nums[r]:
+                    r = m - 1
+                else:
+                    l = m + 1
+        return -1
+        
     # 68
     def searchRotated2(self, nums: List[int], target: int) -> bool:
         pass
