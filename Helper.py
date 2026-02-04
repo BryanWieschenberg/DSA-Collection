@@ -107,7 +107,7 @@ class Tester:
                 if verbose: lines.append(f"  > ✅ {arg_display} == {efmt}")
                 passed += 1
             else:
-                if verbose: lines.append(f"  > ❌ {arg_display} != {rfmt}, expected {efmt}")
+                if verbose: lines.append(f"  > ❌ {arg_display}\n       - Received {rfmt}\n       - Expected {efmt}")
 
         end_time = perf_counter()
         elapsed = end_time - start_time
@@ -168,7 +168,7 @@ class Tester:
                 if verbose: lines.append(f"  > ✅ {call_str} == {efmt}")
                 passed += 1
             else:
-                if verbose: lines.append(f"  > ❌ {call_str} != {rfmt}, expected {efmt}")
+                if verbose: lines.append(f"  > ❌ {call_str}\n       - Received {rfmt}\n       - Expected {efmt}")
 
         end_time = perf_counter()
         elapsed = end_time - start_time
@@ -450,6 +450,7 @@ class TrieNode:
     def __init__(self):
         self.children = {}
         self.end = False
+        self.word = None
 
 class TrieHelper:
     @staticmethod

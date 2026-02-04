@@ -936,7 +936,7 @@ TESTS = [
             ['s','a','a','t'],
             ['a','c','k','e'],
             ['a','c','d','n']
-        ], ["bat","cat","back","backend","stack"] ), ["cat","back","backend"] ),
+        ], ["bat","cat","back","backend","stack"] ), ["back","backend","cat"] ),
         (( [
             ['x','o'],
             ['x','o']
@@ -1041,7 +1041,7 @@ TESTS = [
         (( [
             [1],
             [1]
-        ] ), [[0,0],[0,1]] ),
+        ] ), [[0,0],[1,0]] ),
     ]),
     # 152
     lambda: t.test(Graphs().solve, [

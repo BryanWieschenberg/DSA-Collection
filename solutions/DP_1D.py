@@ -4,8 +4,13 @@ from typing import List
 class Solution:
     # 174
     def climbStairs(self, n: int) -> int:
-        pass
-
+        if n <= 2:
+            return n
+        dp1, dp2 = 1, 2
+        for _ in range(3, n+1):
+            dp1, dp2 = dp2, dp1 + dp2
+        return dp2
+    
     # 175
     def minCostClimbingStairs(self, cost: List[int]) -> int:
         pass
@@ -16,8 +21,11 @@ class Solution:
 
     # 177
     def rob(self, nums: List[int]) -> int:
-        pass
-
+        dp1 = dp2 = 0
+        for n in nums:
+            dp1, dp2 = dp2, max(n + dp1, dp2)
+        return dp2
+    
     # 178
     def rob2(self, nums: List[int]) -> int:
         pass
