@@ -1,6 +1,7 @@
 from sys import path; from os import path as ospath; path.append(ospath.dirname(ospath.dirname(__file__)))
 from typing import List, Optional
 from Helper import TreeNode, TreeHelper, QuadTreeNode, QuadTreeHelper
+from collections import deque
 
 class Solution:
     # 87
@@ -72,8 +73,12 @@ class Solution:
     
     # 96
     def lowestCommonAncestor(self, root: TreeNode, p: TreeNode, q: TreeNode) -> TreeNode:
-        pass
-    
+        if p.val < root.val and q.val < root.val:
+            return self.lowestCommonAncestor(root.left, p, q)
+        if p.val > root.val and q.val > root.val:
+            return self.lowestCommonAncestor(root.right, p, q)
+        return root
+        
     # 97
     def insertIntoBST(self, root: Optional[TreeNode], val: int) -> Optional[TreeNode]:
         pass
@@ -84,8 +89,21 @@ class Solution:
     
     # 99
     def levelOrder(self, root: Optional[TreeNode]) -> List[List[int]]:
-        pass
-
+        res = []
+        q = deque([root])
+        while q:
+            qLen = len(q)
+            lvl = []
+            for _ in range(qLen):
+                node = q.popleft()
+                if node:
+                    lvl.append(node.val)
+                    q.append(node.left)
+                    q.append(node.right)
+            if lvl:
+                res.append(lvl)
+        return res
+    
     # 100
     def rightSideView(self, root: Optional[TreeNode]) -> List[int]:
         pass
@@ -100,15 +118,52 @@ class Solution:
 
     # 103
     def isValidBST(self, root: Optional[TreeNode]) -> bool:
-        pass
+        def dfs(root, l, r):
+            if not root:
+                return True
+            if not (l < root.val < r):
+                return False
+            return (
+                dfs(root.left, l, root.val) and
+                dfs(root.right, root.val, r)
+            )
 
+        return dfs(root, float('-inf'), float('inf'))
+    
     # 104
     def kthSmallest(self, root: Optional[TreeNode], k: int) -> int:
-        pass
+        def dfs(node):
+            if not node:
+                return
+            dfs(node.left)
+            nonlocal ct, res
+            ct -= 1
+            if ct == 0:
+                res = node.val
+                return
+            dfs(node.right)
 
+        res = root.val
+        ct = k
+        dfs(root)
+        return res
+    
     # 105
     def buildTree(self, preorder: List[int], inorder: List[int]) -> Optional[TreeNode]:
-        pass
+        def dfs(l, r):
+            if l > r:
+                return None
+            nonlocal pre_i
+            root_val = preorder[pre_i]
+            pre_i += 1
+            root = TreeNode(root_val)
+            m = idx[root_val]
+            root.left = dfs(l, m-1)
+            root.right = dfs(m+1, r)
+            return root
+        idx = {val: i for i, val in enumerate(inorder)}
+        pre_i = 0
+        return dfs(0, len(inorder)-1)
 
     # 106
     def rob(self, root: Optional[TreeNode]) -> int:
@@ -120,15 +175,48 @@ class Solution:
 
     # 108
     def maxPathSum(self, root: Optional[TreeNode]) -> int:
-        pass
-
+        def dfs(root):
+            if not root:
+                return 0
+            leftMax = dfs(root.left)
+            rightMax = dfs(root.right)
+            leftMax = max(leftMax, 0)
+            rightMax = max(rightMax, 0)
+            nonlocal res
+            res = max(res, root.val + leftMax + rightMax)
+            return root.val + max(leftMax, rightMax)
+        res = root.val
+        dfs(root)
+        return res
+    
     # 109
     class Codec:
         def serialize(self, root: Optional[TreeNode]) -> str:
-            pass
-
+            def dfs(root):
+                if not root:
+                    res.append('N')
+                    return
+                res.append(str(root.val))
+                dfs(root.left)
+                dfs(root.right)
+            res = []
+            dfs(root)
+            return ','.join(res)
+            
         def deserialize(self, data: str) -> Optional[TreeNode]:
-            pass
-
+            def dfs():
+                nonlocal i
+                if vals[i] == 'N':
+                    i += 1
+                    return None
+                node = TreeNode(int(vals[i]))
+                i += 1
+                node.left = dfs()
+                node.right = dfs()
+                return node
+            vals = data.split(',')
+            i = 0
+            return dfs()
+    
 if __name__ == "__main__":
     s = Solution(); ht = TreeHelper(); hq = QuadTreeHelper()

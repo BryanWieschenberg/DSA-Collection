@@ -12,7 +12,21 @@ class Solution:
 
     # 124
     def combinationSum(self, nums: List[int], target: int) -> List[List[int]]:
-        pass
+        def dfs(i, curr, total):
+            if total == target:
+                res.append(curr.copy())
+                return
+            for j in range(i, len(nums)):
+                if total + nums[j] > target:
+                    return
+                curr.append(nums[j])
+                dfs(j, curr, total + nums[j])
+                curr.pop()
+        
+        res = []
+        nums.sort()
+        dfs(0, [], 0)
+        return res
 
     # 125
     def combinationSum2(self, candidates: List[int], target: int) -> List[List[int]]:
@@ -40,8 +54,27 @@ class Solution:
 
     # 131
     def exist(self, board: List[List[str]], word: str) -> bool:
-        pass
-
+        def dfs(r, c, i):
+            if i == len(word):
+                return True
+            if (
+                r < 0 or c < 0 or r >= R or c >= C or
+                word[i] != board[r][c] or board[r][c] == '#'
+            ):
+                return False
+            board[r][c] = '#'
+            res = any(dfs(r+dr, c+dc, i+1) for dr, dc in dirs)
+            board[r][c] = word[i]
+            return res
+        
+        R, C = len(board), len(board[0])
+        dirs = ((0,1),(1,0),(0,-1),(-1,0))
+        for r in range(R):
+            for c in range(C):
+                if dfs(r, c, 0):
+                    return True
+        return False
+    
     # 132
     def partition(self, s: str) -> List[List[str]]:
         pass

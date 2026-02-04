@@ -14,7 +14,7 @@ class Tester:
         self.hl = ListHelper()
         self.ht = TreeHelper()
         self.hq = QuadTreeHelper()
-        self.hi = TrieHelper() # are these how real judgement sites like leetcode or hackerrank do it
+        self.hi = TrieHelper()
         self.hg = GraphHelper()
         self.hv = IntervalHelper()
 

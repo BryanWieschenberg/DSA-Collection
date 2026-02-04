@@ -6,17 +6,32 @@ class Solution:
     # 139
     class PrefixTree:
         def __init__(self):
-            pass
+            self.root = TrieNode()
 
         def insert(self, word: str) -> None:
-            pass
+            curr = self.root
+            for c in word:
+                if c not in curr.children:
+                    curr.children[c] = TrieNode()
+                curr = curr.children[c]
+            curr.end = True
 
         def search(self, word: str) -> bool:
-            pass
+            curr = self.root
+            for c in word:
+                if c not in curr.children:
+                    return False
+                curr = curr.children[c]
+            return curr.end
 
         def startsWith(self, prefix: str) -> bool:
-            pass
-
+            curr = self.root
+            for c in prefix:
+                if c not in curr.children:
+                    return False
+                curr = curr.children[c]
+            return True
+    
     # 140
     class WordDictionary:
         def __init__(self):

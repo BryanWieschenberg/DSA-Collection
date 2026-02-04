@@ -1,5 +1,6 @@
 from sys import path; from os import path as ospath; path.append(ospath.dirname(ospath.dirname(__file__)))
 from typing import List
+import heapq
 
 class Solution:
     # 110
@@ -62,14 +63,20 @@ class Solution:
     # 120
     class MedianFinder:
         def __init__(self):
-            pass
+            self.low = [] # max heap
+            self.high = [] # min heap
 
         def addNum(self, num: int) -> None:
-            pass
+            heapq.heappush(self.low, -num)
+            heapq.heappush(self.high, -heapq.heappop(self.low))
+            if len(self.high) > len(self.low):
+                heapq.heappush(self.low, -heapq.heappop(self.high))
 
         def findMedian(self) -> float:
-            pass
-
+            if len(self.low) > len(self.high):
+                return -self.low[0]
+            return (-self.low[0] + self.high[0]) / 2
+    
     # 121
     def findMaximizedCapital(self, k: int, w: int, profits: List[int], capital: List[int]) -> int:
         pass
