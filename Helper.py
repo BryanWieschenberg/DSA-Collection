@@ -1,10 +1,14 @@
-from typing import List, Optional
+from typing import List, Optional, Dict, Hashable, Union
 from collections import deque
 from math import floor, ceil
 from random import shuffle
 from time import perf_counter
 from signal import signal, alarm, SIGALRM
 from resource import setrlimit, RLIMIT_AS, getrusage, RUSAGE_SELF
+
+MAX_LEN = 10
+HEAD = 3
+TAIL = 3
 
 class TimeLimitExceeded(Exception):
     pass
@@ -43,17 +47,19 @@ class Tester:
         return a == b
 
     def _fmt(self, x):
+        if isinstance(x, str):
+            if len(x) > MAX_LEN:
+                return f"{x[:3]}...{x[-3:]}"
+            return x
+
         if isinstance(x, list):
             if not x:
                 return "[]"
-            if len(x) >  50:
-                head = ", ".join(str(self._fmt(v)) for v in x[:3])
-                tail = ", ".join(str(self._fmt(v)) for v in x[-3:])
-                return f"[{head}, ..., {tail}](len={len(x)})"
-            
-        if isinstance(x, list) and all(isinstance(item, ListNode) for item in x):
-            return ", ".join(str(self._fmt(item)) for item in x)
-        elif isinstance(x, ListNode):
+            if len(x) > MAX_LEN:
+                return f"l{str(x[:HEAD])[:-1]}, ..., {str(x[-TAIL:])[1:]}(len={len(x)})"
+            return str(x)
+        
+        if isinstance(x, ListNode):
             return self.hl.print(x, verbose=False)
         elif isinstance(x, TreeNode):
             return self.ht.print(x, verbose=False)
@@ -65,8 +71,10 @@ class Tester:
             return self.hg.print(x, verbose=False)
         elif isinstance(x, Interval):
             return self.hv.print(x, verbose=False)
-        elif isinstance(x, list) and len(x) and all(isinstance(item, Interval) for item in x):
+
+        if isinstance(x, list) and x and all(isinstance(item, Interval) for item in x):
             return self.hv.print(x, verbose=False)
+
         return str(x)
     
     def test(self, fn: callable, tests: list[tuple], time: int = 1, space: int = 256, verbose: bool = True) -> None:
@@ -123,7 +131,7 @@ class Tester:
         
         print("\n".join(lines))
 
-    def testcls(self, cls: type, init_args: tuple, steps: list[tuple], time=1, space=256, verbose=True) -> None:
+    def testcls(self, cls: type, init_args: tuple, steps: list[tuple], time: int = 1, space: int = 256, verbose: bool = True) -> None:
         if not isinstance(init_args, tuple):
             init_args = (init_args,)
 
@@ -251,8 +259,10 @@ class ListHelper:
 
         if verbose: print(output)
         if curr is not None and curr.cycle:
-            return "l" + str(res)[:-1] + "..]"
-        return "l" + str(res)
+            return f"l{str(res)[:-1]}...]"
+        if len(res) > MAX_LEN:
+            return f"l{str(res[:HEAD])[:-1]}, ..., {str(res[-TAIL:])[1:]}(len={len(res)})"
+        return f"l{str(res)}"
 
 class TreeNode:
     def __init__(self, val=0, left=None, right=None):
@@ -268,16 +278,18 @@ class TreeHelper:
 
         nodes = [TreeNode(v) if v is not None else None for v in values]
 
-        cld_index = 1
         for i in range(len(values)):
             node = nodes[i]
-            if node is not None:
-                if cld_index < len(values):
-                    node.left = nodes[cld_index]
-                cld_index += 1
-                if cld_index < len(values):
-                    node.right = nodes[cld_index]
-                cld_index += 1
+            if node is None:
+                continue
+
+            li = 2 * i + 1
+            ri = 2 * i + 2
+
+            if li < len(values):
+                node.left = nodes[li]
+            if ri < len(values):
+                node.right = nodes[ri]
 
         return nodes[0]
 
@@ -374,7 +386,9 @@ class TreeHelper:
             res.pop()
 
         if verbose: print(output)
-        return "t" + str(res)
+        if len(res) > MAX_LEN:
+            return f"t{str(res[:HEAD])[:-1]}, ..., {str(res[-TAIL:])[1:]}(len={len(res)})"
+        return f"t{str(res)}"
 
 class QuadTreeNode:
     def __init__(self, val, isLeaf, topLeft=None, topRight=None, bottomLeft=None, bottomRight=None):
@@ -444,7 +458,9 @@ class QuadTreeHelper:
                 q.append(node.bottomRight)
 
         if verbose: print(out)
-        return "q" + str(out)
+        if len(out) > MAX_LEN:
+            return f"q{str(out[:HEAD])[:-1]}, ..., {str(out[-TAIL:])[1:]}(len={len(out)})"
+        return f"q{str(out)}"
 
 class TrieNode:
     def __init__(self):
@@ -454,7 +470,7 @@ class TrieNode:
 
 class TrieHelper:
     @staticmethod
-    def to(words):
+    def to(words: List):
         root = TrieNode()
         for word in words:
             node = root
@@ -500,7 +516,9 @@ class TrieHelper:
 
         out = "\n".join(lines)
         if verbose: print(out)
-        return "i" + str(out)
+        if len(out) > MAX_LEN:
+            return f"i{str(out[:HEAD])[:-1]}, ..., {str(out[-TAIL:])[1:]}(len={len(out)})"
+        return f"i{str(out)}"
 
 class Node:
     def __init__(self, val=0, neighbors=None):
@@ -511,7 +529,10 @@ class GraphHelper:
     # Takes in an adjacency list or node-named dict
     # Supports weighted and unweighted graphs
     @staticmethod
-    def to(adjList: list[list[int | list[int, float]]]) -> "Node | None":
+    def to(adjList:
+        List[List[Union[int, tuple[int, float]]]] |
+        Dict[Hashable, List[Union[int, tuple[Hashable, float]]]]
+    ) -> "Node | None":
         if not len(adjList):
             return None
 
@@ -618,7 +639,9 @@ class GraphHelper:
 
         out = "\n".join(lines)
         if verbose: print(out)
-        return "g" + str(adj)
+        if len(adj) > MAX_LEN:
+            return f"g{str(adj[:HEAD])[:-1]}, ..., {str(adj[-TAIL:])[1:]}(len={len(adj)})"
+        return f"g{str(adj)}"
 
 class Interval:
     def __init__(self, start, end):
@@ -627,7 +650,7 @@ class Interval:
 
 class IntervalHelper:
     @staticmethod
-    def to(intervals):
+    def to(intervals: List[tuple[int]]):
         if not intervals:
             return None
 
@@ -657,7 +680,9 @@ class IntervalHelper:
 
         out = ",".join(out)
         if verbose: print(out)
-        return "v[" + out + "]"
+        if len(out) > MAX_LEN:
+            return f"v[\"{str(out[:HEAD])[:-1]}, ..., {str(out[-TAIL:])[1:]}(len={len(out)})\"]"
+        return f"v[\"{out}\"]"
 
 class API:
     @staticmethod

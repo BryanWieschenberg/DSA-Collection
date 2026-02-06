@@ -21,12 +21,32 @@ class Solution:
 
     # 232
     def rotate(self, matrix: List[List[int]]) -> None:
-        pass
+        for i in range(len(matrix)):
+            for j in range(i+1, len(matrix[0])):
+                matrix[i][j], matrix[j][i] = matrix[j][i], matrix[i][j]
+        for i in range(len(matrix)): # 90 deg rot, reverse rows
+            matrix[i].reverse()
+        # for j in range(len(matrix)): # -90 deg rot, reverse cols
+        #     for i in range(len(matrix) // 2):
+        #         matrix[i][j], matrix[-i-1][j] = matrix[-i-1][j], matrix[i][j]
+        return matrix
 
     # 233
     def spiralOrder(self, matrix: List[List[int]]) -> List[int]:
-        pass
-
+        res = []
+        dirs = ((0,1),(1,0),(0,-1),(-1,0))
+        steps = [len(matrix[0]), len(matrix)-1]
+        r, c, d = 0, -1, 0
+        while steps[d & 1]:
+            for _ in range(steps[d & 1]):
+                r += dirs[d][0]
+                c += dirs[d][1]
+                res.append(matrix[r][c])
+            steps[d & 1] -= 1
+            d += 1
+            d %= 4
+        return res
+    
     # 234
     def setZeroes(self, matrix: List[List[int]]) -> None:
         pass

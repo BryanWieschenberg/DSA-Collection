@@ -13,14 +13,17 @@ import math
 logging.disable(logging.CRITICAL)
 
 class Speed(Enum):
-    xxs = .7; xs = 0.07; s = 0.009;
+    xxs = .7
+    xs = 0.07
+    s = 0.009
     m = 0.003
-    f = 0.001; u = 0
+    f = 0.001
+    u = 0
 
 if len(sys.argv) < 2:
-    print("Usage: python sort_visualizer.py <algorithm> <size ?? m> <speed ?? m>")
+    print("Usage: python sort.py <algorithm> <size: int ?? 128> <speed: Speed ?? m>")
     print("> Algorithms: selection insertion bubble bogo merge quick radix tim heap bitonic comb cycle pancake cocktail_shaker shell gravity odd_even flash")
-    print("> Sizes/Speeds: xxs, xs, s, m, l, xl, xxl")
+    print("> Speed: xxs, xs, s, m, l, xl, xxl")
     exit(1)
 
 ALGORITHM = sys.argv[1]
