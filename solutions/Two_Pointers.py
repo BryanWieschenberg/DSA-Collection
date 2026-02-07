@@ -36,7 +36,13 @@ class Solution:
     
     # 29
     def twoSum(self, numbers: List[int], target: int) -> List[int]:
-        pass
+        mp = {}
+        for i, n in enumerate(numbers):
+            diff = target - n
+            if diff in mp:
+                return [mp[diff], i+1]
+            mp[n] = i+1
+        return []
     
     # 30
     def threeSum(self, nums: List[int]) -> List[List[int]]:

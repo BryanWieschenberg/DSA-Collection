@@ -8,11 +8,18 @@ class Solution:
 
     # 242
     def hammingWeight(self, n: int) -> int:
-        pass
+        res = 0
+        while n:
+            n &= n-1
+            res += 1
+        return res
 
     # 243
     def countBits(self, n: int) -> List[int]:
-        pass
+        dp = [0] * (n+1)
+        for i in range(n+1):
+            dp[i] = dp[i >> 1] + (i & 1)
+        return dp
 
     # 244
     def addBinary(self, a: str, b: str) -> str:
@@ -20,16 +27,29 @@ class Solution:
 
     # 245
     def reverseBits(self, n: int) -> int:
-        pass
+        res = 0
+        for _ in range(32):
+            res = (res << 1) | (n & 1)
+            n >>= 1
+        return res
 
     # 246
     def missingNumber(self, nums: List[int]) -> int:
-        pass
+        xor = len(nums)
+        for i, n in enumerate(nums):
+            xor ^= i ^ n
+        return xor
 
     # 247
     def getSum(self, a: int, b: int) -> int:
-        pass
-
+        MASK = 0xffffffff
+        MAX_INT = 0x7fffffff
+        while b != 0:
+            carry = (a & b) << 1
+            a = (a ^ b) & MASK
+            b = carry & MASK
+        return a if a <= MAX_INT else ~(a ^ MASK)
+    
     # 248
     def reverse(self, x: int) -> int:
         pass

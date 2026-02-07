@@ -152,8 +152,23 @@ class Solution:
             
     # 17
     def isValidSudoku(self, board: List[List[str]]) -> bool:
-        pass
-    
+        for r in range(len(board)):
+            rows, cols, subs = set(), set(), set()
+            for c in range(len(board[r])):
+                row = board[r][c]
+                col = board[c][r]
+                sub = board[r // 3 * 3 + c // 3][r % 3 * 3 + c % 3]
+                if (
+                    row in rows or
+                    col in cols or
+                    sub in subs
+                ):
+                    return False
+                if row != '.': rows.add(row)
+                if col != '.': cols.add(col)
+                if sub != '.': subs.add(sub)
+        return True
+        
     # 18
     def longestConsecutive(self, nums: List[int]) -> int:
         numsSet = set(nums)

@@ -24,32 +24,45 @@ class Solution:
         for i in range(len(matrix)):
             for j in range(i+1, len(matrix[0])):
                 matrix[i][j], matrix[j][i] = matrix[j][i], matrix[i][j]
-        for i in range(len(matrix)): # 90 deg rot, reverse rows
+        for i in range(len(matrix)):
             matrix[i].reverse()
-        # for j in range(len(matrix)): # -90 deg rot, reverse cols
-        #     for i in range(len(matrix) // 2):
-        #         matrix[i][j], matrix[-i-1][j] = matrix[-i-1][j], matrix[i][j]
         return matrix
 
     # 233
     def spiralOrder(self, matrix: List[List[int]]) -> List[int]:
         res = []
-        dirs = ((0,1),(1,0),(0,-1),(-1,0))
-        steps = [len(matrix[0]), len(matrix)-1]
-        r, c, d = 0, -1, 0
-        while steps[d & 1]:
-            for _ in range(steps[d & 1]):
-                r += dirs[d][0]
-                c += dirs[d][1]
-                res.append(matrix[r][c])
-            steps[d & 1] -= 1
-            d += 1
-            d %= 4
+        l, r, t, b = 0, len(matrix[0]), 0, len(matrix)
+        while l < r and t < b:
+            for i in range(l, r):
+                res.append(matrix[t][i])
+            t += 1
+            for i in range(t, b):
+                res.append(matrix[i][r-1])
+            r -= 1
+            if not (l < r and t < b):
+                break
+            for i in range(r-1, l-1, -1):
+                res.append(matrix[b-1][i])
+            b -= 1
+            for i in range(b-1, t-1, -1):
+                res.append(matrix[i][l])
+            l += 1
         return res
     
     # 234
     def setZeroes(self, matrix: List[List[int]]) -> None:
-        pass
+        R, C = len(matrix), len(matrix[0])
+        rows, cols = [False] * R, [False] * C
+        for r in range(R):
+            for c in range(C):
+                if matrix[r][c] == 0:
+                    rows[r] = True
+                    cols[c] = True
+        for r in range(R):
+            for c in range(C):
+                if rows[r] or cols[c]:
+                    matrix[r][c] = 0
+        return matrix
 
     # 235
     def isHappy(self, n: int) -> bool:
