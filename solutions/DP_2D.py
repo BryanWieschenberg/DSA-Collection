@@ -4,7 +4,11 @@ from typing import List
 class Solution:
     # 191
     def uniquePaths(self, m: int, n: int) -> int:
-        pass
+        dp = [1] * n
+        for _ in range(1, m):
+            for c in range(1, n):
+                dp[c] += dp[c-1]
+        return dp[-1]
 
     # 192
     def uniquePathsWithObstacles(self, obstacleGrid: List[List[int]]) -> int:
@@ -16,7 +20,17 @@ class Solution:
 
     # 194
     def longestCommonSubsequence(self, text1: str, text2: str) -> int:
-        pass
+        R, C = len(text1), len(text2)
+        prev = [0] * (C+1)
+        for i in range(1, R+1):
+            curr = [0] * (C+1)
+            for j in range(1, C+1):
+                if text1[i-1] == text2[j-1]:
+                    curr[j] = prev[j-1] + 1
+                else:
+                    curr[j] = max(prev[j], curr[j-1])
+            prev = curr
+        return prev[-1]
 
     # 195
     def lastStoneWeightII(self, stones: List[int]) -> int:

@@ -52,6 +52,9 @@ class Tester:
                 return f"{x[:3]}...{x[-3:]}"
             return x
 
+        if isinstance(x, list) and x and all(isinstance(item, Interval) for item in x):
+            return self.hv.print(x, verbose=False)
+
         if isinstance(x, list):
             if not x:
                 return "[]"
@@ -70,9 +73,6 @@ class Tester:
         elif isinstance(x, Node):
             return self.hg.print(x, verbose=False)
         elif isinstance(x, Interval):
-            return self.hv.print(x, verbose=False)
-
-        if isinstance(x, list) and x and all(isinstance(item, Interval) for item in x):
             return self.hv.print(x, verbose=False)
 
         return str(x)
@@ -676,19 +676,18 @@ class IntervalHelper:
 
         out = []
         for it in intervals:
-            out.append(f"({it.start},{it.end})")
+            out.append((it.start, it.end))
 
-        out = ",".join(out)
         if verbose: print(out)
         if len(out) > MAX_LEN:
-            return f"v[\"{str(out[:HEAD])[:-1]}, ..., {str(out[-TAIL:])[1:]}(len={len(out)})\"]"
-        return f"v[\"{out}\"]"
+            return f"v{str(out[:HEAD])[:-1]}, ..., {str(out[-TAIL:])[1:]}(len={len(out)})"
+        return f"v{str(out)}"
 
 class API:
     @staticmethod
     def guess(n: int, pick: int) -> int:
         if n < pick: return 1
-        elif n > pick: return -1
+        if n > pick: return -1
         return 0
 
 shuffled_size = 1*10**6

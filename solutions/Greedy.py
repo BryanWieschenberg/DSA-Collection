@@ -8,7 +8,11 @@ class Solution:
 
     # 208
     def maxSubArray(self, nums: List[int]) -> int:
-        pass
+        res, curr = nums[0], 0
+        for n in nums:
+            curr = max(curr, 0) + n
+            res = max(res, curr)
+        return res
 
     # 209
     def maxSubarraySumCircular(self, nums: List[int]) -> int:
@@ -20,8 +24,12 @@ class Solution:
 
     # 211
     def canJump(self, nums: List[int]) -> bool:
-        pass
-
+        goal = len(nums)-1
+        for i in range(len(nums)-2, -1, -1):
+            if i + nums[i] >= goal:
+                goal = i
+        return goal == 0
+    
     # 212
     def jump(self, nums: List[int]) -> int:
         pass
