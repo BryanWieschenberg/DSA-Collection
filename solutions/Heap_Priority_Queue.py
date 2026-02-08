@@ -1,6 +1,6 @@
 from sys import path; from os import path as ospath; path.append(ospath.dirname(ospath.dirname(__file__)))
 from typing import List
-import heapq
+from heapq import *
 
 class Solution:
     # 110
@@ -67,10 +67,10 @@ class Solution:
             self.high = [] # min heap
 
         def addNum(self, num: int) -> None:
-            heapq.heappush(self.low, -num)
-            heapq.heappush(self.high, -heapq.heappop(self.low))
+            heappush(self.low, -num)
+            heappush(self.high, -heappop(self.low))
             if len(self.high) > len(self.low):
-                heapq.heappush(self.low, -heapq.heappop(self.high))
+                heappush(self.low, -heappop(self.high))
 
         def findMedian(self) -> float:
             if len(self.low) > len(self.high):

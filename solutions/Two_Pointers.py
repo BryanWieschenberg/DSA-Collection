@@ -54,7 +54,8 @@ class Solution:
             while l < r:
                 while l > i+1 and nums[l] == nums[l-1]: l += 1
                 while r < len(nums)-1 and nums[r] == nums[r+1]: r -= 1
-                if l >= r: break
+                if l >= r:
+                    break
                 if nums[i] + nums[l] + nums[r] < 0:
                     l += 1
                 elif nums[i] + nums[l] + nums[r] > 0:
@@ -75,14 +76,17 @@ class Solution:
     
     # 33
     def maxArea(self, heights: List[int]) -> int:
+        def getHeight(l, r):
+            return (r-l) * min(heights[l], heights[r])
+        
         l, r = 0, len(heights)-1
-        res = 0
+        res = getHeight(l, r)
         while l < r:
-            res = max(res, min(heights[l], heights[r]) * (r-l))
             if heights[l] < heights[r]:
                 l += 1
             else:
                 r -= 1
+            res = max(res, getHeight(l, r))
         return res
         
     # 34
@@ -91,7 +95,19 @@ class Solution:
         
     # 35
     def trap(self, height: List[int]) -> int:
-        pass
-        
+        highL, highR = height[0], height[-1]
+        res = 0
+        l, r = 0, len(height)-1
+        while l < r:
+            if highL < highR:
+                l += 1
+                highL = max(highL, height[l])
+                res += highL - height[l]
+            else:
+                r -= 1
+                highR = max(highR, height[r])
+                res += highR - height[r]
+        return res
+     
 if __name__ == "__main__":
     s = Solution()

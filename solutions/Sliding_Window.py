@@ -1,6 +1,6 @@
 from sys import path; from os import path as ospath; path.append(ospath.dirname(ospath.dirname(__file__)))
 from typing import List
-from collections import defaultdict
+from collections import defaultdict, deque
 
 class Solution:
     # 36
@@ -43,8 +43,32 @@ class Solution:
     
     # 40
     def checkInclusion(self, s1: str, s2: str) -> bool:
-        pass
-        
+        req, obt = [0] * 26, [0] * 26
+        reqCt = obtCt = l = 0
+        for c in s1:
+            ch = ord(c) - ord('a')
+            if req[ch] == 0:
+                reqCt += 1
+            req[ord(c) - ord('a')] += 1
+        for r in range(len(s2)):
+            chR = ord(s2[r]) - ord('a')
+            obt[chR] += 1
+            if obt[chR] == req[chR]:
+                obtCt += 1
+            elif obt[chR] == req[chR]+1:
+                obtCt -= 1
+            if r >= len(s1):
+                chL = ord(s2[l]) - ord('a')
+                if obt[chL] == req[chL]:
+                    obtCt -= 1
+                elif obt[chL] == req[chL]+1:
+                    obtCt += 1
+                obt[chL] -= 1
+                l += 1
+            if r - l + 1 == len(s1) and obtCt == reqCt:
+                return True
+        return False
+            
     # 41
     def minSubArrayLen(self, target: int, nums: List[int]) -> int:
         pass
@@ -56,30 +80,41 @@ class Solution:
     # 43
     def minWindow(self, s: str, t: str) -> str:
         sCt, tCt = [0] * 128, [0] * 128
-        res, matching, required, l = "", 0, 0, 0
-        for i in range(len(t)):
-            if tCt[ord(t[i])] == 0:
-                required += 1
-            tCt[ord(t[i])] += 1
-            
+        l = req = obt = 0
+        res = ""
+        for c in t:
+            ch = ord(c)
+            if tCt[ch] == 0:
+                req += 1
+            tCt[ch] += 1
         for r in range(len(s)):
-            rc = ord(s[r])
-            sCt[rc] += 1
-            if tCt[rc] > 0 and sCt[rc] == tCt[rc]:
-                matching += 1
-            while matching == required:
-                if not res or r - l + 1 < len(res):
+            cR = ord(s[r])
+            sCt[cR] += 1
+            if sCt[cR] == tCt[cR]:
+                obt += 1
+            while req == obt:
+                if not res or len(res) > (r - l + 1):
                     res = s[l : r+1]
-                lc = ord(s[l])
-                if tCt[lc] > 0 and sCt[lc] == tCt[lc]:
-                    matching -= 1
-                sCt[lc] -= 1
+                cL = ord(s[l])
+                sCt[cL] -= 1
+                if sCt[cL] < tCt[cL]:
+                    obt -= 1
                 l += 1
         return res
         
     # 44
     def maxSlidingWindow(self, nums: List[int], k: int) -> List[int]:
-        pass
-        
+        res = [0] * (len(nums)-k+1)
+        q = deque()
+        for r in range(len(nums)):
+            while q and nums[q[-1]] <= nums[r]:
+                q.pop()
+            q.append(r)
+            if r >= k - 1:
+                while q and q[0] <= r - k:
+                    q.popleft()
+                res[r-k+1] = nums[q[0]]
+        return res
+            
 if __name__ == "__main__":
     s = Solution()

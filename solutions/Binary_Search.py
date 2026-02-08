@@ -1,6 +1,7 @@
 from sys import path; from os import path as ospath; path.append(ospath.dirname(ospath.dirname(__file__)))
 from typing import List
 from Helper import API
+from bisect import *
 
 class Solution:
     # 59
