@@ -37,21 +37,41 @@ class Solution:
         
     # 92
     def diameterOfBinaryTree(self, root: Optional[TreeNode]) -> int:
-        pass
+        def dfs(node):
+            if not node:
+                return 0
+            nonlocal res
+            l = dfs(node.left)
+            r = dfs(node.right)
+            res = max(res, l + r)
+            return 1 + max(l, r)
+        res = 0
+        dfs(root)
+        return res
 
     # 93
     def isBalanced(self, root: Optional[TreeNode]) -> bool:
-        pass
+        def dfs(node):
+            if not node:
+                return 0
+            l = dfs(node.left)
+            if l == -1:
+                return -1
+            r = dfs(node.right)
+            if r == -1:
+                return -1
+            if abs(l - r) > 1:
+                return -1
+            return 1 + max(l, r)
+        return dfs(root) != -1
 
     # 94
     def isSameTree(self, p: Optional[TreeNode], q: Optional[TreeNode]) -> bool:
-        def dfs(p, q):
-            if not (p or q):
-                return True
-            if p and q and p.val == q.val:
-                return dfs(p.left, q.left) and dfs(p.right, q.right)
-            return False
-        return dfs(p, q)
+        if not (p or q):
+            return True
+        if p and q and p.val == q.val:
+            return self.isSameTree(p.left, q.left) and self.isSameTree(p.right, q.right)
+        return False
     
     # 95
     def isSubtree(self, root: Optional[TreeNode], subRoot: Optional[TreeNode]) -> bool:
@@ -62,14 +82,13 @@ class Solution:
                 return isSameTree(p.left, q.left) and isSameTree(p.right, q.right)
             return False
         
-        def dfs(root, subRoot):
-            if not root:
-                return False
-            if isSameTree(root, subRoot):
-                return True
-            return dfs(root.left, subRoot) or dfs(root.right, subRoot)
-
-        return dfs(root, subRoot)
+        if not (root or subRoot):
+            return True
+        if not root:
+            return False
+        if isSameTree(root, subRoot):
+            return True
+        return self.isSubtree(root.left, subRoot) or self.isSubtree(root.right, subRoot)
     
     # 96
     def lowestCommonAncestor(self, root: TreeNode, p: TreeNode, q: TreeNode) -> TreeNode:
@@ -89,19 +108,21 @@ class Solution:
     
     # 99
     def levelOrder(self, root: Optional[TreeNode]) -> List[List[int]]:
-        res = []
+        if not root:
+            return []
         q = deque([root])
+        res = []
         while q:
             qLen = len(q)
             lvl = []
             for _ in range(qLen):
                 node = q.popleft()
-                if node:
-                    lvl.append(node.val)
+                if node.left:
                     q.append(node.left)
+                if node.right:
                     q.append(node.right)
-            if lvl:
-                res.append(lvl)
+                lvl.append(node.val)
+            res.append(lvl)
         return res
     
     # 100

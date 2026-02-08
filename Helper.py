@@ -278,18 +278,16 @@ class TreeHelper:
 
         nodes = [TreeNode(v) if v is not None else None for v in values]
 
+        cld_index = 1
         for i in range(len(values)):
             node = nodes[i]
-            if node is None:
-                continue
-
-            li = 2 * i + 1
-            ri = 2 * i + 2
-
-            if li < len(values):
-                node.left = nodes[li]
-            if ri < len(values):
-                node.right = nodes[ri]
+            if node is not None:
+                if cld_index < len(values):
+                    node.left = nodes[cld_index]
+                cld_index += 1
+                if cld_index < len(values):
+                    node.right = nodes[cld_index]
+                cld_index += 1
 
         return nodes[0]
 

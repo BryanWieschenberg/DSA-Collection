@@ -618,7 +618,7 @@ TESTS = [
     # 93
     lambda: t.test(Trees().isBalanced, [
         (( ht.to([1,2,3,None,None,4]) ), True ),
-        (( ht.to([1,2,3,None,None,4,None,5]) ),  ),
+        (( ht.to([1,2,3,None,None,4,None,5]) ), False ),
         (( ht.to([]) ), True ),
     ]),
     # 94

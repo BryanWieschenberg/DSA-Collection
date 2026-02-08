@@ -1,13 +1,29 @@
 from sys import path; from os import path as ospath; path.append(ospath.dirname(ospath.dirname(__file__)))
 from typing import List
+from collections import defaultdict
 from Helper import API
 from bisect import *
+from math import ceil
 
 class Solution:
     # 59
     def search(self, nums: List[int], target: int) -> int:
-        pass
-    
+        l, r = 0, len(nums)-1
+        while l <= r:
+            m = l + (r - l) // 2
+            if nums[m] < target:
+                l = m + 1
+            elif nums[m] > target:
+                r = m - 1
+            else:
+                return m
+        return -1
+        # SOLUTION 2:
+        i = bisect_left(nums, target)
+        if i < len(nums) and nums[i] == target:
+            return i
+        return -1
+        
     # 60
     def searchInsert(self, nums: List[int], target: int) -> int:
         pass
@@ -22,12 +38,32 @@ class Solution:
     
     # 63
     def searchMatrix(self, matrix: List[List[int]], target: int) -> bool:
-        pass
+        R, C = len(matrix), len(matrix[0])
+        l, r = 0, (R*C)-1
+        while l <= r:
+            m = l + (r - l) // 2
+            if matrix[m // C][m % C] < target:
+                l = m + 1
+            elif matrix[m // C][m % C] > target:
+                r = m - 1
+            else:
+                return True
+        return False
     
     # 64
     def minEatingSpeed(self, piles: List[int], h: int) -> int:
-        pass
-    
+        l, r = 1, max(piles)
+        while l < r:
+            m = l + (r - l) // 2
+            hrs = 0
+            for p in piles:
+                hrs += ceil(p / m)
+            if hrs > h:
+                l = m + 1
+            else:
+                r = m
+        return l
+        
     # 65
     def shipWithinDays(self, weights: List[int], days: int) -> int:
         pass
@@ -37,7 +73,7 @@ class Solution:
         l, r = 0, len(nums)-1
         while l < r:
             m = l + (r - l) // 2
-            if nums[m] >= nums[r]:
+            if nums[m] > nums[r]:
                 l = m + 1
             else:
                 r = m
@@ -70,13 +106,23 @@ class Solution:
     # 69
     class TimeMap:
         def __init__(self):
-            pass
+            self.mp = defaultdict(list)
 
         def set(self, key: str, value: str, timestamp: int) -> None:
-            pass
+            self.mp[key].append((value, timestamp))
 
         def get(self, key: str, timestamp: int) -> str:
-            pass
+            if key not in self.mp or timestamp < self.mp[key][0][1]:
+                return ""
+            pairs = self.mp[key]
+            l, r = 0, len(pairs)
+            while l < r:
+                m = l + (r - l) // 2
+                if pairs[m][1] <= timestamp:
+                    l = m + 1
+                else:
+                    r = m
+            return pairs[l-1][0]
         
     # 70
     def splitArray(self, nums: List[int], k: int) -> int:
@@ -84,8 +130,28 @@ class Solution:
     
     # 71
     def findMedianSortedArrays(self, nums1: List[int], nums2: List[int]) -> float:
-        pass
-    
+        A, B = nums1, nums2
+        if len(A) > len(B):
+            A, B = B, A
+        l, r = 0, len(A)-1
+        total = len(A) + len(B)
+        half = total // 2
+        while True:
+            i = l + (r - l) // 2
+            j = half - i - 2
+            Aleft = A[i] if i >= 0 else float('-inf')
+            Aright = A[i+1] if i+1 < len(A) else float('inf')
+            Bleft = B[j] if j >= 0 else float('-inf')
+            Bright = B[j+1] if j+1 < len(B) else float('inf')
+            if Aleft <= Bright and Bleft <= Aright:
+                if total % 2 == 1:
+                    return min(Aright, Bright)
+                return (max(Aleft, Bleft) + min(Aright, Bright)) / 2
+            elif Aright < Bleft:
+                l = i + 1
+            else:
+                r = i - 1
+                    
     # 72
     def findInMountainArray(self, mountainArr: List[int], target: int) -> int:
         pass

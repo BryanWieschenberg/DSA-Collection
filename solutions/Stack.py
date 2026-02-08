@@ -165,8 +165,6 @@ class Solution:
                 start = idx
             st.append((start, h))
         return res
-    
-    # Input: heights = [7,1,7,2,2,4]
-    
+        
 if __name__ == "__main__":
     s = Solution()

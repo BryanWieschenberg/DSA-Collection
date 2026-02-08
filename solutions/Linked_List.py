@@ -1,6 +1,7 @@
 from sys import path; from os import path as ospath; path.append(ospath.dirname(ospath.dirname(__file__)))
 from typing import List, Optional
 from Helper import ListNode, ListHelper
+from heapq import *
 
 class Solution:
     # 73
@@ -51,14 +52,14 @@ class Solution:
             curr.next = prev
             prev = curr
             curr = tmp
-        curr = head
-        tmp1, tmp2 = curr, prev
-        while tmp2:
-            tmp1 = tmp1.next
-            curr.next = tmp2
+        curr, tmp2 = head, prev
+        while prev:
             tmp2 = tmp2.next
+            tmp1 = curr.next
+            curr.next = prev
             curr.next.next = tmp1
             curr = curr.next.next
+            prev = tmp2
         return head
 
     # 77
@@ -78,15 +79,52 @@ class Solution:
         
     # 78
     def copyRandomList(self, head: 'Optional[ListNode]') -> 'Optional[ListNode]':
-        pass
+        if not head:
+            return None
+        new = {}
+        curr = head
+        while curr:
+            new[curr] = ListNode(curr.val)
+            curr = curr.next
+        curr = head
+        while curr:
+            copy = new[curr]
+            copy.next = new.get(curr.next)
+            copy.random = new.get(curr.random)
+            curr = curr.next
+        return new[head]
 
     # 79
     def addTwoNumbers(self, l1: Optional[ListNode], l2: Optional[ListNode]) -> Optional[ListNode]:
-        pass
+        dummy = curr = ListNode()
+        carry = 0
+        while l1 or l2 or carry:
+            total = 0
+            total += carry
+            if l1:
+                total += l1.val
+                l1 = l1.next
+            if l2:
+                total += l2.val
+                l2 = l2.next
+            carry = total // 10
+            curr.next = ListNode(total % 10)
+            curr = curr.next
+        return dummy.next
         
     # 80
     def findDuplicate(self, nums: List[int]) -> int:
-        pass
+        slow = fast = nums[0]
+        while True:
+            slow = nums[slow]
+            fast = nums[nums[fast]]
+            if slow == fast:
+                break
+        slow = nums[0]
+        while slow != fast:
+            slow = nums[slow]
+            fast = nums[fast]
+        return slow
     
     # 81
     def reverseBetween(self, head: Optional[ListNode], left: int, right: int) -> Optional[ListNode]:
@@ -118,13 +156,43 @@ class Solution:
     # 83
     class LRUCache:
         def __init__(self, capacity: int):
-            pass
+            self.cache = {}
+            self.cap = capacity
+            self.left, self.right = ListNode(), ListNode()
+            self.left.next = self.right
+            self.right.prev = self.left
+
+        def _remove(self, node):
+            prev, nxt = node.prev, node.next
+            prev.next = nxt
+            nxt.prev = prev
+        
+        def _insert(self, node):
+            nxt = self.left.next
+            self.left.next = node
+            node.prev = self.left
+            node.next = nxt
+            nxt.prev = node
 
         def get(self, key: int) -> int:
-            pass
+            if key not in self.cache:
+                return -1
+            node = self.cache[key]
+            self._remove(node)
+            self._insert(node)
+            return node.val
 
         def put(self, key: int, value: int) -> None:
-            pass
+            if key in self.cache:
+                self._remove(self.cache[key])
+            node = ListNode(key=key, val=value)
+            self.cache[key] = node
+            self._insert(node)
+
+            if len(self.cache) > self.cap:
+                lru = self.right.prev
+                self._remove(lru)
+                del self.cache[lru.key]
 
     # 84
     class LFUCache:
@@ -139,24 +207,43 @@ class Solution:
 
     # 85
     def mergeKLists(self, lists: List[Optional[ListNode]]) -> Optional[ListNode]:
-        if not lists: return None
-        dummy = l1 = ListNode(next=lists[0])
-        for l2 in lists[1:]:
-            curr, l1 = dummy, dummy.next
-            while l1 and l2:
-                if l1.val <= l2.val:
-                    curr.next = l1
-                    l1 = l1.next
-                else:
-                    curr.next = l2
-                    l2 = l2.next
-                curr = curr.next
-            curr.next = l1 or l2
+        heap = []
+        for i, node in enumerate(lists):
+            if node:
+                heappush(heap, (node.val, i, node))
+        dummy = curr = ListNode()
+        while heap:
+            _, i, node = heappop(heap)
+            curr.next = node
+            curr = curr.next
+            if node.next:
+                heappush(heap, (node.next.val, i, node.next))
         return dummy.next
     
     # 86
     def reverseKGroup(self, head: Optional[ListNode], k: int) -> Optional[ListNode]:
-        pass
+        def getKth(curr, k):
+            while curr and k > 0:
+                curr = curr.next
+                k -= 1
+            return curr
 
+        dummy = groupPrev = ListNode(next=head)
+        while True:
+            kth = getKth(groupPrev, k)
+            if not kth:
+                break
+            groupNext = kth.next
+            curr, prev = groupPrev.next, kth.next
+            while curr != groupNext:
+                tmp = curr.next
+                curr.next = prev
+                prev = curr
+                curr = tmp
+            tmp = groupPrev.next
+            groupPrev.next = kth
+            groupPrev = tmp
+        return dummy.next
+    
 if __name__ == "__main__":
     s = Solution(); hl = ListHelper()
