@@ -127,7 +127,17 @@ class Solution:
     
     # 100
     def rightSideView(self, root: Optional[TreeNode]) -> List[int]:
-        pass
+        def dfs(node, depth):
+            if not node:
+                return 0
+            if depth == len(res):
+                res.append(node.val)
+            dfs(node.right, depth+1)
+            dfs(node.left, depth+1)
+
+        res = []
+        dfs(root, 0)
+        return res
     
     # 101
     def construct(self, grid: List[List[int]]) -> Optional[QuadTreeNode]:
@@ -135,37 +145,46 @@ class Solution:
     
     # 102
     def goodNodes(self, root: TreeNode) -> int:
-        pass
+        def dfs(node, maxVal):
+            if not node:
+                return
+            nonlocal res
+            if maxVal <= node.val:
+                res += 1
+            dfs(node.left, max(maxVal, node.val))
+            dfs(node.right, max(maxVal, node.val))
+            
+        res = 0
+        dfs(root, float('-inf'))
+        return res
 
     # 103
     def isValidBST(self, root: Optional[TreeNode]) -> bool:
-        def dfs(root, l, r):
-            if not root:
+        def dfs(node, l, r):
+            if not node:
                 return True
-            if not (l < root.val < r):
-                return False
-            return (
-                dfs(root.left, l, root.val) and
-                dfs(root.right, root.val, r)
-            )
+            left = dfs(node.left, l, node.val)
+            right = dfs(node.right, node.val, r)
+            if l < node.val < r:
+                return left and right
+            return False
 
         return dfs(root, float('-inf'), float('inf'))
     
     # 104
     def kthSmallest(self, root: Optional[TreeNode], k: int) -> int:
         def dfs(node):
-            if not node:
+            nonlocal k, res
+            if not node or res is not None:
                 return
             dfs(node.left)
-            nonlocal ct, res
-            ct -= 1
-            if ct == 0:
+            k -= 1
+            if k == 0:
                 res = node.val
                 return
             dfs(node.right)
-
-        res = root.val
-        ct = k
+        
+        res = None
         dfs(root)
         return res
     
@@ -196,16 +215,15 @@ class Solution:
 
     # 108
     def maxPathSum(self, root: Optional[TreeNode]) -> int:
-        def dfs(root):
-            if not root:
+        def dfs(node):
+            if not node:
                 return 0
-            leftMax = dfs(root.left)
-            rightMax = dfs(root.right)
-            leftMax = max(leftMax, 0)
-            rightMax = max(rightMax, 0)
             nonlocal res
-            res = max(res, root.val + leftMax + rightMax)
-            return root.val + max(leftMax, rightMax)
+            left = max(dfs(node.left), 0)
+            right = max(dfs(node.right), 0)
+            res = max(res, node.val + left + right)
+            return node.val + max(left, right)
+
         res = root.val
         dfs(root)
         return res
