@@ -49,7 +49,7 @@ class Tester:
     def _fmt(self, x):
         if isinstance(x, str):
             if len(x) > MAX_LEN:
-                return f"{x[:3]}...{x[-3:]}"
+                return f"{x[:3]}...{x[-3:]}(len={len(x)})"
             return x
 
         if isinstance(x, list) and x and all(isinstance(item, Interval) for item in x):

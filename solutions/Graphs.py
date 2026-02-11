@@ -38,11 +38,26 @@ class Solution:
                     res += 1
         return res
 
-
     # 147
     def maxAreaOfIsland(self, grid: List[List[int]]) -> int:
-        pass
+        def dfs(r, c):
+            if r < 0 or r >= R or c < 0 or c >= C or grid[r][c] == 0:
+                return 0
+            grid[r][c] = 0
+            area = 0
+            for dr, dc in dirs:
+                area += dfs(r+dr, c+dc)
+            return 1 + area
 
+        res = 0
+        dirs = ((0,1),(1,0),(0,-1),(-1,0))
+        R, C = len(grid), len(grid[0])
+        for r in range(R):
+            for c in range(C):
+                if grid[r][c] == 1:
+                    res = max(res, dfs(r, c))
+        return res
+    
     # 148
     def cloneGraph(self, node: Optional['Node']) -> Optional['Node']:
         def dfs(node):
@@ -59,54 +74,104 @@ class Solution:
     
     # 149
     def islandsAndTreasure(self, grid: List[List[int]]) -> None:
-        pass
+        R, C = len(grid), len(grid[0])
+        INF = 2**31-1
+        dirs = ((0,1),(1,0),(0,-1),(-1,0))
+        q = deque()
+        for r in range(R):
+            for c in range(C):
+                if grid[r][c] == 0:
+                    q.append((r, c, 1))
+        while q:
+            r, c, dist = q.popleft()
+            for dr, dc in dirs:
+                nr, nc = r+dr, c+dc
+                if nr < 0 or nr >= R or nc < 0 or nc >= C or grid[nr][nc] != INF:
+                    continue
+                grid[nr][nc] = dist
+                q.append((nr, nc, dist+1))
+        return grid
 
     # 150
     def orangesRotting(self, grid: List[List[int]]) -> int:
-        pass
+        res = fresh = 0
+        dirs = ((0,1),(1,0),(0,-1),(-1,0))
+        q = deque()
+        R, C = len(grid), len(grid[0])
+        for r in range(R):
+            for c in range(C):
+                if grid[r][c] == 2:
+                    q.append((r, c))
+                elif grid[r][c] == 1:
+                    fresh += 1
+        while q and fresh > 0:
+            qLen = len(q)
+            res += 1
+            for _ in range(qLen):
+                r, c = q.popleft()
+                for dr, dc in dirs:
+                    nr, nc = r+dr, c+dc
+                    if 0 <= nr < R and 0 <= nc < C and grid[nr][nc] == 1:
+                        fresh -= 1
+                        q.append((nr, nc))
+                        grid[nr][nc] = 2
+        return res if fresh == 0 else -1
 
     # 151
     def pacificAtlantic(self, heights: List[List[int]]) -> List[List[int]]:
-        def bfs(src, ocean):
-            q = deque(src)
+        def bfs(starts):
+            visit = set(starts)
+            q = deque(starts)
             while q:
                 r, c = q.popleft()
-                ocean[r][c] = True
                 for dr, dc in dirs:
                     nr, nc = r + dr, c + dc
                     if (
                         0 <= nr < R and 0 <= nc < C and
-                        not ocean[nr][nc] and
+                        (nr, nc) not in visit and
                         heights[nr][nc] >= heights[r][c]
                     ):
+                        visit.add((nr, nc))
                         q.append((nr, nc))
-
+            return visit
+        
         R, C = len(heights), len(heights[0])
-        dirs = ((0,1),(1,0),(0,-1),(-1,0))
-        pacReachable = [[False] * C for _ in range(R)]
-        atlReachable = [[False] * C for _ in range(R)]
-        pacSrc, atlSrc = [], []
-
-        for r in range(R):
-            pacSrc.append((r, 0))
-            atlSrc.append((r, C-1))
-        for c in range(C):
-            pacSrc.append((0, c))
-            atlSrc.append((R-1, c))
-
-        bfs(pacSrc, pacReachable)
-        bfs(atlSrc, atlReachable)
-
-        res = []
-        for r in range(R):
-            for c in range(C):
-                if pacReachable[r][c] and atlReachable[r][c]:
-                    res.append([r, c])
-        return res
+        dirs = ((1,0), (-1,0), (0,1), (0,-1))
+        pacific_starts = [(0, c) for c in range(C)] + [(r, 0) for r in range(R)]
+        atlantic_starts = [(R-1, c) for c in range(C)] + [(r, C-1) for r in range(R)]
+        pac = bfs(pacific_starts)
+        atl = bfs(atlantic_starts)
+        return [[r, c] for (r, c) in pac & atl]
     
     # 152
     def solve(self, board: List[List[str]]) -> None:
-        pass
+        R, C = len(board), len(board[0])
+        dirs = ((1,0), (-1,0), (0,1), (0,-1))
+        q = deque()
+        for r in range(R):
+            for c in [0, C-1]:
+                if board[r][c] == 'O':
+                    q.append((r, c))
+        for c in range(C):
+            for r in [0, R-1]:
+                if board[r][c] == 'O':
+                    q.append((r, c))
+        while q:
+            r, c = q.popleft()
+            if board[r][c] != 'O':
+                continue
+            board[r][c] = '#'
+            for dr, dc in dirs:
+                nr, nc = r + dr, c + dc
+                if 0 <= nr < R and 0 <= nc < C and board[nr][nc] == 'O':
+                    q.append((nr, nc))
+        for r in range(R):
+            for c in range(C):
+                if board[r][c] == 'O':
+                    board[r][c] = 'X'
+                elif board[r][c] == '#':
+                    board[r][c] = 'O'
+        return board
 
     # 153
     def openLock(self, deadends: List[str], target: str) -> int:
@@ -114,58 +179,61 @@ class Solution:
 
     # 154
     def canFinish(self, numCourses: int, prerequisites: List[List[int]]) -> bool:
-        def dfs(u):
-            if state[u] == 1:
-                return False
-            elif state[u] == 2:
-                return True
-
-            state[u] = 1
+        graph = [[] for _ in range(numCourses)]
+        indeg = [0] * numCourses
+        for u, v in prerequisites:
+            graph[v].append(u)
+            indeg[u] += 1
+        q = deque(i for i in range(numCourses) if indeg[i] == 0)
+        taken = 0
+        while q:
+            u = q.popleft()
+            taken += 1
             for v in graph[u]:
-                if not dfs(v):
-                    return False
-            state[u] = 2
-            return True
-
-        graph = defaultdict(list)
-        for a, b in prerequisites:
-            graph[b].append(a)
-
-        # 0 = unvisited, 1 = visiting, 2 = visited
-        state = [0] * numCourses
-
-        for course in range(numCourses):
-            if not dfs(course):
-                return False
-        return True
+                indeg[v] -= 1
+                if indeg[v] == 0:
+                    q.append(v)
+        return taken == numCourses
     
     # 155
     def findOrder(self, numCourses: int, prerequisites: List[List[int]]) -> List[int]:
-        pass
-
+        graph = [[] for _ in range(numCourses)]
+        indeg = [0] * numCourses
+        for u, v in prerequisites:
+            graph[v].append(u)
+            indeg[u] += 1
+        q = deque(i for i in range(numCourses) if indeg[i] == 0)
+        order = []
+        while q:
+            u = q.popleft()
+            order.append(u)
+            for v in graph[u]:
+                indeg[v] -= 1
+                if indeg[v] == 0:
+                    q.append(v)
+        return order if len(order) == numCourses else []
+    
     # 156
     def validTree(self, n: int, edges: List[List[int]]) -> bool:
-        def dfs(node, par):
-            if node in visit:
+        def find(x):
+            if parent[x] != x:
+                parent[x] = find(parent[x])
+            return parent[x]
+        
+        def union(a, b):
+            ra, rb = find(a), find(b)
+            if ra == rb:
                 return False
-            visit.add(node)
-            for nei in graph[node]:
-                if nei == par:
-                    continue
-                if not dfs(nei, node):
-                    return False
+            parent[rb] = ra
             return True
         
         if len(edges) != n-1:
             return False
-        
-        graph = defaultdict(list)
+        parent = list(range(n))
         for u, v in edges:
-            graph[u].append(v)
-            graph[v].append(u)
-        
-        visit = set()
-        return dfs(0, -1) and len(visit) == n
+            if not union(u, v):
+                return False
+        return True
     
     # 157
     def checkIfPrerequisite(self, numCourses: int, prerequisites: List[List[int]], queries: List[List[int]]) -> List[bool]:
@@ -173,29 +241,62 @@ class Solution:
 
     # 158
     def countComponents(self, n: int, edges: List[List[int]]) -> int:
-        def dfs(node):
-            for nei in graph[node]:
-                if not visit[nei]:
-                    visit[nei] = True
-                    dfs(nei)
-                    
-        graph = defaultdict(list)
-        visit = [False] * n
+        def find(x):
+            if parent[x] != x:
+                parent[x] = find(parent[x])
+            return parent[x]
+        
+        def union(a, b):
+            ar, br = find(a), find(b)
+            if ar == br:
+                return False
+            nonlocal comps
+            comps -= 1
+            if rank[ar] < rank[br]:
+                parent[ar] = br
+            elif rank[ar] > rank[br]:
+                parent[br] = ar
+            else:
+                parent[br] = ar
+                rank[ar] += 1
+            return True
+        
+        parent = list(range(n))
+        rank = [0] * n
+        comps = n
         for u, v in edges:
-            graph[u].append(v)
-            graph[v].append(u)
-        res = 0
-        for node in range(n):
-            if not visit[node]:
-                visit[node] = True
-                dfs(node)
-                res += 1
-        return res
+            union(u, v)
+        return comps
 
     # 159
     def findRedundantConnection(self, edges: List[List[int]]) -> List[int]:
-        pass
-
+        def find(x):
+            if parent[x] != x:
+                parent[x] = find(parent[x])
+            return parent[x]
+        
+        def union(a, b):
+            ar, br = find(a), find(b)
+            if ar == br:
+                return False
+            if rank[ar] < rank[br]:
+                parent[ar] = br
+            elif rank[ar] > rank[br]:
+                parent[br] = ar
+            else:
+                parent[br] = ar
+                rank[ar] += 1
+            return True
+        
+        n = len(edges)+1
+        parent = list(range(n))
+        rank = [0] * n
+        res = []
+        for u, v in edges:
+            if not union(u, v):
+                res = [u, v]
+        return res
+    
     # 160
     def accountsMerge(self, accounts: List[List[str]]) -> List[List[str]]:
         pass
@@ -210,7 +311,34 @@ class Solution:
 
     # 163
     def ladderLength(self, beginWord: str, endWord: str, wordList: List[str]) -> int:
-        pass
+        def toCatchall(word, i):
+            return word[:i] + '*' + word[i+1:]
+        
+        if endWord not in wordList:
+            return 0
+        wordList.append(beginWord)
+        graph = defaultdict(list)
+        for w in wordList:
+            for i in range(len(w)):
+                graph[toCatchall(w, i)].append(w)
+        visit = set([beginWord])
+        q = deque([beginWord])
+        res = 0
+        while q:
+            qLen = len(q)
+            res += 1
+            for i in range(qLen):
+                w = q.popleft()
+                if w == endWord:
+                    return res
+                for j in range(len(w)):
+                    pattern = toCatchall(w, j)
+                    for nei in graph[pattern]:
+                        if nei not in visit:
+                            q.append(nei)
+                            visit.add(nei)
+                    graph[pattern] = []
+        return 0
 
 if __name__ == "__main__":
     s = Solution(); hg = GraphHelper()

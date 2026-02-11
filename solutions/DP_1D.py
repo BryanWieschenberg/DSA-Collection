@@ -16,7 +16,15 @@ class Solution:
     
     # 175
     def minCostClimbingStairs(self, cost: List[int]) -> int:
-        pass
+        prev2 = prev1 = 0
+        for i in range(2, len(cost)+1):
+            curr = min(
+                prev1 + cost[i-1],
+                prev2 + cost[i-2]
+            )
+            prev2 = prev1
+            prev1 = curr
+        return prev1
 
     # 176
     def tribonacci(self, n: int) -> int:
