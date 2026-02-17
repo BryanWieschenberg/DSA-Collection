@@ -5,10 +5,8 @@ from Helper import TrieNode, TrieHelper
 class Solution:
     # 174
     def climbStairs(self, n: int) -> int:
-        if n <= 2:
-            return n
-        prev2, prev1 = 1, 2
-        for _ in range(3, n+1):
+        prev2, prev1 = 1, 1
+        for _ in range(n - 1):
             tmp = prev2
             prev2 = prev1
             prev1 += tmp
@@ -16,15 +14,12 @@ class Solution:
     
     # 175
     def minCostClimbingStairs(self, cost: List[int]) -> int:
-        prev2 = prev1 = 0
-        for i in range(2, len(cost)+1):
-            curr = min(
-                prev1 + cost[i-1],
-                prev2 + cost[i-2]
-            )
+        prev1, prev2 = cost[-1], 0
+        for i in range(len(cost)-2, -1, -1):
+            curr = cost[i] + min(prev1, prev2)
             prev2 = prev1
             prev1 = curr
-        return prev1
+        return min(prev1, prev2)
 
     # 176
     def tribonacci(self, n: int) -> int:
@@ -104,7 +99,6 @@ class Solution:
     def coinChange(self, coins: List[int], amount: int) -> int:
         dp = [amount+1] * (amount+1)
         dp[0] = 0
-
         for i in range(1, amount+1):
             for c in coins:
                 if i - c >= 0:
@@ -140,26 +134,23 @@ class Solution:
                 return curr.end
         
         trie = Trie()
-        for w in wordDict:
-            trie.insert(w)
-        dp = [False] * (len(s)+1)
-        dp[len(s)] = True
         longest = 0
         for w in wordDict:
+            trie.insert(w)
             longest = max(longest, len(w))
+        dp = [False] * (len(s)+1)
+        dp[len(s)] = True
         for i in range(len(s)-1, -1, -1):
-            for j in range(i, min(len(s), i+longest)):
-                if trie.search(s, i, j):
-                    dp[i] = dp[j+1]
-                    if dp[i]:
-                        break
+            rBound = min(len(s), i+longest)
+            for j in range(i, rBound):
+                if trie.search(s, i, j) and dp[j+1]:
+                    dp[i] = True
         return dp[0]
 
     # 185
     def lengthOfLIS(self, nums: List[int]) -> int:
-        n = len(nums)
-        dp = [1] * n
-        for i in range(n):
+        dp = [1] * len(nums)
+        for i in range(len(nums)):
             for j in range(i):
                 if nums[j] < nums[i]:
                     dp[i] = max(dp[i], dp[j]+1)
@@ -167,7 +158,7 @@ class Solution:
         # Alternative solution using greedy + bisect
         # tails = []
         # for x in nums:
-        #     i = bisect.bisect_left(tails, x)
+            # i = bisect.bisect_left(tails, x)
         #     if i == len(tails):
         #         tails.append(x)
         #     else:
@@ -176,8 +167,17 @@ class Solution:
     
     # 186
     def canPartition(self, nums: List[int]) -> bool:
-        pass
-
+        total = sum(nums)
+        if total % 2 == 1:
+            return False
+        half = total // 2
+        dp = [False] * (half+1)
+        dp[0] = True
+        for num in nums:
+            for i in range(half, num-1, -1):
+                dp[i] = dp[i] or dp[i - num]
+        return dp[half]
+    
     # 187
     def combinationSum4(self, nums: List[int], target: int) -> int:
         pass

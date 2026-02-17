@@ -1,9 +1,16 @@
-import pygame
 import numpy as np
 from collections import deque
+from sys import argv, exit
 import heapq
-
+from os import environ
+environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "1"
+import pygame
 pygame.init()
+
+MAZE_HEIGHT = 20
+SLOW_RATIO = 0.1
+WALL_PROB = 0.5
+DELAY_MS = 50
 
 def make_odd(n: int) -> int:
     return n if n % 2 == 1 else n - 1
@@ -668,11 +675,23 @@ class MazeVisualizer:
 
 
 if __name__ == "__main__":
+    if len(argv) > 1 and argv[1] == "help":
+        print("Usage: python find.py <maze_height ?? 20> <slow_ratio ?? 0.1> <wall_prob ?? 0.5> <delay_ms ?? 50>")
+        exit(1)
+    if len(argv) > 1 and argv[1].isdigit():
+        MAZE_HEIGHT = int(argv[1])
+    if len(argv) > 2 and argv[2].isdigit() and 0 <= int(argv[2]) <= 1:
+        SLOW_RATIO = int(argv[2])
+    if len(argv) > 3 and argv[3].isdigit() and 0 <= int(argv[3]) <= 1:
+        WALL_PROB = int(argv[3])
+    if len(argv) > 4 and argv[4].isdigit():
+        DELAY_MS = int(argv[4])
+
     visualizer = MazeVisualizer(
-        maze_height=200,
+        maze_height=MAZE_HEIGHT,
         fullscreen=True,
-        slow_ratio=.1,
-        wall_prob=.99,
+        slow_ratio=SLOW_RATIO,
+        wall_prob=WALL_PROB,
         hud_height=90,
         # map=np.array([
         #     [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
@@ -699,5 +718,5 @@ if __name__ == "__main__":
         # ], dtype=np.uint8)
     )
 
-    visualizer.compare_all(delay=1)
+    visualizer.compare_all(delay=DELAY_MS)
     visualizer.close()

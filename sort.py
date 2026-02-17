@@ -23,7 +23,7 @@ class Speed(Enum):
 if len(sys.argv) < 2:
     print("Usage: python sort.py <algorithm> <size: int ?? 128> <speed: Speed ?? m>")
     print("> Algorithms: selection insertion bubble bogo merge quick radix tim heap bitonic comb cycle pancake cocktail_shaker shell gravity odd_even flash")
-    print("> Speed: xxs, xs, s, m, l, xl, xxl")
+    print("> Speed: xxs, xs, s, m, f, u")
     exit(1)
 
 ALGORITHM = sys.argv[1]
