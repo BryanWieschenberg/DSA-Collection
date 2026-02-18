@@ -1,5 +1,6 @@
 from sys import path; from os import path as ospath; path.append(ospath.dirname(ospath.dirname(__file__)))
 from typing import List
+from collections import Counter
 
 class Solution:
     # 207
@@ -32,28 +33,65 @@ class Solution:
     
     # 212
     def jump(self, nums: List[int]) -> int:
-        pass
-
+        res = l = r = 0
+        while r < len(nums)-1:
+            furthest = 0
+            for i in range(l, r+1):
+                furthest = max(furthest, i + nums[i])
+            l = r + 1
+            r = furthest
+            res += 1
+        return res
+    
     # 213
     def canReach(self, s: str, minJump: int, maxJump: int) -> bool:
         pass
 
     # 214
     def canCompleteCircuit(self, gas: List[int], cost: List[int]) -> int:
-        pass
-
+        for i in range(len(gas)):
+            if sum(gas) < sum(cost):
+                return -1
+            res = curr = 0
+            for i in range(len(gas)):
+                curr += gas[i] - cost[i]
+                if curr < 0:
+                    curr = 0
+                    res = i + 1
+            return res
+        
     # 215
     def isNStraightHand(self, hand: List[int], groupSize: int) -> bool:
-        pass
-    
+        count = Counter(hand)
+        keys = sorted(count.keys())
+        for x in keys:
+            freq = count[x]
+            if freq > 0:
+                for v in range(x, x + groupSize):
+                    if count[v] < freq:
+                        return False
+                    count[v] -= freq
+        return True
+        
     # 216
     def predictPartyVictory(self, senate: str) -> str:
         pass
     
     # 217
     def mergeTriplets(self, triplets: List[List[int]], target: List[int]) -> bool:
-        pass
-
+        X, Y, Z = target
+        gotX = gotY = gotZ = False
+        for a, b, c in triplets:
+            if a > X or b > Y or c > Z:
+                continue
+            if a == X:
+                gotX = True
+            if b == Y:
+                gotY = True
+            if c == Z:
+                gotZ = True
+        return gotX and gotY and gotZ
+    
     # 218
     def partitionLabels(self, s: str) -> List[int]:
         pass
