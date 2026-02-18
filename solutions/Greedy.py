@@ -94,12 +94,34 @@ class Solution:
     
     # 218
     def partitionLabels(self, s: str) -> List[int]:
-        pass
-
+        last = {c: i for i, c in enumerate(s)}
+        res = []
+        start = end = 0
+        for i, c in enumerate(s):
+            end = max(end, last[c])
+            if i == end:
+                res.append(end - start + 1)
+                start = i + 1
+        return res
+    
     # 219
     def checkValidString(self, s: str) -> bool:
-        pass
-
+        lo = hi = 0
+        for c in s:
+            if c == '(':
+                lo += 1
+                hi += 1
+            elif c == ')':
+                lo -= 1
+                hi -= 1
+            else:
+                lo -= 1
+                hi += 1
+            if hi < 0:
+                return False
+            lo = max(lo, 0)
+        return lo == 0
+    
     # 220
     def candy(self, ratings: List[int]) -> int:
         pass
