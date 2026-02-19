@@ -5,8 +5,13 @@ from collections import defaultdict, deque
 class Solution:
     # 36
     def containsNearbyDuplicate(self, nums: List[int], k: int) -> bool:
-        pass
-    
+        mp = {}
+        for i, n in enumerate(nums):
+            if n in mp and mp[n] + k >= i:
+                return True
+            mp[n] = i
+        return False
+        
     # 37
     def maxProfit(self, prices: List[int]) -> int:
         res = l = 0

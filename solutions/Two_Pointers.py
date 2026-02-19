@@ -56,12 +56,27 @@ class Solution:
         
     # 27
     def merge(self, nums1: List[int], m: int, nums2: List[int], n: int) -> List[int]:
-        pass
-    
+        i, j = m-1, n-1
+        for k in range(m+n-1, -1, -1):
+            if j < 0:
+                break
+            if i >= 0 and nums1[i] >= nums2[j]:
+                nums1[k] = nums1[i]
+                i -= 1
+            else:
+                nums1[k] = nums2[j]
+                j -= 1
+        return nums1
+
     # 28
     def removeDuplicates(self, nums: List[int]) -> int:
-        pass
-    
+        k = 1
+        for i in range(1, len(nums)):
+            if nums[i] != nums[k-1]:
+                nums[k] = nums[i]
+                k += 1
+        return k
+        
     # 29
     def twoSum(self, numbers: List[int], target: int) -> List[int]:
         mp = {}
@@ -75,15 +90,12 @@ class Solution:
     # 30
     def threeSum(self, nums: List[int]) -> List[List[int]]:
         nums.sort()
+        n = len(nums)
         res = []
-        for i in range(len(nums)):
+        for i in range(n-2):
             if i > 0 and nums[i] == nums[i-1]: continue
-            l, r = i+1, len(nums)-1
+            l, r = i+1, n-1
             while l < r:
-                while l > i+1 and nums[l] == nums[l-1]: l += 1
-                while r < len(nums)-1 and nums[r] == nums[r+1]: r -= 1
-                if l >= r:
-                    break
                 if nums[i] + nums[l] + nums[r] < 0:
                     l += 1
                 elif nums[i] + nums[l] + nums[r] > 0:
@@ -92,16 +104,48 @@ class Solution:
                     res.append([nums[i], nums[l], nums[r]])
                     l += 1
                     r -= 1
+                    while l < r and nums[l] == nums[l-1]: l += 1
+                    while l < r and nums[r] == nums[r+1]: r -= 1
         return res
-        
+                
     # 31
     def fourSum(self, nums: List[int], target: int) -> List[List[int]]:
-        pass
-    
+        nums.sort()
+        n = len(nums)
+        res = []
+        for i in range(n-3):
+            if i > 0 and nums[i] == nums[i-1]: continue
+            for j in range(i+1, n-2):
+                if j > i+1 and nums[j] == nums[j-1]: continue
+                l, r = j+1, n-1
+                while l < r:
+                    if nums[i] + nums[j] + nums[l] + nums[r] < target:
+                        l += 1
+                    elif nums[i] + nums[j] + nums[l] + nums[r] > target:
+                        r -= 1
+                    else:
+                        res.append([nums[i], nums[j], nums[l], nums[r]])
+                        l += 1
+                        r -= 1
+                        while l < r and nums[l] == nums[l-1]: l += 1
+                        while l < r and nums[r] == nums[r+1]: r -= 1
+        return res
+        
     # 32
     def rotate(self, nums: List[int], k: int) -> List[int]:
-        pass
-    
+        def rev(l, r):
+            while l < r:
+                nums[l], nums[r] = nums[r], nums[l]
+                l += 1
+                r -= 1
+                
+        n = len(nums)
+        k %= n
+        rev(0, n-1)
+        rev(0, k-1)
+        rev(k, n-1)
+        return nums
+
     # 33
     def maxArea(self, heights: List[int]) -> int:
         def getHeight(l, r):
@@ -119,8 +163,16 @@ class Solution:
         
     # 34
     def numRescueBoats(self, people: List[int], limit: int) -> int:
-        pass
-        
+        people.sort()
+        res = 0
+        l, r = 0, len(people)-1
+        while l <= r:
+            if people[l] + people[r] <= limit:
+                l += 1
+            r -= 1
+            res += 1
+        return res
+            
     # 35
     def trap(self, height: List[int]) -> int:
         highL, highR = height[0], height[-1]
