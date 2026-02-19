@@ -4,7 +4,12 @@ from typing import List
 class Solution:
     # 23
     def reverseString(self, s: List[str]) -> List[str]:
-        pass
+        l, r = 0, len(s)-1
+        while l < r:
+            s[l], s[r] = s[r], s[l]
+            l += 1
+            r -= 1
+        return s
     
     # 24
     def isPalindrome(self, s: str) -> bool:
@@ -20,12 +25,35 @@ class Solution:
         
     # 25
     def validPalindrome(self, s: str) -> bool:
-        pass
-    
+        def isPal(l, r):
+            while l < r:
+                if s[l] != s[r]:
+                    return False
+                l += 1
+                r -= 1
+            return True
+        
+        l, r = 0, len(s)-1
+        while l < r:
+            if s[l] != s[r]:
+                return isPal(l+1, r) or isPal(l, r-1)
+            l += 1
+            r -= 1
+        return True
+        
     # 26
     def mergeAlternately(self, word1: str, word2: str) -> str:
-        pass
-    
+        res = []
+        n1, n2 = len(word1), len(word2)
+        for i in range(min(n1, n2)):
+            res.append(word1[i])
+            res.append(word2[i])
+        if n1 > n2:
+            res.extend(word1[n2:])
+        if n2 > n1:
+            res.extend(word2[n1:])
+        return ''.join(res)
+        
     # 27
     def merge(self, nums1: List[int], m: int, nums2: List[int], n: int) -> List[int]:
         pass
