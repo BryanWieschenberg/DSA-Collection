@@ -48,77 +48,89 @@ class Solution:
     
     # 40
     def checkInclusion(self, s1: str, s2: str) -> bool:
-        req, obt = [0] * 26, [0] * 26
-        reqCt = obtCt = l = 0
+        req = obt = 0
+        ct1, ct2 = [0] * 26, [0] * 26
         for c in s1:
             ch = ord(c) - ord('a')
-            if req[ch] == 0:
-                reqCt += 1
-            req[ord(c) - ord('a')] += 1
+            if ct1[ch] == 0: req += 1
+            ct1[ch] += 1
+        l = 0
         for r in range(len(s2)):
             chR = ord(s2[r]) - ord('a')
-            obt[chR] += 1
-            if obt[chR] == req[chR]:
-                obtCt += 1
-            elif obt[chR] == req[chR]+1:
-                obtCt -= 1
+            ct2[chR] += 1
+            if ct2[chR] == ct1[chR]: obt += 1
+            if ct2[chR] == ct1[chR]+1: obt -= 1
             if r >= len(s1):
                 chL = ord(s2[l]) - ord('a')
-                if obt[chL] == req[chL]:
-                    obtCt -= 1
-                elif obt[chL] == req[chL]+1:
-                    obtCt += 1
-                obt[chL] -= 1
+                ct2[chL] -= 1
+                if ct2[chL] == ct1[chL]: obt += 1
+                if ct2[chL] == ct1[chL]-1: obt -= 1
                 l += 1
-            if r - l + 1 == len(s1) and obtCt == reqCt:
+            if req == obt:
                 return True
         return False
             
     # 41
     def minSubArrayLen(self, target: int, nums: List[int]) -> int:
-        pass
-        
+        res = float('inf')
+        curr = l = 0
+        for r in range(len(nums)):
+            curr += nums[r]
+            while l < r and curr - nums[l] >= target:
+                curr -= nums[l]
+                l += 1
+            if curr >= target:
+                res = min(res, r-l+1)
+        return res if res != float('inf') else 0
+                
     # 42
     def findClosestElements(self, arr: List[int], k: int, x: int) -> List[int]:
-        pass
-    
+        l, r = 0, len(arr)-k
+        while l < r:
+            windStart = l + (r - l) // 2
+            if x - arr[windStart] > arr[windStart + k] - x:
+                l = windStart + 1
+            else:
+                r = windStart
+        return arr[l : l+k]
+        
     # 43
     def minWindow(self, s: str, t: str) -> str:
-        sCt, tCt = [0] * 128, [0] * 128
-        l = req = obt = 0
         res = ""
+        req = obt = 0
+        ctS, ctT = [0] * 128, [0] * 128
         for c in t:
             ch = ord(c)
-            if tCt[ch] == 0:
-                req += 1
-            tCt[ch] += 1
+            if ctT[ch] == 0: req += 1
+            ctT[ch] += 1
+        l = 0
         for r in range(len(s)):
-            cR = ord(s[r])
-            sCt[cR] += 1
-            if sCt[cR] == tCt[cR]:
-                obt += 1
+            chR = ord(s[r])
+            ctS[chR] += 1
+            if ctS[chR] == ctT[chR]: obt += 1
             while req == obt:
-                if not res or len(res) > (r - l + 1):
+                if len(res) > r-l+1 or not res:
                     res = s[l : r+1]
-                cL = ord(s[l])
-                sCt[cL] -= 1
-                if sCt[cL] < tCt[cL]:
-                    obt -= 1
+                chL = ord(s[l])
+                ctS[chL] -= 1
+                if ctS[chL] == ctT[chL]-1: obt -= 1
                 l += 1
         return res
-        
+            
     # 44
     def maxSlidingWindow(self, nums: List[int], k: int) -> List[int]:
         res = [0] * (len(nums)-k+1)
         q = deque()
+        l = 0
         for r in range(len(nums)):
             while q and nums[q[-1]] <= nums[r]:
                 q.pop()
             q.append(r)
-            if r >= k - 1:
-                while q and q[0] <= r - k:
-                    q.popleft()
-                res[r-k+1] = nums[q[0]]
+            while l > q[0]:
+                q.popleft()
+            if r >= k-1:
+                res[l] = nums[q[0]]
+                l += 1
         return res
             
 if __name__ == "__main__":
