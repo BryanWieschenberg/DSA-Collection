@@ -1611,9 +1611,9 @@ TESTS = [
     ]),
     # 238
     lambda: t.test(Math_Geometry().myPow, [
-        (( 2.0, 5 ), 32.0 ),
+        (( 2.0, 5 ), 32.00000 ),
         (( 1.1, 10 ), 2.59374 ),
-        (( 2.0, -3 ), 0.125 ),
+        (( 2.0, -3 ), 0.12500 ),
     ]),
     # 239
     lambda: t.test(Math_Geometry().multiply, [

@@ -1,11 +1,15 @@
 from sys import path; from os import path as ospath; path.append(ospath.dirname(ospath.dirname(__file__)))
 from typing import List
+from math import fmod
 
 class Solution:
     # 241
     def singleNumber(self, nums: List[int]) -> int:
-        pass
-
+        res = 0
+        for n in nums:
+            res ^= n
+        return res
+    
     # 242
     def hammingWeight(self, n: int) -> int:
         res = 0
@@ -35,10 +39,10 @@ class Solution:
 
     # 246
     def missingNumber(self, nums: List[int]) -> int:
-        xor = len(nums)
+        res = len(nums)
         for i, n in enumerate(nums):
-            xor ^= i ^ n
-        return xor
+            res ^= i ^ n
+        return res
 
     # 247
     def getSum(self, a: int, b: int) -> int:
@@ -52,7 +56,18 @@ class Solution:
     
     # 248
     def reverse(self, x: int) -> int:
-        pass
+        MIN, MAX = -2**31, 2**31-1
+        MIN_LSD, MAX_LSD = fmod(MIN, 10), fmod(MAX, 10)
+        res = 0
+        while x != 0:
+            digit = int(fmod(x, 10))
+            x = int(x / 10)
+            if res > MAX // 10 or (res == MAX // 10 and digit > MAX_LSD):
+                return 0
+            if res < MIN // 10 or (res == MIN // 10 and digit < MIN_LSD):
+                return 0
+            res = res * 10 + digit
+        return res
 
     # 249
     def rangeBitwiseAnd(self, left: int, right: int) -> int:
