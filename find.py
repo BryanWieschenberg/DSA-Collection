@@ -138,6 +138,23 @@ class MazeVisualizer:
         maze[start] = 0
         maze[goal] = 0
 
+        # Reachability check: everything unreachable from start becomes a wall
+        reachable = set()
+        q = deque([start])
+        reachable.add(start)
+        while q:
+            curr = q.popleft()
+            for dx, dy in [(0, 1), (1, 0), (0, -1), (-1, 0)]:
+                nx, ny = curr[0] + dx, curr[1] + dy
+                if 0 <= nx < rows and 0 <= ny < cols and maze[nx, ny] == 0 and (nx, ny) not in reachable:
+                    reachable.add((nx, ny))
+                    q.append((nx, ny))
+        
+        for i in range(rows):
+            for j in range(cols):
+                if maze[i, j] == 0 and (i, j) not in reachable:
+                    maze[i, j] = 1
+
         np.random.seed(43)
         for i in range(1, rows - 1):
             for j in range(1, cols - 1):

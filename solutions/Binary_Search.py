@@ -26,30 +26,58 @@ class Solution:
         
     # 60
     def searchInsert(self, nums: List[int], target: int) -> int:
-        pass
-    
+        l, r = 0, len(nums)
+        while l < r:
+            m = l + (r - l) // 2
+            if nums[m] < target:
+                l = m + 1
+            else:
+                r = m
+        return l
+        
     # 61
     def guessNumber(self, n: int, pick: int) -> int:
-        pass
-
+        l, r = 1, n
+        while l < r:
+            m = l + (r - l) // 2
+            if API.guess(m, pick) == 1:
+                l = m + 1
+            elif API.guess(m, pick) == -1:
+                r = m - 1
+            else:
+                return m
+        return l
+    
     # 62
     def mySqrt(self, x: int) -> int:
-        pass
-    
+        l, r = 0, x
+        res = 0
+        while l <= r:
+            m = l + (r - l) // 2
+            if m**2 < x:
+                l = m + 1
+                res = m
+            elif m**2 > x:
+                r = m - 1
+            else:
+                return m
+        return res
+        
     # 63
     def searchMatrix(self, matrix: List[List[int]], target: int) -> bool:
         R, C = len(matrix), len(matrix[0])
-        l, r = 0, (R*C)-1
+        l, r = 0, R*C-1
         while l <= r:
             m = l + (r - l) // 2
-            if matrix[m // C][m % C] < target:
+            cell = matrix[m//C][m%C]
+            if cell < target:
                 l = m + 1
-            elif matrix[m // C][m % C] > target:
+            elif cell > target:
                 r = m - 1
             else:
                 return True
         return False
-    
+        
     # 64
     def minEatingSpeed(self, piles: List[int], h: int) -> int:
         l, r = 1, max(piles)
@@ -66,8 +94,27 @@ class Solution:
         
     # 65
     def shipWithinDays(self, weights: List[int], days: int) -> int:
-        pass
-    
+        def canShip(cap, limit):
+            days, curr = 1, 0
+            for w in weights:
+                if curr + w <= cap:
+                    curr += w
+                else:
+                    days += 1
+                    curr = w
+                if days > limit:
+                    return False
+            return True
+
+        l, r = max(weights), sum(weights)
+        while l < r:
+            m = l + (r - l) // 2
+            if not canShip(m, days):
+                l = m + 1
+            else:
+                r = m
+        return l
+        
     # 66
     def findMin(self, nums: List[int]) -> int:
         l, r = 0, len(nums)-1

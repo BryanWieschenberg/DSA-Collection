@@ -1,0 +1,6 @@
+numpy
+moderngl
+moderngl-window
+pygame
+pyglet
+sounddevice
