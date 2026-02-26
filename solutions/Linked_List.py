@@ -1,7 +1,8 @@
 from sys import path; from os import path as ospath; path.append(ospath.dirname(ospath.dirname(__file__)))
-from typing import List, Optional
 from Helper import ListNode, ListHelper
 from heapq import *
+from collections import defaultdict
+from typing import List, Optional
 
 class Solution:
     # 73
@@ -128,30 +129,60 @@ class Solution:
     
     # 81
     def reverseBetween(self, head: Optional[ListNode], left: int, right: int) -> Optional[ListNode]:
-        pass
-
+        dummy = ListNode(next=head)
+        lPrev, curr = dummy, head
+        for _ in range(left - 1):
+            lPrev, curr = curr, curr.next
+        prev = None
+        for _ in range(right - left + 1):
+            tmp = curr.next
+            curr.next = prev
+            prev = curr
+            curr = tmp
+        lPrev.next.next = curr
+        lPrev.next = prev
+        return dummy.next
+    
     # 82
     class MyCircularQueue:
         def __init__(self, k: int):
-            pass
+            self.space = k
+            self.left = ListNode()
+            self.right = ListNode(prev=self.left)
+            self.left.next = self.right
 
         def enQueue(self, value: int) -> bool:
-            pass
+            if self.isFull():
+                return False
+            node = ListNode(value, self.right, self.right.prev)
+            self.right.prev.next = node
+            self.right.prev = node
+            self.space -= 1
+            return True
 
         def deQueue(self) -> bool:
-            pass
+            if self.isEmpty():
+                return False
+            self.space += 1
+            self.left.next = self.left.next.next
+            self.left.next.prev = self.left
+            return True
 
         def Front(self) -> int:
-            pass
+            if self.isEmpty():
+                return -1
+            return self.left.next.val
 
         def Rear(self) -> int:
-            pass
+            if self.isEmpty():
+                return -1
+            return self.right.prev.val
 
         def isEmpty(self) -> bool:
-            pass
+            return self.left.next == self.right
 
         def isFull(self) -> bool:
-            pass
+            return self.space == 0
 
     # 83
     class LRUCache:
@@ -196,14 +227,76 @@ class Solution:
 
     # 84
     class LFUCache:
+        class LRUList:
+            def __init__(self):
+                self.left = ListNode()
+                self.right = ListNode(prev=self.left)
+                self.left.next = self.right
+                self.size = 0
+            
+            def insert(self, node):
+                node.next = self.left.next
+                node.prev = self.left
+                self.left.next.prev = node
+                self.left.next = node
+                self.size += 1
+            
+            def remove(self, node):
+                node.prev.next = node.next
+                node.next.prev = node.prev
+                self.size -= 1
+
+            def pop(self):
+                if self.size == 0:
+                    return None
+                lru = self.right.prev
+                self.remove(lru)
+                return lru
+
         def __init__(self, capacity: int):
-            pass
+            self.cache = {}
+            self.freq = defaultdict(self.LRUList)
+            self.cap = capacity
+            self.minFreq = 0
+            self.size = 0
+
+        def _update(self, node):
+            freq = node.freq
+            self.freq[freq].remove(node)
+            if self.freq[freq].size == 0:
+                del self.freq[freq]
+                if self.minFreq == freq:
+                    self.minFreq += 1
+            node.freq += 1
+            self.freq[node.freq].insert(node)
 
         def get(self, key: int) -> int:
-            pass
+            if key not in self.cache:
+                return -1
+            node = self.cache[key]
+            self._update(node)
+            return node.val
 
         def put(self, key: int, value: int) -> None:
-            pass
+            if self.cap == 0:
+                return
+            
+            if key in self.cache:
+                node = self.cache[key]
+                node.val = value
+                self._update(node)
+                return
+            
+            if self.size == self.cap:
+                lru = self.freq[self.minFreq].pop()
+                del self.cache[lru.key]
+                self.size -= 1
+            
+            node = ListNode(key=key, val=value)
+            self.cache[key] = node
+            self.freq[1].insert(node)
+            self.minFreq = 1
+            self.size += 1
 
     # 85
     def mergeKLists(self, lists: List[Optional[ListNode]]) -> Optional[ListNode]:
@@ -234,8 +327,8 @@ class Solution:
             if not kth:
                 break
             groupNext = kth.next
-            curr, prev = groupPrev.next, kth.next
-            while curr != groupNext:
+            curr, prev = groupPrev.next, groupNext
+            for _ in range(k):
                 tmp = curr.next
                 curr.next = prev
                 prev = curr

@@ -6,15 +6,42 @@ from collections import deque
 class Solution:
     # 87
     def inorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
-        pass
+        def dfs(node):
+            if not node:
+                return None
+            dfs(node.left)
+            res.append(node.val)
+            dfs(node.right)
+
+        res = []
+        dfs(root)
+        return res
 
     # 88
     def preorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
-        pass
+        def dfs(node):
+            if not node:
+                return None
+            res.append(node.val)
+            dfs(node.left)
+            dfs(node.right)
+
+        res = []
+        dfs(root)
+        return res
 
     # 89
     def postorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
-        pass
+        def dfs(node):
+            if not node:
+                return None
+            dfs(node.left)
+            dfs(node.right)
+            res.append(node.val)
+
+        res = []
+        dfs(root)
+        return res
 
     # 90
     def invertTree(self, root: Optional[TreeNode]) -> Optional[TreeNode]:
@@ -53,26 +80,21 @@ class Solution:
     def isBalanced(self, root: Optional[TreeNode]) -> bool:
         def dfs(node):
             if not node:
-                return 0
-            l = dfs(node.left)
-            if l == -1:
-                return -1
-            r = dfs(node.right)
-            if r == -1:
-                return -1
-            if abs(l - r) > 1:
-                return -1
-            return 1 + max(l, r)
-        return dfs(root) != -1
+                return (True, 0)
+            lBal, l = dfs(node.left)
+            rBal, r = dfs(node.right)
+            isBalanced = abs(l - r) <= 1 and lBal and rBal
+            return (isBalanced, max(l, r) + 1)
+        return dfs(root)[0]
 
     # 94
     def isSameTree(self, p: Optional[TreeNode], q: Optional[TreeNode]) -> bool:
         if not (p or q):
             return True
-        if p and q and p.val == q.val:
-            return self.isSameTree(p.left, q.left) and self.isSameTree(p.right, q.right)
-        return False
-    
+        if (not p and q) or (p and not q) or p.val != q.val:
+            return False
+        return self.isSameTree(p.left, q.left) and self.isSameTree(p.right, q.right)
+        
     # 95
     def isSubtree(self, root: Optional[TreeNode], subRoot: Optional[TreeNode]) -> bool:
         def isSameTree(p, q):

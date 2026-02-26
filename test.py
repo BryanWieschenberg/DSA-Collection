@@ -19,7 +19,7 @@ from solutions.Bit_Manipulation    import Solution as Bit_Manipulation
 from solutions.Finale              import Solution as Finale
 
 from sys import argv
-from Helper import Tester, ListHelper, TreeHelper, QuadTreeHelper, GraphHelper, IntervalHelper, shuffled, shuffled_size
+from Helper import Tester, ListHelper, TreeHelper, QuadTreeHelper, GraphHelper, IntervalHelper, API, shuffled, shuffled_size
 t = Tester(); hl = ListHelper(); ht = TreeHelper(); hq = QuadTreeHelper(); hg = GraphHelper(); hv = IntervalHelper()
 
 TESTS = [
@@ -481,8 +481,8 @@ TESTS = [
     ]),
     # 72
     lambda: t.test(Binary_Search().findInMountainArray, [
-        (( [2,4,5,2,1], 2 ), 0 ),
-        (( [1,2,3,4,2,1], 6 ), -1 ),
+        (( 2, API.MountainArray([2,4,5,2,1]) ), 0 ),
+        (( 6, API.MountainArray([1,2,3,4,2,1]) ), -1 ),
     ]),
 
     # 🔗 LINKED LIST

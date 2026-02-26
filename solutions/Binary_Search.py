@@ -159,49 +159,103 @@ class Solution:
             self.mp[key].append((value, timestamp))
 
         def get(self, key: str, timestamp: int) -> str:
-            if key not in self.mp or timestamp < self.mp[key][0][1]:
+            possibilities = self.mp[key]
+            if not possibilities or timestamp < possibilities[0][1]:
                 return ""
-            pairs = self.mp[key]
-            l, r = 0, len(pairs)
+            l, r = 0, len(possibilities)
             while l < r:
                 m = l + (r - l) // 2
-                if pairs[m][1] <= timestamp:
+                if possibilities[m][1] <= timestamp:
                     l = m + 1
                 else:
                     r = m
-            return pairs[l-1][0]
-        
+            return possibilities[l-1][0]
+
     # 70
     def splitArray(self, nums: List[int], k: int) -> int:
-        pass
-    
+        def canSplit(m):
+            ct, curr = 1, 0
+            for n in nums:
+                if curr + n <= m:
+                    curr += n
+                else:
+                    ct += 1
+                    curr = n
+                    if ct > k:
+                        return False
+            return True
+
+        l, r = max(nums), sum(nums)
+        while l < r:
+            m = l + (r - l) // 2
+            if canSplit(m):
+                r = m
+            else:
+                l = m + 1
+        return l
+
     # 71
     def findMedianSortedArrays(self, nums1: List[int], nums2: List[int]) -> float:
         A, B = nums1, nums2
-        if len(A) > len(B):
+        if len(nums2) < len(nums1):
             A, B = B, A
-        l, r = 0, len(A)-1
-        total = len(A) + len(B)
+        na, nb = len(A), len(B)
+        total = na + nb
         half = total // 2
+        l, r = 0, na-1
         while True:
             i = l + (r - l) // 2
             j = half - i - 2
-            Aleft = A[i] if i >= 0 else float('-inf')
-            Aright = A[i+1] if i+1 < len(A) else float('inf')
-            Bleft = B[j] if j >= 0 else float('-inf')
-            Bright = B[j+1] if j+1 < len(B) else float('inf')
+
+            Aleft = A[i]    if i >= 0   else float('-inf')
+            Aright = A[i+1] if i+1 < na else float('inf')
+            Bleft = B[j]    if j >= 0   else float('-inf')
+            Bright = B[j+1] if j+1 < nb else float('inf')
+
             if Aleft <= Bright and Bleft <= Aright:
-                if total % 2 == 1:
+                if total % 2:
                     return min(Aright, Bright)
                 return (max(Aleft, Bleft) + min(Aright, Bright)) / 2
-            elif Aright < Bleft:
-                l = i + 1
-            else:
+            elif Aleft > Bright:
                 r = i - 1
-                    
-    # 72
-    def findInMountainArray(self, mountainArr: List[int], target: int) -> int:
-        pass
+            else:
+                l = i + 1
 
+    # 72
+    def findInMountainArray(self, target: int, mountainArr: API.MountainArray) -> int:
+        n = mountainArr.length()
+        l, r = 0, n
+        while l < r:
+            m = l + (r - l) // 2
+            if mountainArr.get(m) < mountainArr.get(m+1):
+                l = m + 1
+            else:
+                r = m
+
+        peak = l
+        l, r = 0, peak
+        while l <= r:
+            m = l + (r - l) // 2
+            val = mountainArr.get(m)
+            if val < target:
+                l = m + 1
+            elif val > target:
+                r = m - 1
+            else:
+                return m
+        
+        l, r = peak+1, n-1
+        while l <= r:
+            m = l + (r - l) // 2
+            val = mountainArr.get(m)
+            if val > target:
+                l = m + 1
+            elif val < target:
+                r = m - 1
+            else:
+                return m
+
+        return -1
+        
 if __name__ == "__main__":
     s = Solution()

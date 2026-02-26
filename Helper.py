@@ -193,13 +193,14 @@ class Tester:
         print("\n".join(lines))
 
 class ListNode:
-    def __init__(self, val=0, next=None, prev=None, key=None, cycle=None, random=None):
+    def __init__(self, val=0, next=None, prev=None, key=None, cycle=None, random=None, freq=1):
         self.val = val
         self.next = next
         self.prev = prev
         self.key = key
         self.cycle = cycle
         self.random = random
+        self.freq = freq
 
 class ListHelper:
     @staticmethod
@@ -687,6 +688,16 @@ class API:
         if n < pick: return 1
         if n > pick: return -1
         return 0
+    
+    class MountainArray:
+        def __init__(self, arr):
+            self.arr = arr
+
+        def get(self, k: int):
+            return self.arr[k]
+
+        def length(self):
+            return len(self.arr)
 
 shuffled_size = 1*10**6
 shuffled = list(range(shuffled_size))
