@@ -1,0 +1,17 @@
+{
+  "scripts": {
+    "dev": "concurrently -n \"WEB,API\" -c \"yellow,blue\" \"pnpm --prefix apps/web dev\" \"cd apps/api && uvicorn main:app --reload --port 8000\"",
+    "build": "concurrently -n \"WEB,API\" -c \"yellow,blue\" \"pnpm --prefix apps/web build\"",
+    "start": "concurrently -n \"WEB,API\" -c \"yellow,blue\" \"pnpm --prefix apps/web start\" \"cd apps/api && gunicorn -w 4 -k uvicorn.workers.UvicornWorker app.main:app --bind 0.0.0.0:8000",
+    "lint": "concurrently -n \"WEB,API\" -c \"yellow,blue\" \"pnpm --prefix apps/web lint\" \"ruff check apps/api\"",
+    "format": "concurrently -n \"WEB,API\" -c \"yellow,blue\" \"pnpm --prefix apps/web format\" \"ruff format apps/api\"",
+    "lines": "cloc . --exclude-dir=preprocessing,jobgen,dist,node_modules,.ruff_cache,__pycache__ --include-ext=ts,tsx,py --exclude-ext=d.ts,gen.ts",
+    "lines:large": "cloc . --exclude-dir=preprocessing,jobgen,dist,node_modules,.ruff_cache,__pycache__ --include-ext=ts,tsx,py --exclude-ext=d.ts,gen.ts --by-file --csv | awk -F, '$5 >= 500 {print $2, $5}'",
+    "tree": "tree -I preprocessing -I jobgen -I node_modules -I dist -I node_modules -I public -I .ruff_cache -I __pycache__",
+    "gitleaks": "gitleaks detect --source .",
+    "api-install": "python -m pip install -r apps/api/requirements.txt"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}

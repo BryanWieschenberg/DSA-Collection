@@ -1,0 +1,147 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --color-surface-900: #0a0a0f;
+  --color-surface-800: #0f0f18;
+  --color-surface-700: #151520;
+  --color-surface-600: #1a1a2e;
+  --color-surface-500: #22223a;
+  --color-surface-400: #2a2a45;
+
+  --color-border: #2a2a45;
+  --color-border-bright: #3a3a5c;
+
+  --color-text-primary: #e8e8f0;
+  --color-text-secondary: #9595b0;
+  --color-text-muted: #6a6a85;
+
+  --color-accent: #7c5cfc;
+  --color-accent-bright: #9b7eff;
+  --color-accent-glow: rgba(124, 92, 252, 0.15);
+
+  --color-green: #4ade80;
+  --color-green-dim: rgba(74, 222, 128, 0.12);
+  --color-yellow: #facc15;
+  --color-yellow-dim: rgba(250, 204, 21, 0.12);
+  --color-red: #f87171;
+  --color-red-dim: rgba(248, 113, 113, 0.12);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-surface-400) transparent;
+}
+
+body {
+  font-family: var(--font-sans);
+  color: var(--color-text-primary);
+  background: var(--color-surface-900);
+  overflow: hidden;
+}
+
+/* CodeMirror overrides for seamless integration */
+.cm-editor {
+  height: 100% !important;
+  font-family: var(--font-mono) !important;
+  font-size: 14px !important;
+  background: transparent !important;
+}
+
+.cm-editor .cm-scroller {
+  font-family: var(--font-mono) !important;
+  line-height: 1.6 !important;
+}
+
+.cm-editor .cm-gutters {
+  background: transparent !important;
+  border-right: 1px solid var(--color-border) !important;
+  color: var(--color-text-muted) !important;
+}
+
+.cm-editor .cm-activeLineGutter {
+  background: var(--color-accent-glow) !important;
+  color: var(--color-accent-bright) !important;
+}
+
+.cm-editor .cm-activeLine {
+  background: rgba(124, 92, 252, 0.04) !important;
+}
+
+.cm-editor .cm-cursor {
+  border-left-color: var(--color-accent-bright) !important;
+}
+
+.cm-editor .cm-selectionBackground {
+  background: rgba(124, 92, 252, 0.2) !important;
+}
+
+.cm-editor.cm-focused .cm-selectionBackground {
+  background: rgba(124, 92, 252, 0.25) !important;
+}
+
+.cm-tooltip-autocomplete {
+  background: var(--color-surface-700) !important;
+  border: 1px solid var(--color-border-bright) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5) !important;
+  overflow: hidden !important;
+}
+
+.cm-tooltip-autocomplete ul li {
+  padding: 4px 12px !important;
+  color: var(--color-text-primary) !important;
+}
+
+.cm-tooltip-autocomplete ul li[aria-selected] {
+  background: var(--color-accent-glow) !important;
+  color: var(--color-accent-bright) !important;
+}
+
+/* Resizer handle */
+.resizer {
+  position: relative;
+  z-index: 10;
+  flex-shrink: 0;
+}
+
+.resizer::after {
+  content: "";
+  position: absolute;
+  border-radius: 999px;
+  background: var(--color-border);
+  transition: background 0.2s;
+}
+
+.resizer:hover::after,
+.resizer:active::after {
+  background: var(--color-accent);
+}
+
+.resizer-horizontal {
+  cursor: col-resize;
+  width: 5px;
+}
+
+.resizer-horizontal::after {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 3px;
+  height: 40px;
+}
+
+.resizer-vertical {
+  cursor: row-resize;
+  height: 5px;
+}
+
+.resizer-vertical::after {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  height: 3px;
+  width: 40px;
+}
