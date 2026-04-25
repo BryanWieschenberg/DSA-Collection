@@ -1,0 +1,83 @@
+from sys import path; from os import path as ospath; path.append(ospath.dirname(ospath.dirname(ospath.dirname(__file__))))
+from typing import List
+from math import fmod
+
+
+class Solution:
+    # 47
+    def singleNumber(self, nums: List[int]) -> int:
+        res = 0
+        for n in nums:
+            res ^= n
+        return res
+    
+    # 48
+    def hammingWeight(self, n: int) -> int:
+        res = 0
+        while n:
+            n &= n-1
+            res += 1
+        return res
+
+    # 49
+    def countBits(self, n: int) -> List[int]:
+        dp = [0] * (n+1)
+        for i in range(n+1):
+            dp[i] = dp[i >> 1] + (i & 1)
+        return dp
+
+    # 50
+    def addBinary(self, a: str, b: str) -> str:
+        pass
+
+    # 51
+    def reverseBits(self, n: int) -> int:
+        res = 0
+        for _ in range(32):
+            res = (res << 1) | (n & 1)
+            n >>= 1
+        return res
+
+    # 52
+    def missingNumber(self, nums: List[int]) -> int:
+        res = len(nums)
+        for i, n in enumerate(nums):
+            res ^= i ^ n
+        return res
+
+    # 53
+    def getSum(self, a: int, b: int) -> int:
+        MASK = 0xffffffff
+        MAX_INT = 0x7fffffff
+        while b != 0:
+            carry = (a & b) << 1
+            a = (a ^ b) & MASK
+            b = carry & MASK
+        return a if a <= MAX_INT else ~(a ^ MASK)
+    
+    # 54
+    def reverse(self, x: int) -> int:
+        MIN, MAX = -2**31, 2**31-1
+        MIN_LSD, MAX_LSD = fmod(MIN, 10), fmod(MAX, 10)
+        res = 0
+        while x != 0:
+            digit = int(fmod(x, 10))
+            x = int(x / 10)
+            if res > MAX // 10 or (res == MAX // 10 and digit > MAX_LSD):
+                return 0
+            if res < MIN // 10 or (res == MIN // 10 and digit < MIN_LSD):
+                return 0
+            res = res * 10 + digit
+        return res
+
+    # 55
+    def rangeBitwiseAnd(self, left: int, right: int) -> int:
+        pass
+
+    # 56
+    def minEnd(self, n: int, x: int) -> int:
+        pass
+
+
+if __name__ == "__main__":
+    s = Solution()
