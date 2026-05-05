@@ -1,7 +1,9 @@
 from sys import path; from os import path as ospath; path.append(ospath.dirname(ospath.dirname(ospath.dirname(__file__))))
 from typing import List
 from collections import defaultdict, Counter
-from Helper import ListNode, ListHelper
+from Helper import ListNode, ListHelper, RNG
+
+global_rng = RNG(id(object()))
 
 
 class Solution:
@@ -12,25 +14,40 @@ class Solution:
     # 2
     class DynamicArray:
         def __init__(self, capacity: int):
-            pass
+            self.cap = capacity
+            self.size = 0
+            self.arr = [-1] * self.cap
 
         def get(self, i: int) -> int:
-            pass
+            return self.arr[i]
 
         def set(self, i: int, n: int) -> None:
-            pass
+            self.arr[i] = n
 
         def pushback(self, n: int) -> None:
-            pass
+            if self.getSize() == self.getCapacity():
+                self.resize()
+            self.arr[self.size] = n
+            self.size += 1
 
         def popback(self) -> int:
-            pass    
+            val = self.arr[self.size-1]
+            self.arr[self.size-1] = -1
+            self.size -= 1
+            return val
 
         def resize(self) -> None:
-            pass
+            self.cap *= 2
+            new = [-1] * self.cap
+            for i in range(self.cap // 2):
+                new[i] = self.arr[i]
+            self.arr = new
 
         def getSize(self) -> int:
-            pass
+            return self.size
+        
+        def getCapacity(self) -> int:
+            return self.cap
 
     # 3
     def hasDuplicate(self, nums: List[int]) -> bool:
@@ -189,48 +206,182 @@ class Solution:
     
     # 14
     class MySortingAlgorithms:
+        def bogo_sort(self, nums: List[int]) -> List[int]:
+            def isSorted(nums):
+                for i in range(1, len(nums)):
+                    if nums[i-1] > nums[i]:
+                        return False
+                return True
+
+            def shuffle(nums):
+                for i in range(len(nums)-1, 0, -1):
+                    j = global_rng.randint(0, i)
+                    nums[i], nums[j] = nums[j], nums[i]
+
+            while True:
+                if isSorted(nums):
+                    return nums
+                shuffle(nums)
+
         def bubble_sort(self, nums: List[int]) -> List[int]:
-            pass
+            n = len(nums)
+            for i in range(n):
+                for j in range(0, n-i-1):
+                    if nums[j] > nums[j+1]:
+                        nums[j], nums[j+1] = nums[j+1], nums[j]
+            return nums
 
         def selection_sort(self, nums: List[int]) -> List[int]:
-            pass
+            n = len(nums)
+            for i in range(n):
+                minVal = nums[i]
+                minPos = i
+                for j in range(i+1, n):
+                    if nums[j] < minVal:
+                        minVal = nums[j]
+                        minPos = j
+                nums[i], nums[minPos] = nums[minPos], nums[i]
+            return nums
 
         def insertion_sort(self, nums: List[int]) -> List[int]:
-            pass
+            n = len(nums)
+            for i in range(1, n):
+                key = nums[i]
+                j = i-1
+                while j >= 0 and nums[j] > key:
+                    nums[j+1] = nums[j]
+                    j -= 1
+                nums[j+1] = key
+            return nums
 
         def merge_sort(self, nums: List[int]) -> List[int]:
-            pass
+            def combine(l, m, r):
+                for k in range(l, r+1):
+                    aux[k] = nums[k]
+                i, j = l, m+1
+                for k in range(l, r+1):
+                    if i > m:
+                        nums[k] = aux[j]
+                        j += 1
+                    elif j > r:
+                        nums[k] = aux[i]
+                        i += 1
+                    elif aux[j] < aux[i]:
+                        nums[k] = aux[j]
+                        j += 1
+                    else:
+                        nums[k] = aux[i]
+                        i += 1
+
+            def merge(l, r):
+                if l < r:
+                    m = l + (r - l) // 2
+                    merge(l, m)
+                    merge(m+1, r)
+                    combine(l, m, r)
+
+            aux = [0] * len(nums)
+            merge(0, len(nums)-1)
+            return nums
 
         def quick_sort(self, nums: List[int]) -> List[int]:
             def partition(l, r):
-                pivot = nums[l + (r - l) // 2]
-                while l <= r:
-                    while nums[l] < pivot: l += 1
-                    while nums[r] > pivot: r -= 1
-                    if l <= r:
-                        nums[l], nums[r] = nums[r], nums[l]
-                        l += 1
-                        r -= 1
-                return l, r
+                pivot = nums[r]
+                i = l-1
+                for j in range(l, r):
+                    if nums[j] <= pivot:
+                        i += 1
+                        nums[i], nums[j] = nums[j], nums[i]
+                nums[i+1], nums[r] = nums[r], nums[i+1]
+                return i+1
 
             def quicksort(l, r):
-                if l >= r:
-                    return []
-                i, j = partition(l, r)
-                quicksort(l, j)
-                quicksort(i, r)
+                if l < r:
+                    random_idx = global_rng.randint(l, r)
+                    nums[random_idx], nums[r] = nums[r], nums[random_idx]
+                    pivot_idx = partition(l, r)
+                    quicksort(l, pivot_idx-1)
+                    quicksort(pivot_idx+1, r)
 
             quicksort(0, len(nums)-1)
             return nums
 
-        def counting_sort(self, nums: List[int]) -> List[int]:
-            pass
+        def heap_sort(self, nums: List[int]) -> List[int]:
+            def sift_down(n, i):
+                largest = i
+                l = i*2 + 1
+                r = i*2 + 2
+                if l < n and nums[l] > nums[largest]:
+                    largest = l
+                if r < n and nums[r] > nums[largest]:
+                    largest = r
+                if largest != i:
+                    nums[i], nums[largest] = nums[largest], nums[i]
+                    sift_down(n, largest)
 
-        def bucket_sort(self, nums: List[int]) -> List[int]:
-            pass
+            n = len(nums)
+            for i in range(n // 2 - 1, -1, -1):
+                sift_down(n, i)
+            for i in range(n-1, 0, -1):
+                nums[i], nums[0] = nums[0], nums[i]
+                sift_down(i, 0)
+            return nums
+
+        def counting_sort(self, nums: List[int]) -> List[int]:
+            smallest, largest = min(nums), max(nums)
+            cts = [0] * (largest - smallest + 1)
+            res = [0] * len(nums)
+            for n in nums:
+                cts[n - smallest] += 1
+            for i in range(1, len(cts)):
+                cts[i] += cts[i-1]
+            for i in range(len(nums)-1, -1, -1):
+                val = nums[i]
+                pos = cts[val - smallest] - 1
+                res[pos] = val
+                cts[val - smallest] -= 1
+            return res
+
+        def bucket_sort(self, nums: List[int], bucket_ct: int = 5) -> List[int]:
+            smallest, largest = min(nums), max(nums)
+            if smallest == largest:
+                return nums
+            buckets = [[] for _ in range(bucket_ct)]
+            for n in nums:
+                i = int((n - smallest) / (largest - smallest) * (bucket_ct))
+                if i == bucket_ct:
+                    i -= 1
+                buckets[i].append(n)
+            nums.clear()
+            for bucket in buckets:
+                self.insertion_sort(bucket)
+                nums.extend(bucket)
+            return nums
 
         def radix_sort(self, nums: List[int]) -> List[int]:
-            pass
+            def counting_sort_for_radix(exp):
+                n = len(nums)
+                cts = [0] * 10
+                res = [0] * n
+                for i in range(n):
+                    idx = (nums[i] // exp) % 10
+                    cts[idx] += 1
+                for i in range(1, 10):
+                    cts[i] += cts[i-1]
+                for i in range(n-1, -1, -1):
+                    idx = (nums[i] // exp) % 10
+                    pos = cts[idx] - 1
+                    res[pos] = nums[i]
+                    cts[idx] -= 1
+                for i in range(n):
+                    nums[i] = res[i]
+
+            largest = max(nums)
+            exp = 1
+            while largest // exp > 0:
+                counting_sort_for_radix(exp)
+                exp *= 10
+            return nums
 
     # 15
     def sortColors(self, nums: List[int]) -> List[int]:
@@ -247,12 +398,27 @@ class Solution:
     
     # 16
     def pivotIndex(self, nums: List[int]) -> int:
-        pass
+        lSum = 0
+        total = sum(nums)
+        for i in range(len(nums)):
+            rSum = total - nums[i] - lSum
+            if lSum == rSum:
+                return i
+            lSum += nums[i]
+        return -1
 
     # 17
     def countStudents(self, students: List[int], sandwiches: List[int]) -> int:
-        pass
-
+        res = len(students)
+        cts = Counter(students)
+        for s in sandwiches:
+            if cts[s] > 0:
+                res -= 1
+                cts[s] -= 1
+            else:
+                break
+        return res
+        
     # 18
     def topKFrequent(self, nums: List[int], k: int) -> List[int]:
         freq = Counter(nums)
@@ -291,10 +457,12 @@ class Solution:
     # 20
     class NumArray:
         def __init__(self, nums: List[int]):
-            pass
+            self.sums = [0] * (len(nums)+1)
+            for i in range(len(nums)):
+                self.sums[i+1] = self.sums[i] + nums[i]
 
         def sumRange(self, left: int, right: int) -> int:
-            pass
+            return self.nums[right+1] - self.nums[left]
 
     # 21
     class NumMatrix:

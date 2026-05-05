@@ -7,19 +7,49 @@ from collections import defaultdict
 class Solution:
     # 31
     def convertToTitle(self, columnNumber: int) -> str:
-        pass
+        res = []
+        while columnNumber >= 1:
+            columnNumber -= 1
+            offset = columnNumber % 26
+            char = chr(ord('A') + offset)
+            res.append(char)
+            columnNumber //= 26
+        res.reverse()
+        return ''.join(res)
 
     # 32
     def gcdOfStrings(self, str1: str, str2: str) -> str:
-        pass
+        def gcd(a, b):
+            while b:
+                a, b = b, a % b
+            return a
+
+        if str1 + str2 != str2 + str1:
+            return ""
+        maxLen = gcd(len(str1), len(str2))
+        return str1[:maxLen]
 
     # 33
     def insertGreatestCommonDivisors(self, head: Optional[ListNode]) -> Optional[ListNode]:
-        pass
+        def gcd(a, b):
+            while b:
+                a, b = b, a % b
+            return a
+        
+        curr = head
+        while curr.next:
+            tmp = curr.next
+            curr.next = ListNode(gcd(curr.val, tmp.val), tmp)
+            curr = curr.next.next
+        return head
 
     # 34
     def transpose(self, matrix: List[List[int]]) -> List[List[int]]:
-        pass
+        res = [[0] * len(matrix) for _ in range(len(matrix[0]))]
+        for r in range(len(matrix)):
+            for c in range(len(matrix[r])):
+                res[c][r] = matrix[r][c]
+        return res
 
     # 35
     def rotate(self, matrix: List[List[int]]) -> None:

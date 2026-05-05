@@ -43,56 +43,110 @@ class Solution:
 
     # 137
     def middleNode(self, head: Optional[ListNode]) -> Optional[ListNode]:
-        pass
+        slow, fast = head, head
+        while fast and fast.next:
+            slow = slow.next
+            fast = fast.next.next
+        return slow
 
     # 138
     class LinkedList:
         def __init__(self):
-            pass
+            self.head = ListNode()
+            self.tail = self.head
+            self.length = 0
         
         def get(self, index: int) -> int:
-            pass
+            if index < 0 or index >= self.length:
+                return -1
+            curr = self.head.next
+            for _ in range(index):
+                curr = curr.next
+            return curr.val
 
         def insertHead(self, val: int) -> None:
-            pass
+            self.head.next = ListNode(val, next=self.head.next)
+            if self.length == 0:
+                self.tail = self.head.next
+            self.length += 1
 
         def insertTail(self, val: int) -> None:
-            pass
+            self.tail.next = ListNode(val)
+            self.tail = self.tail.next
+            self.length += 1
 
         def remove(self, index: int) -> bool:
-            pass
+            if index < 0 or index >= self.length:
+                return False
+            curr = self.head
+            for _ in range(index):
+                curr = curr.next
+            curr.next = curr.next.next
+            if index == self.length-1:
+                self.tail = curr
+            self.length -= 1
+            return True
 
         def getValues(self) -> List[int]:
-            pass
+            curr = self.head.next
+            res = []
+            while curr:
+                res.append(curr.val)
+                curr = curr.next
+            return res
 
     # 139
     class MyCircularDeque:
         def __init__(self, k: int):
-            pass
+            self.left = ListNode()
+            self.right = ListNode(prev=self.left)
+            self.left.next = self.right
+            self.length = 0
+            self.cap = k
 
         def insertFront(self, value: int) -> bool:
-            pass
+            if self.length == self.cap:
+                return False
+            new = ListNode(value, next=self.left.next, prev=self.left)
+            new.next.prev = new.prev.next = new
+            self.length += 1
+            return True
 
         def insertLast(self, value: int) -> bool:
-            pass
+            if self.length == self.cap:
+                return False
+            new = ListNode(value, next=self.right, prev=self.right.prev)
+            new.next.prev = new.prev.next = new
+            self.length += 1
+            return True
 
         def deleteFront(self) -> bool:
-            pass
+            if self.length == 0:
+                return False
+            self.left.next = self.left.next.next
+            self.left.next.prev = self.left
+            self.length -= 1
+            return True
 
         def deleteLast(self) -> bool:
-            pass
+            if self.length == 0:
+                return False
+            self.right.prev = self.right.prev.prev
+            self.right.prev.next = self.right
+            self.length -= 1
+            return True
 
         def getFront(self) -> int:
-            pass
+            return self.left.next.val if self.length > 0 else -1
 
         def getRear(self) -> int:
-            pass            
+            return self.right.prev.val if self.length > 0 else -1
 
         def isEmpty(self) -> bool:
-            pass
+            return self.length == 0
 
         def isFull(self) -> bool:
-            pass
+            return self.length == self.cap
 
     # 140
     def reorderList(self, head: Optional[ListNode]) -> Optional[ListNode]:
@@ -135,16 +189,26 @@ class Solution:
     # 142
     class BrowserHistory:
         def __init__(self, homepage: str):
-            pass
+            self.curr = ListNode(homepage)
 
         def visit(self, url: str) -> None:
-            pass
+            self.curr.next = ListNode(url)
+            self.curr.next.prev = self.curr
+            self.curr = self.curr.next
 
         def back(self, steps: int) -> str:
-            pass
+            for _ in range(steps):
+                if not self.curr.prev:
+                    break
+                self.curr = self.curr.prev
+            return self.curr.val
 
         def forward(self, steps: int) -> str:
-            pass
+            for _ in range(steps):
+                if not self.curr.next:
+                    break
+                self.curr = self.curr.next
+            return self.curr.val
 
     # 143
     def copyRandomList(self, head: 'Optional[ListNode]') -> 'Optional[ListNode]':

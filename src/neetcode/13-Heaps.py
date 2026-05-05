@@ -73,19 +73,54 @@ class Solution:
     # 189
     class MinHeap:
         def __init__(self):
-            pass
+            self.h = []
+
+        def _get_parent(self, i):
+            return (i-1) // 2
+        
+        def _get_left_child(self, i):
+            return i*2 + 1
+        
+        def _get_right_child(self, i):
+            return i*2 + 2
+
+        def _sift_up(self, i):
+            par = self._get_parent(i)
+            if i > 0 and self.h[i] < self.h[par]:
+                self.h[i], self.h[par] = self.h[par], self.h[i]
+                self._sift_up(par)
+
+        def _sift_down(self, i):
+            smallest = i
+            l = self._get_left_child(i)
+            r = self._get_right_child(i)
+            if l < len(self.h) and self.h[l] < self.h[smallest]:
+                smallest = l
+            if r < len(self.h) and self.h[r] < self.h[smallest]:
+                smallest = r
+            if smallest != i:
+                self.h[i], self.h[smallest] = self.h[smallest], self.h[i]
+                self._sift_down(smallest)
 
         def push(self, val: int) -> None:
-            pass
+            self.h.append(val)
+            self._sift_up(len(self.h)-1)
 
         def pop(self) -> Optional[int]:
-            pass
+            if not self.h:
+                return None
+            if len(self.h) == 1:
+                return self.h.pop()
+            self.h[0], self.h[len(self.h)-1] = self.h[len(self.h)-1], self.h[0]
+            root = self.h.pop()
+            self._sift_down(0)
+            return root
 
         def peek(self) -> Optional[int]:
-            pass
+            return self.h[0] if self.h else None
 
         def __len__(self) -> int:
-            pass
+            return len(self.h)
 
     # 190
     class Twitter:

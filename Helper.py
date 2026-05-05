@@ -1,12 +1,12 @@
 from __future__ import annotations
-from typing import List, Optional
+from typing import List, Optional, Union
 from collections import deque
 
 
 class ListNode:
     def __init__(
         self,
-        val: int = 0,
+        val: Union[int, str] = 0,
         next: Optional[ListNode] = None,
         prev: Optional[ListNode] = None,
         key: Optional[int] = None,
@@ -348,3 +348,20 @@ class IntervalHelper:
         if verbose:
             print(res_str)
         return res_str
+
+
+class RNG:
+    def __init__(self, seed=id(object())):
+        self.state = seed
+        self.a = 1103515245
+        self.c = 12345
+        self.m = 2**31
+    
+    def _next_raw(self):
+        self.state = (self.a * self.state + self.c) % self.m
+        return self.state
+    
+    def randint(self, min, max):
+        raw = self._next_raw()
+        range_size = max - min + 1
+        return min + (raw % range_size)
