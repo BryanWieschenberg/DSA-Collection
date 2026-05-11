@@ -2,3 +2,4 @@
 *temp*
 *.test*
 *.code-workspace
+node_modules

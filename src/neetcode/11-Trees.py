@@ -79,7 +79,15 @@ class Solution:
 
     # 159
     def hasPathSum(self, root: Optional[TreeNode], targetSum: int) -> bool:
-        pass
+        if not root:
+            return False
+        if not (root.left or root.right):
+            return targetSum == root.val
+        total = targetSum - root.val
+        return (
+            self.hasPathSum(root.left, total) or
+            self.hasPathSum(root.right, total)
+        )
 
     # 160
     def isBalanced(self, root: Optional[TreeNode]) -> bool:
@@ -127,39 +135,108 @@ class Solution:
         
     # 164
     def insertIntoBST(self, root: Optional[TreeNode], val: int) -> Optional[TreeNode]:
-        pass
+        if not root:
+            return TreeNode(val)
+        if val < root.val:
+            root.left = self.insertIntoBST(root.left, val)
+        else:
+            root.right = self.insertIntoBST(root.right, val)
+        return root
     
     # 165
     def deleteNode(self, root: Optional[TreeNode], key: int) -> Optional[TreeNode]:
-        pass
+        if not root:
+            return None
+        if key < root.val:
+            root.left = self.deleteNode(root.left, key)
+        elif key > root.val:
+            root.right = self.deleteNode(root.right, key)
+        else:
+            if not root.left:
+                return root.right
+            elif not root.right:
+                return root.left
+            curr = root.right
+            while curr.left:
+                curr = curr.left
+            root.val = curr.val
+            root.right = self.deleteNode(root.right, curr.val)
+        return root
 
     # 166
     class BinarySearchTree:
         def __init__(self):
-            pass
+            self.root: Optional[TreeNode] = None
 
         def insert(self, val: int) -> None:
-            pass
+            def traverse(node, val):
+                if not node:
+                    return TreeNode(val)
+                if val < node.val:
+                    node.left = traverse(node.left, val)
+                else:
+                    node.right = traverse(node.right, val)
+                return node
+
+            self.root = traverse(self.root, val)
 
         def search(self, val: int) -> bool:
-            pass
+            def traverse(node, val):
+                if not node:
+                    return False
+                if val < node.val:
+                    return traverse(node.left, val)
+                elif val > node.val:
+                    return traverse(node.right, val)
+                else:
+                    return True
+            
+            return traverse(self.root, val)
 
         def delete(self, val: int) -> None:
-            pass
+            def traverse(node, key):
+                if not node:
+                    return None
+                if key < node.val:
+                    node.left = traverse(node.left, key)
+                elif key > node.val:
+                    node.right = traverse(node.right, key)
+                else:
+                    if not node.left:
+                        return node.right
+                    elif not node.right:
+                        return node.left
+                    curr = node.right
+                    while curr.left:
+                        curr = curr.left
+                    node.val = curr.val
+                    node.right = traverse(node.right, curr.val)
+                return node
+            
+            self.root = traverse(self.root, val)
 
         def get_root(self) -> TreeNode:
-            pass
+            return self.root
 
     # 167
     class BSTIterator:
         def __init__(self, root: Optional[TreeNode]):
-            pass
+            self.st = []
+            self._leftmost_inorder(root)
 
+        def _leftmost_inorder(self, root: Optional[TreeNode]) -> None:
+            while root:
+                self.st.append(root)
+                root = root.left
+            
         def next(self) -> int:
-            pass
+            topmost_node = self.st.pop()
+            if topmost_node.right:
+                self._leftmost_inorder(topmost_node.right)
+            return topmost_node.val
 
         def hasNext(self) -> bool:
-            pass
+            return bool(self.st)
 
     # 168
     def levelOrder(self, root: Optional[TreeNode]) -> List[List[int]]:
@@ -196,8 +273,27 @@ class Solution:
     
     # 170
     def construct(self, grid: List[List[int]]) -> Optional[QuadNode]:
-        pass
-    
+        def solve(r, c, n):
+            is_same = True
+            first_val = grid[r][c]
+            for i in range(r, r+n):
+                for j in range(c, c+n):
+                    if grid[i][j] != first_val:
+                        is_same = False
+                        break
+                if not is_same:
+                    break
+            if is_same:
+                return QuadNode(first_val == 1, True)
+            n //= 2
+            tl = solve(r, c, n)
+            tr = solve(r, c+n, n)
+            bl = solve(r+n, c, n)
+            br = solve(r+n, c+n, n)
+            return QuadNode(True, False, tl, tr, bl, br)
+        
+        return solve(0, 0, len(grid))
+
     # 171
     def goodNodes(self, root: TreeNode) -> int:
         def dfs(node, maxVal):

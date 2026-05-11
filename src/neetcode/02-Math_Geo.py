@@ -35,7 +35,7 @@ class Solution:
             while b:
                 a, b = b, a % b
             return a
-        
+
         curr = head
         while curr.next:
             tmp = curr.next
@@ -106,7 +106,7 @@ class Solution:
             return res
 
         slow, fast = n, sumOfSquares(n)
-        while fast != 1 and slow != fast:
+        while slow != fast:
             slow = sumOfSquares(slow)
             fast = sumOfSquares(sumOfSquares(fast))
         return fast == 1
@@ -124,7 +124,17 @@ class Solution:
     
     # 40
     def romanToInt(self, s: str) -> int:
-        pass
+        roman = {
+            "I": 1, "V": 5, "X": 10, "L": 50,
+            "C": 100, "D": 500, "M": 1000
+        }
+        res = 0
+        for i in range(len(s)):
+            if i + 1 < len(s) and roman[s[i]] < roman[s[i + 1]]:
+                res -= roman[s[i]]
+            else:
+                res += roman[s[i]]
+        return res
 
     # 41
     def myPow(self, x: float, n: int) -> float:
