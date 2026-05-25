@@ -1,23 +1,26 @@
 {
-  "name": "dsa",
-  "version": "1.0.0",
-  "description": "",
-  "type": "module",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "packageManager": "pnpm@10.27.0",
-  "dependencies": {
-    "@datastructures-js/deque": "^1.0.8",
-    "@datastructures-js/heap": "^4.3.7",
-    "@datastructures-js/queue": "^4.3.0"
-  },
-  "devDependencies": {
-    "tsx": "^4.21.0",
-    "typescript": "^6.0.3"
-  }
+    "scripts": {
+        "dev:web": "pnpm -C apps/web dev",
+        "dev:api": "./apps/api/.venv/bin/python ./apps/api/main.py",
+        "dev": "concurrently --names \"web,api\" --prefix-colors \"yellow,blue\" \"pnpm dev:web\" \"pnpm dev:api\"",
+        "lint:web": "eslint ./apps/web",
+        "lint:api": "ruff check ./apps/api",
+        "lint": "concurrently --names \"web,api\" --prefix-colors \"yellow,blue\" \"pnpm lint:web\" \"pnpm lint:api\"",
+        "lint:fix:web": "eslint ./apps/web --fix",
+        "lint:fix:api": "ruff check --fix ./apps/api",
+        "lint:fix": "concurrently --names \"web,api\" --prefix-colors \"yellow,blue\" \"pnpm lint:fix:web\" \"pnpm lint:fix:api\"",
+        "format:web": "prettier --check ./apps/web",
+        "format:api": "ruff format --check ./apps/api",
+        "format": "concurrently --names \"web,api\" --prefix-colors \"yellow,blue\" \"pnpm format:web\" \"pnpm format:api\"",
+        "format:write:web": "prettier --write ./apps/web",
+        "format:write:api": "ruff format ./apps/api",
+        "format:write": "concurrently --names \"web,api\" --prefix-colors \"yellow,blue\" \"pnpm format:write:web\" \"pnpm format:write:api\"",
+        "lines": "cloc . --exclude-dir=dist,node_modules,.dist,__pycache__,.venv,public --include-ext=ts,tsx,py --exclude-ext=d.ts,gen.ts",
+        "lines:large": "cloc . --exclude-dir=dist,node_modules,dist,__pycache__,.venv,public --include-ext=ts,tsx,py --exclude-ext=d.ts,gen.ts --by-file --csv | awk -F, '$5 >= 500 {print $2, $5}'",
+        "tree": "tree -I node_modules -I dist -I node_modules -I public -I __pycache__ -I .venv",
+        "gitleaks": "gitleaks detect --source ."
+    },
+    "devDependencies": {
+        "concurrently": "^9.2.1"
+    }
 }

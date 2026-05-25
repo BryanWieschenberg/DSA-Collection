@@ -358,11 +358,25 @@ class Solution:
 
     # 175
     def rob(self, root: Optional[TreeNode]) -> int:
-        pass
+        def dfs(root):
+            if not root:
+                return [0, 0]
+            l = dfs(root.left)
+            r = dfs(root.right)
+            withRoot = root.val + l[1] + r[1]
+            withoutRoot = max(l) + max(r)
+            return [withRoot, withoutRoot]
+        return max(dfs(root))
 
     # 176
     def removeLeafNodes(self, root: Optional[TreeNode], target: int) -> Optional[TreeNode]:
-        pass
+        if not root:
+            return None
+        root.left = self.removeLeafNodes(root.left, target)
+        root.right = self.removeLeafNodes(root.right, target)
+        if not (root.left or root.right) and root.val == target:
+            return None
+        return root
 
     # 177
     def maxPathSum(self, root: Optional[TreeNode]) -> int:

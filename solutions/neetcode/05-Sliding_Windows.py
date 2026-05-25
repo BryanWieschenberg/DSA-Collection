@@ -49,7 +49,15 @@ class Solution:
 
     # 75
     def numOfSubarrays(self, arr: List[int], k: int, threshold: int) -> int:
-        pass
+        curr = l = res = 0
+        for r in range(len(arr)):
+            curr += arr[r]
+            if r-l+1 == k and curr/k >= threshold:
+                res += 1
+            if r-l+1 >= k:
+                curr -= arr[l]
+                l += 1
+        return res
 
     # 76
     def checkInclusion(self, s1: str, s2: str) -> bool:
@@ -102,13 +110,23 @@ class Solution:
     # 79
     class HitCounter:
         def __init__(self):
-            pass
+            self.times = []
+            self.hits = []
 
         def hit(self, timestamp: int) -> None:
-            pass
+            idx = timestamp % 300
+            if self.times[idx] != timestamp:
+                self.times[idx] = timestamp
+                self.hits[idx] = 1
+            else:
+                self.hits[idx] += 1
 
         def getHits(self, timestamp: int) -> int:
-            pass
+            res = 0
+            for i in range(300):
+                if timestamp - self.times[i] < 300:
+                    res += self.hits[i]
+            return res
 
     # 80
     def minWindow(self, s: str, t: str) -> str:

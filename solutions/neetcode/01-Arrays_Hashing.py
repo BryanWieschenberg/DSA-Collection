@@ -592,11 +592,65 @@ class Solution:
             
     # 29
     def shortestPalindrome(self, s: str) -> str:
-        pass
+        prefix = suffix = last_i = 0
+        power = 1
+        base = 29
+        mod = 10**9 + 7
+        for i, c in enumerate(s):
+            char = ord(c) - ord('a') + 1
+            prefix = (prefix * base) % mod
+            prefix = (prefix + char) % mod
+            suffix = (suffix + char * power) % mod
+            power = (power * base) % mod
+            if prefix == suffix:
+                last_i = i
+        suffix = s[last_i + 1:]
+        return suffix[::-1] + s
 
     # 30
     def longestDupSubstring(self, s: str) -> str:
-        pass
+        def check(length: int) -> int:
+            if length == 0:
+                return -1
+            
+            current_hash = 0
+            for i in range(length):
+                current_hash = (current_hash * base + nums[i]) % mod
+                
+            seen = set(current_hash)
+            highest_power = (base ** (length-1)) % mod
+            
+            for start in range(1, len(s) - length + 1):
+                prev_char = nums[start - 1]
+                next_char = nums[start + length - 1]
+                current_hash = (current_hash - prev_char * highest_power) % mod
+                current_hash = (current_hash * base + next_char) % mod
+                
+                if current_hash in seen:
+                    return start
+                seen.add(current_hash)
+                
+            return -1
+
+        nums = [ord(c) - ord('a') for c in s]
+        base = 29
+        mod = 10**9 + 7
+        l, r = 0, len(s)
+        best_start = -1
+        best_len = 0
+
+        while l <= r:
+            m = l + (r - l) // 2
+            start_idx = check(m)
+
+            if start_idx != -1:
+                best_start = start_idx
+                best_len = m
+                l = m + 1
+            else:
+                r = m - 1
+                
+        return s[best_start : best_start + best_len] if best_start != -1 else ""
 
 
 if __name__ == "__main__":

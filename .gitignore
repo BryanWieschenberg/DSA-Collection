@@ -1,5 +1,5 @@
 *__pycache__*
-*temp*
 *.test*
-*.code-workspace
 node_modules
+.venv
+.env*

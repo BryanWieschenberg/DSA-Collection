@@ -2,6 +2,7 @@ from sys import path; from os import path as ospath; path.append(ospath.dirname(
 from typing import List, Optional
 from Helper import ListNode, ListHelper
 from collections import defaultdict
+from math import gcd
 
 
 class Solution:
@@ -172,25 +173,31 @@ class Solution:
     # 43
     class CountSquares:
         def __init__(self):
-            self.ct = defaultdict(int)
-            self.pts = []
+            self.freq = defaultdict(lambda: defaultdict(int))
 
         def add(self, point: List[int]) -> None:
-            self.ct[tuple(point)] += 1
-            self.pts.append(point)
+            x, y = point
+            self.freq[x][y] += 1
 
         def count(self, point: List[int]) -> int:
+            x1, y1 = point
             res = 0
-            px, py = point
-            for x, y in self.pts:
-                if abs(py-y) != abs(px-x) or x == px or y == py:
-                    continue
-                res += self.ct[(x, py)] * self.ct[(px, y)]
+            for y2, x1_y2_ct in self.freq[x1].items():
+                if y1 == y2: continue
+                side_len = abs(y1 - y2)
+                for x2 in [x1 + side_len, x1 - side_len]:
+                    res += (
+                        self.freq[x2][y1] *
+                        self.freq[x2][y2] *
+                        x1_y2_ct # we ignore x1_y1_ct per problem specs
+                    )
             return res
 
     # 44
     def canMeasureWater(self, x: int, y: int, target: int) -> bool:
-        pass
+        if x + y < target:
+            return False
+        return target % gcd(x, y) == 0
 
     # 45
     def nthUglyNumber(self, n: int, a: int, b: int, c: int) -> int:
