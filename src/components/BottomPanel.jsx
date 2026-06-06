@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef } from "react";
+import { driver, preloadPyodide } from "../lib/pyRunner";
+import { getLimits, getHiddenTests } from "../lib/appHelpers";
 
 const getDefaultCases = (problem) => {
     const defaults = (problem.examples || []).map((ex) => ({
@@ -8,7 +10,7 @@ const getDefaultCases = (problem) => {
     return defaults.length > 0 ? defaults : [{ input: "", expected: "" }];
 };
 
-export default function BottomPanel({ activeProblem }) {
+export default function BottomPanel({ activeProblem, code }) {
     const [activeTab, setActiveTab] = useState("testcases");
     const [testCases, setTestCases] = useState(() => getDefaultCases(activeProblem));
     const [activeCase, setActiveCase] = useState(0);
@@ -16,6 +18,14 @@ export default function BottomPanel({ activeProblem }) {
     const [running, setRunning] = useState(false);
     const [hoveredCase, setHoveredCase] = useState(null);
     const [activeResultCase, setActiveResultCase] = useState(0);
+
+    useEffect(() => {
+        preloadPyodide();
+    }, []);
+
+    useEffect(() => {
+        window.dispatchEvent(new CustomEvent("dsa-running", { detail: { running } }));
+    }, [running]);
 
     const simulateRunRef = useRef(null);
     useEffect(() => {
@@ -46,9 +56,7 @@ export default function BottomPanel({ activeProblem }) {
     };
 
     const updateCase = (idx, field, value) => {
-        setTestCases((prev) =>
-            prev.map((tc, i) => (i === idx ? { ...tc, [field]: value } : tc))
-        );
+        setTestCases((prev) => prev.map((tc, i) => (i === idx ? { ...tc, [field]: value } : tc)));
     };
 
     const addCase = () => {
@@ -65,73 +73,65 @@ export default function BottomPanel({ activeProblem }) {
         else if (activeCase > idx) setActiveCase(activeCase - 1);
     };
 
-    const simulateRun = (isSubmit) => {
+    const simulateRun = async (isSubmit) => {
         if (running) return;
         setRunning(true);
         setActiveTab("output");
         setActiveResultCase(0);
 
-        setTimeout(() => {
-            const caseResults = testCases.map((tc, idx) => {
-                const errorRoll = Math.random();
-                if (errorRoll < 0.08) {
-                    return {
-                        caseNum: idx + 1,
-                        input: tc.input,
-                        expected: tc.expected,
-                        status: "RE",
-                        error: "RuntimeError: list index out of range",
-                        stdout: "",
-                        output: null,
-                    };
-                }
-                if (errorRoll < 0.12) {
-                    return {
-                        caseNum: idx + 1,
-                        input: tc.input,
-                        expected: tc.expected,
-                        status: "TLE",
-                        error: "Time Limit Exceeded",
-                        stdout: "",
-                        output: null,
-                    };
-                }
-                if (errorRoll < 0.14) {
-                    return {
-                        caseNum: idx + 1,
-                        input: tc.input,
-                        expected: tc.expected,
-                        status: "MLE",
-                        error: "Memory Limit Exceeded",
-                        stdout: "",
-                        output: null,
-                    };
-                }
-                const passed = Math.random() > 0.3;
-                return {
-                    caseNum: idx + 1,
-                    input: tc.input,
-                    expected: tc.expected,
-                    status: passed ? "AC" : "WA",
-                    error: null,
-                    stdout: "",
-                    output: passed ? tc.expected : "[incorrect output]",
-                };
-            });
+        const isClass = activeProblem.code.trim().startsWith("class");
+        const fnMatch = activeProblem.code.match(/^\s*(\w+)\s*\(/);
+        const functionName = fnMatch ? fnMatch[1] : null;
 
-            setResults({ isSubmit, cases: caseResults });
-            if (isSubmit) {
-                const allAC = caseResults.every((c) => c.status === "AC");
-                if (allAC) {
-                    window.dispatchEvent(
-                        new CustomEvent("dsa-problem-solved", {
-                            detail: { id: activeProblem.id },
-                        })
-                    );
-                }
+        const { timeLimitMs, memLimitMb } = getLimits(activeProblem);
+
+        const cases = testCases.map((tc) => ({
+            input: tc.input,
+            expected: tc.expected,
+            hidden: false,
+        }));
+        if (isSubmit) {
+            for (const ht of getHiddenTests(activeProblem)) {
+                cases.push({ input: ht.input, expected: ht.expected ?? ht.output, hidden: true });
             }
-            setRunning(false);
-        }, 800 + Math.random() * 700);
+        }
+
+        let caseResults;
+        try {
+            caseResults = await driver({
+                userCode: code,
+                functionName,
+                isClass,
+                cases,
+                timeLimitMs,
+                memLimitMb,
+            });
+        } catch (err) {
+            caseResults = testCases.map((tc, idx) => ({
+                caseNum: idx + 1,
+                input: tc.input,
+                expected: tc.expected,
+                status: "RE",
+                error: String(err),
+                stdout: "",
+                output: null,
+            }));
+        }
+
+        setResults({ isSubmit, cases: caseResults });
+        const firstFailedIdx = caseResults.findIndex((c) => c.status !== "AC");
+        setActiveResultCase(firstFailedIdx === -1 ? 0 : firstFailedIdx);
+        if (isSubmit) {
+            const allAC = caseResults.length > 0 && caseResults.every((c) => c.status === "AC");
+            if (allAC) {
+                window.dispatchEvent(
+                    new CustomEvent("dsa-problem-solved", {
+                        detail: { id: activeProblem.id },
+                    }),
+                );
+            }
+        }
+        setRunning(false);
     };
 
     const totalCases = results ? results.cases.length : 0;
@@ -139,12 +139,23 @@ export default function BottomPanel({ activeProblem }) {
     const firstFailed = results ? results.cases.find((c) => c.status !== "AC") : null;
     const allPassed = results && passedCases === totalCases;
 
+    const maxTimeMs = results ? Math.max(0, ...results.cases.map((c) => c.timeMs ?? 0)) : 0;
+    const maxMemMb = results ? Math.max(0, ...results.cases.map((c) => c.memMb ?? 0)) : 0;
+
     const statusColor = (status) => {
         if (status === "AC") return "text-emerald-400";
         if (status === "WA") return "text-rose-400";
         if (status === "TLE") return "text-amber-400";
         if (status === "MLE") return "text-purple-400";
         return "text-rose-400";
+    };
+
+    const statusDot = (status) => {
+        if (status === "AC") return "bg-emerald-400";
+        if (status === "WA") return "bg-rose-400";
+        if (status === "TLE") return "bg-amber-400";
+        if (status === "MLE") return "bg-purple-400";
+        return "bg-rose-400";
     };
 
     const statusLabel = (status) => {
@@ -159,11 +170,36 @@ export default function BottomPanel({ activeProblem }) {
     const renderCaseResult = (r) => (
         <div key={r.caseNum} className="space-y-2 text-sm">
             <div className="flex items-center gap-2">
-                <span className="text-zinc-500 font-medium">Case {r.caseNum}:</span>
+                <span className="text-zinc-500 font-medium">
+                    {r.label || `Case ${r.caseNum}`}:
+                </span>
                 <span className={`font-semibold ${statusColor(r.status)}`}>
                     {statusLabel(r.status)}
                 </span>
+                {(typeof r.timeMs === "number" || typeof r.memMb === "number") && (
+                    <span className="text-zinc-500 text-xs ml-auto font-mono">
+                        {typeof r.timeMs === "number" && `${r.timeMs.toFixed(1)} ms`}
+                        {typeof r.timeMs === "number" && typeof r.memMb === "number" && " · "}
+                        {typeof r.memMb === "number" && `${r.memMb.toFixed(2)} MB`}
+                    </span>
+                )}
             </div>
+            {r.hidden ? (
+                <div className="flex items-center gap-1.5 text-zinc-500 text-xs bg-zinc-800/60 rounded-lg p-2.5">
+                    <svg
+                        className="w-3.5 h-3.5"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                    >
+                        <rect x="3" y="11" width="18" height="11" rx="2" />
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                    </svg>
+                    Hidden test — input and expected output are not shown.
+                </div>
+            ) : (
+                <>
             {r.error && (
                 <div className="bg-rose-950/30 border border-rose-900/40 rounded-lg p-3 font-mono text-xs text-rose-300">
                     {r.error}
@@ -194,14 +230,18 @@ export default function BottomPanel({ activeProblem }) {
             {r.output !== null && (
                 <div>
                     <span className="text-zinc-500 text-xs font-medium">Output</span>
-                    <div className={`rounded-lg p-2 font-mono text-xs mt-1 ${
-                        r.status === "AC"
-                            ? "bg-emerald-950/30 border border-emerald-900/40 text-emerald-300"
-                            : "bg-rose-950/30 border border-rose-900/40 text-rose-300"
-                    }`}>
+                    <div
+                        className={`rounded-lg p-2 font-mono text-xs mt-1 ${
+                            r.status === "AC"
+                                ? "bg-emerald-950/30 border border-emerald-900/40 text-emerald-300"
+                                : "bg-rose-950/30 border border-rose-900/40 text-rose-300"
+                        }`}
+                    >
                         {r.output}
                     </div>
                 </div>
+            )}
+                </>
             )}
         </div>
     );
@@ -236,22 +276,6 @@ export default function BottomPanel({ activeProblem }) {
                         Output
                     </button>
                 </div>
-                <div className="flex items-center gap-2">
-                    <button
-                        onClick={() => window.dispatchEvent(new CustomEvent("trigger-dsa-run", { detail: { isSubmit: false } }))}
-                        disabled={running}
-                        className="px-3 py-1 text-xs font-medium bg-zinc-700 hover:bg-zinc-600 text-zinc-200 rounded transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none"
-                    >
-                        {running ? "Running..." : "Run"}
-                    </button>
-                    <button
-                        onClick={() => window.dispatchEvent(new CustomEvent("trigger-dsa-run", { detail: { isSubmit: true } }))}
-                        disabled={running}
-                        className="px-3 py-1 text-xs font-medium bg-emerald-600 hover:bg-emerald-500 text-white rounded transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none"
-                    >
-                        Submit
-                    </button>
-                </div>
             </div>
 
             <div className="flex-1 min-h-0 overflow-y-auto p-3 panel-scrollbar">
@@ -262,7 +286,7 @@ export default function BottomPanel({ activeProblem }) {
                                 {testCases.map((_, idx) => (
                                     <div
                                         key={idx}
-                                        className="relative"
+                                        className="relative flex"
                                         onMouseEnter={() => setHoveredCase(idx)}
                                         onMouseLeave={() => setHoveredCase(null)}
                                     >
@@ -291,18 +315,24 @@ export default function BottomPanel({ activeProblem }) {
                                 ))}
                                 <button
                                     onClick={addCase}
-                                    className="w-7 h-7 flex items-center justify-center text-sm text-zinc-500 hover:text-zinc-200 hover:bg-zinc-800 rounded transition-colors cursor-pointer focus:outline-none"
-                                    title="Add test case"
+                                    className="w-6 h-6 flex items-center justify-center text-sm text-zinc-500 hover:text-zinc-200 hover:bg-zinc-800 rounded transition-colors cursor-pointer focus:outline-none"
                                 >
                                     +
                                 </button>
                             </div>
                             <button
                                 onClick={resetTestCases}
-                                className="p-1.5 text-zinc-500 hover:text-zinc-300 transition-colors cursor-pointer focus:outline-none"
-                                title="Reset test cases"
+                                className="w-6 h-6 flex items-center justify-center text-zinc-500 hover:text-zinc-300 transition-colors cursor-pointer focus:outline-none"
                             >
-                                <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <svg
+                                    className="w-3.5 h-3.5"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                >
                                     <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
                                     <path d="M3 3v5h5" />
                                 </svg>
@@ -312,20 +342,28 @@ export default function BottomPanel({ activeProblem }) {
                         {testCases[activeCase] && (
                             <div className="space-y-3">
                                 <div>
-                                    <span className="text-zinc-500 text-xs font-medium mb-1 block">Input</span>
+                                    <span className="text-zinc-500 text-xs font-medium mb-1 block">
+                                        Input
+                                    </span>
                                     <textarea
                                         value={testCases[activeCase].input}
-                                        onChange={(e) => updateCase(activeCase, "input", e.target.value)}
+                                        onChange={(e) =>
+                                            updateCase(activeCase, "input", e.target.value)
+                                        }
                                         className="w-full bg-zinc-800/60 border border-zinc-700/40 rounded-lg p-2.5 font-mono text-sm text-zinc-200 resize-none focus:outline-none focus:border-zinc-600"
                                         rows={autoRows(testCases[activeCase].input)}
                                         spellCheck={false}
                                     />
                                 </div>
                                 <div>
-                                    <span className="text-zinc-500 text-xs font-medium mb-1 block">Expected Output</span>
+                                    <span className="text-zinc-500 text-xs font-medium mb-1 block">
+                                        Expected Output
+                                    </span>
                                     <textarea
                                         value={testCases[activeCase].expected}
-                                        onChange={(e) => updateCase(activeCase, "expected", e.target.value)}
+                                        onChange={(e) =>
+                                            updateCase(activeCase, "expected", e.target.value)
+                                        }
                                         className="w-full bg-zinc-800/60 border border-zinc-700/40 rounded-lg p-2.5 font-mono text-sm text-zinc-200 resize-none focus:outline-none focus:border-zinc-600"
                                         rows={autoRows(testCases[activeCase].expected)}
                                         spellCheck={false}
@@ -353,16 +391,40 @@ export default function BottomPanel({ activeProblem }) {
                                 {results.isSubmit ? (
                                     <>
                                         <div className="flex items-center gap-3">
-                                            <span className={`text-lg font-semibold ${allPassed ? "text-emerald-400" : statusColor(firstFailed?.status)}`}>
-                                                {allPassed ? "Accepted" : statusLabel(firstFailed?.status)}
+                                            <span
+                                                className={`text-lg font-semibold ${allPassed ? "text-emerald-400" : statusColor(firstFailed?.status)}`}
+                                            >
+                                                {allPassed
+                                                    ? "Accepted"
+                                                    : statusLabel(firstFailed?.status)}
                                             </span>
                                             <span className="text-zinc-500 text-sm">
                                                 {passedCases}/{totalCases} cases passed
                                             </span>
                                         </div>
                                         {allPassed ? (
-                                            <div className="text-emerald-400/80 text-sm">
-                                                Your solution passed all test cases.
+                                            <div className="space-y-3">
+                                                <div className="text-emerald-400/80 text-sm">
+                                                    Your solution passed all test cases.
+                                                </div>
+                                                <div className="flex items-center gap-3">
+                                                    <div className="flex-1 bg-zinc-800/60 rounded-lg p-3">
+                                                        <div className="text-zinc-500 text-xs font-medium">
+                                                            Time
+                                                        </div>
+                                                        <div className="text-zinc-100 font-mono text-sm mt-0.5">
+                                                            {maxTimeMs.toFixed(1)} ms
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex-1 bg-zinc-800/60 rounded-lg p-3">
+                                                        <div className="text-zinc-500 text-xs font-medium">
+                                                            Memory
+                                                        </div>
+                                                        <div className="text-zinc-100 font-mono text-sm mt-0.5">
+                                                            {maxMemMb.toFixed(2)} MB
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         ) : (
                                             firstFailed && renderCaseResult(firstFailed)
@@ -370,23 +432,28 @@ export default function BottomPanel({ activeProblem }) {
                                     </>
                                 ) : (
                                     <div className="space-y-3">
-                                        <div className="flex items-center gap-1.5 flex-wrap">
-                                            {results.cases.map((r, idx) => (
-                                                <button
-                                                    key={idx}
-                                                    onClick={() => setActiveResultCase(idx)}
-                                                    className={`px-2.5 py-1 text-xs rounded transition-colors cursor-pointer focus:outline-none ${
-                                                        activeResultCase === idx
-                                                            ? "bg-zinc-700 text-zinc-100"
-                                                            : "bg-zinc-800/60 text-zinc-500 hover:text-zinc-300"
-                                                    }`}
-                                                >
-                                                    <span className={`inline-block w-1.5 h-1.5 rounded-full mr-1.5 ${statusColor(r.status).replace("text-", "bg-")}`} />
-                                                    Case {r.caseNum}
-                                                </button>
-                                            ))}
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-1.5 flex-wrap">
+                                                {results.cases.map((r, idx) => (
+                                                    <button
+                                                        key={idx}
+                                                        onClick={() => setActiveResultCase(idx)}
+                                                        className={`px-2.5 py-1 text-xs rounded transition-colors cursor-pointer focus:outline-none ${
+                                                            activeResultCase === idx
+                                                                ? "bg-zinc-700 text-zinc-100"
+                                                                : "bg-zinc-800/60 text-zinc-500 hover:text-zinc-300"
+                                                        }`}
+                                                    >
+                                                        <span
+                                                            className={`inline-block align-middle w-1.5 h-1.5 rounded-full mr-1.5 ${statusDot(r.status)}`}
+                                                        />
+                                                        {r.label || `Case ${r.caseNum}`}
+                                                    </button>
+                                                ))}
+                                            </div>
                                         </div>
-                                        {results.cases[activeResultCase] && renderCaseResult(results.cases[activeResultCase])}
+                                        {results.cases[activeResultCase] &&
+                                            renderCaseResult(results.cases[activeResultCase])}
                                     </div>
                                 )}
                             </div>

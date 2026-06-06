@@ -62,20 +62,38 @@ export default function Navbar({
                         onClick={() => prevProblem && onSelectProblem(prevProblem)}
                         disabled={!prevProblem}
                         className="p-1.5 text-zinc-400 hover:text-zinc-200 disabled:opacity-25 disabled:hover:text-zinc-400 transition-colors cursor-pointer disabled:cursor-not-allowed focus:outline-none"
-                        title="Previous problem"
                     >
-                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                        <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            strokeWidth={2.5}
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M15.75 19.5 8.25 12l7.5-7.5"
+                            />
                         </svg>
                     </button>
                     <button
                         onClick={() => nextProblem && onSelectProblem(nextProblem)}
                         disabled={!nextProblem}
                         className="p-1.5 text-zinc-400 hover:text-zinc-200 disabled:opacity-25 disabled:hover:text-zinc-400 transition-colors cursor-pointer disabled:cursor-not-allowed focus:outline-none"
-                        title="Next problem"
                     >
-                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                        <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            strokeWidth={2.5}
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="m8.25 4.5 7.5 7.5-7.5 7.5"
+                            />
                         </svg>
                     </button>
                 </div>
@@ -109,7 +127,6 @@ export default function Navbar({
                 <button
                     onClick={() => setLives((prev) => (prev > 1 ? prev - 1 : 3))}
                     className="flex items-center gap-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 px-3 py-1.5 rounded-lg text-xs transition-colors border border-zinc-700/50 cursor-pointer focus:outline-none"
-                    title="Click to decrement lives (resets at 0)"
                 >
                     <span className="text-rose-500">
                         {"❤️".repeat(lives) + "🖤".repeat(3 - lives)}
@@ -119,7 +136,6 @@ export default function Navbar({
                 <button
                     onClick={onResetCode}
                     className="flex items-center justify-center bg-zinc-800 hover:bg-zinc-700 hover:text-rose-400 text-zinc-300 p-2 rounded-lg transition-colors border border-zinc-700/50 cursor-pointer focus:outline-none"
-                    title="Reset to default template"
                 >
                     <svg
                         className="w-4 h-4"

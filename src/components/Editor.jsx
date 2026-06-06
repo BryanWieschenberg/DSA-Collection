@@ -21,6 +21,12 @@ export default function Editor({ value, onChange, onMount }) {
                 { open: '"', close: '"' },
                 { open: "'", close: "'" },
             ],
+            onEnterRules: [
+                {
+                    beforeText: /:\s*$/,
+                    action: { indentAction: monaco.languages.IndentAction.Indent },
+                },
+            ],
         });
         monaco.editor.defineTheme("dsa-dark-theme", {
             base: "vs-dark",
@@ -155,6 +161,7 @@ export default function Editor({ value, onChange, onMount }) {
                 lineNumbersMinChars: 3,
                 fontSize: 15,
                 scrollBeyondLastLine: false,
+                padding: { top: 16 },
             }}
         />
     );

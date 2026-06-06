@@ -23,6 +23,7 @@ export const pythonMonarch = {
                         elif: "keyword.control",
                         else: "keyword.control",
                         for: "keyword.control",
+                        in: "keyword.control",
                         while: "keyword.control",
                         break: "keyword.control",
                         continue: "keyword.control",

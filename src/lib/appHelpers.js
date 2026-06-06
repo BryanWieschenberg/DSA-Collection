@@ -24,3 +24,14 @@ export const findProblemById = (id) => {
 };
 
 export const allProblems = problemsData.flatMap((cat) => cat.problems);
+
+export const DEFAULT_TIME_LIMIT_MS = 3000;
+export const DEFAULT_MEMORY_LIMIT_MB = 256;
+
+export const getLimits = (problem) => ({
+    timeLimitMs: problem.timeLimit ?? DEFAULT_TIME_LIMIT_MS,
+    memLimitMb: problem.memoryLimit ?? DEFAULT_MEMORY_LIMIT_MB,
+});
+
+export const getHiddenTests = (problem) =>
+    Array.isArray(problem.hiddenTests) ? problem.hiddenTests : [];
