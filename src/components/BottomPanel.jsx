@@ -1,11 +1,13 @@
 import { useState, useEffect, useRef } from "react";
 import { driver, preloadPyodide } from "../lib/pyRunner";
-import { getLimits, getHiddenTests } from "../lib/appHelpers";
+import { getLimits, getHiddenTests, compactValue, pythonize } from "../lib/appHelpers";
+import SuccessAnimation from "./SuccessAnimation";
+import FailureAnimation from "./FailureAnimation";
 
 const getDefaultCases = (problem) => {
     const defaults = (problem.examples || []).map((ex) => ({
-        input: ex.input,
-        expected: ex.output,
+        input: compactValue(pythonize(ex.input)),
+        expected: compactValue(pythonize(ex.output)),
     }));
     return defaults.length > 0 ? defaults : [{ input: "", expected: "" }];
 };
@@ -18,6 +20,7 @@ export default function BottomPanel({ activeProblem, code }) {
     const [running, setRunning] = useState(false);
     const [hoveredCase, setHoveredCase] = useState(null);
     const [activeResultCase, setActiveResultCase] = useState(0);
+    const [animation, setAnimation] = useState(null);
 
     useEffect(() => {
         preloadPyodide();
@@ -123,6 +126,7 @@ export default function BottomPanel({ activeProblem, code }) {
         setActiveResultCase(firstFailedIdx === -1 ? 0 : firstFailedIdx);
         if (isSubmit) {
             const allAC = caseResults.length > 0 && caseResults.every((c) => c.status === "AC");
+            setAnimation(allAC ? "success" : "failure");
             if (allAC) {
                 window.dispatchEvent(
                     new CustomEvent("dsa-problem-solved", {
@@ -461,6 +465,9 @@ export default function BottomPanel({ activeProblem, code }) {
                     </div>
                 )}
             </div>
+
+            {animation === "success" && <SuccessAnimation onDone={() => setAnimation(null)} />}
+            {animation === "failure" && <FailureAnimation onDone={() => setAnimation(null)} />}
         </div>
     );
 }

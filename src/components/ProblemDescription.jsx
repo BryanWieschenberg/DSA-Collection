@@ -1,96 +1,82 @@
+import { renderMarkdown } from "./RenderMarkdown";
+import { compactValue, pythonize } from "../lib/appHelpers";
+
+const VALUE_TOKEN =
+    /("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|\b(?:true|false|null|True|False|None)\b|-?\d+(?:\.\d+)?)/g;
+
+const highlightValue = (text) => {
+    if (!text) return text;
+    return text.split(VALUE_TOKEN).map((part, i) => {
+        if (!part) return null;
+        const c = part[0];
+        if (c === '"' || c === "'") {
+            return (
+                <span key={i} style={{ color: "#CE9178" }}>
+                    {part}
+                </span>
+            );
+        }
+        if (/^(true|false|null|True|False|None)$/.test(part)) {
+            return (
+                <span key={i} style={{ color: "#569CD6" }}>
+                    {part}
+                </span>
+            );
+        }
+        if (/^-?\d/.test(part)) {
+            return (
+                <span key={i} style={{ color: "#B5CEA8" }}>
+                    {part}
+                </span>
+            );
+        }
+        return part;
+    });
+};
+
 export default function ProblemDescription({ activeProblem }) {
     const { description, examples, constraints } = activeProblem;
 
-    const renderMarkdown = (text) => {
-        if (!text) return "";
-        const lines = text.split("\n");
-        return lines.map((line, lineIdx) => {
-            const parts = line.split("`");
-            const renderedLine = parts.map((part, index) => {
-                if (index % 2 === 1) {
-                    return (
-                        <code
-                            key={index}
-                            className="bg-zinc-800/80 text-zinc-200 px-1 py-0.5 rounded font-mono text-sm border border-zinc-700/40"
-                        >
-                            {part}
-                        </code>
-                    );
-                }
-                const boldParts = part.split("**");
-                return boldParts.map((subPart, subIndex) => {
-                    if (subIndex % 2 === 1) {
-                        return (
-                            <strong key={subIndex} className="font-bold text-zinc-100">
-                                {subPart}
-                            </strong>
-                        );
-                    }
-                    const italicParts = subPart.split("*");
-                    return italicParts.map((item, itemIdx) => {
-                        if (itemIdx % 2 === 1) {
-                            return (
-                                <em key={itemIdx} className="italic text-zinc-400">
-                                    {item}
-                                </em>
-                            );
-                        }
-                        return item;
-                    });
-                });
-            });
-
-            return (
-                <p key={lineIdx} className={lineIdx > 0 ? "mt-3" : ""}>
-                    {renderedLine}
-                </p>
-            );
-        });
-    };
-
     return (
         <div className="w-full h-full bg-zinc-900/30 overflow-y-auto p-4 select-text space-y-6 desc-scrollbar">
-            <div className="text-zinc-300 text-[15px] leading-relaxed whitespace-pre-wrap">
+            <div className="text-zinc-100 text-[15px] leading-relaxed whitespace-pre-wrap">
                 {renderMarkdown(description)}
             </div>
 
             {examples && examples.length > 0 && (
-                <div className="space-y-4">
-                    <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider">
-                        Examples
-                    </h3>
+                <div className="space-y-5">
                     {examples.map((ex, idx) => (
-                        <div
-                            key={idx}
-                            className="bg-zinc-900/40 border border-zinc-800/60 rounded-xl p-4 space-y-2.5"
-                        >
-                            <div className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">
-                                Example {idx + 1}
-                            </div>
-                            <div className="space-y-1.5 font-mono text-sm text-zinc-300">
-                                <div className="flex gap-2">
-                                    <span className="text-zinc-500 font-bold shrink-0 select-none">
-                                        Input:
-                                    </span>
-                                    <span className="text-zinc-200">{ex.input}</span>
-                                </div>
-                                <div className="flex gap-2">
-                                    <span className="text-zinc-500 font-bold shrink-0 select-none">
-                                        Output:
-                                    </span>
-                                    <span className="text-zinc-200">{ex.output}</span>
-                                </div>
-                                {ex.explanation && (
-                                    <div className="flex gap-2 pt-2 border-t border-zinc-800/60 mt-1.5">
-                                        <span className="text-zinc-500 font-bold shrink-0 select-none">
-                                            Explanation:
+                        <div key={idx} className="space-y-2">
+                            <h3 className="text-base font-semibold text-zinc-100">
+                                Example {idx + 1}:
+                            </h3>
+                            <div className="bg-zinc-900/40 border border-zinc-800/60 rounded-xl p-4">
+                                <div className="space-y-1.5 font-mono text-sm text-zinc-300">
+                                    <div className="flex gap-2">
+                                        <span className="shrink-0 select-none">
+                                            <span style={{ color: "#4EC9B0" }}>Input</span>
+                                            <span className="text-zinc-200">:</span>
                                         </span>
-                                        <span className="text-zinc-400 font-sans leading-relaxed">
-                                            {ex.explanation}
+                                        <span className="text-zinc-200">
+                                            {highlightValue(compactValue(pythonize(ex.input)))}
                                         </span>
                                     </div>
-                                )}
+                                    <div className="flex gap-2">
+                                        <span className="shrink-0 select-none">
+                                            <span style={{ color: "#4EC9B0" }}>Output</span>
+                                            <span className="text-zinc-200">:</span>
+                                        </span>
+                                        <span className="text-zinc-200">
+                                            {highlightValue(compactValue(pythonize(ex.output)))}
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
+                            {ex.explanation && (
+                                <div className="text-zinc-100 text-[15px] leading-relaxed whitespace-pre-wrap">
+                                    {renderMarkdown(ex.explanation)}
+                                </div>
+                            )}
                         </div>
                     ))}
                 </div>
@@ -98,13 +84,14 @@ export default function ProblemDescription({ activeProblem }) {
 
             {constraints && constraints.length > 0 && (
                 <div className="space-y-3 pt-2">
-                    <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider">
-                        Constraints
+                    <h3 className="text-base font-semibold text-zinc-100">
+                        Constraints:
                     </h3>
-                    <ul className="list-disc pl-5 space-y-2 text-sm text-zinc-400">
+                    <ul className="space-y-3 pl-4 text-zinc-100 text-[15px] leading-relaxed">
                         {constraints.map((c, idx) => (
-                            <li key={idx} className="leading-relaxed">
-                                {renderMarkdown(c)}
+                            <li key={idx} className="flex gap-3.5">
+                                <span className="select-none shrink-0">•</span>
+                                <div className="flex-1">{renderMarkdown(c)}</div>
                             </li>
                         ))}
                     </ul>

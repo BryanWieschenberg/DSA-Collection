@@ -20,6 +20,20 @@ class __Self:
     pass
 
 def __fmt(v):
+    if v is True:
+        return "True"
+    if v is False:
+        return "False"
+    if v is None:
+        return "None"
+    if isinstance(v, str):
+        return json.dumps(v)
+    if isinstance(v, list):
+        return "[" + ", ".join(__fmt(x) for x in v) + "]"
+    if isinstance(v, tuple):
+        return "(" + ", ".join(__fmt(x) for x in v) + ")"
+    if isinstance(v, dict):
+        return "{" + ", ".join(json.dumps(k) + ": " + __fmt(val) for k, val in v.items()) + "}"
     try:
         return json.dumps(v)
     except Exception:
