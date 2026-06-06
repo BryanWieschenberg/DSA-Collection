@@ -1,0 +1,88 @@
+import { keywords } from "./pyInfo";
+
+export const pythonMonarch = {
+    defaultToken: "",
+    tokenPostfix: ".python",
+    keywords,
+    brackets: [
+        { open: "{", close: "}", token: "delimiter.curly" },
+        { open: "[", close: "]", token: "delimiter.bracket" },
+        { open: "(", close: ")", token: "delimiter.parenthesis" },
+    ],
+    tokenizer: {
+        root: [
+            [/(def)(\s+)([a-zA-Z_]\w*)/, ["keyword", "white", "entity.name.function"]],
+            [/(class)(\s+)([a-zA-Z_]\w*)/, ["keyword", "white", "entity.name.class"]],
+            [/[a-zA-Z_]\w*(?=\()/, "entity.name.function"],
+            [
+                /[a-zA-Z_]\w*/,
+                {
+                    cases: {
+                        return: "keyword.control",
+                        if: "keyword.control",
+                        elif: "keyword.control",
+                        else: "keyword.control",
+                        for: "keyword.control",
+                        while: "keyword.control",
+                        break: "keyword.control",
+                        continue: "keyword.control",
+                        try: "keyword.control",
+                        except: "keyword.control",
+                        finally: "keyword.control",
+                        yield: "keyword.control",
+                        with: "keyword.control",
+                        as: "keyword.control",
+                        raise: "keyword.control",
+                        assert: "keyword.control",
+                        import: "keyword.control",
+                        from: "keyword.control",
+                        pass: "keyword.control",
+
+                        self: "variable.predefined",
+                        True: "constant",
+                        False: "constant",
+                        None: "constant",
+
+                        List: "type",
+                        Dict: "type",
+                        Set: "type",
+                        Tuple: "type",
+                        Optional: "type",
+                        Union: "type",
+                        Any: "type",
+                        Callable: "type",
+                        int: "type",
+                        str: "type",
+                        float: "type",
+                        bool: "type",
+
+                        "@keywords": "keyword",
+                        "@default": "identifier",
+                    },
+                },
+            ],
+            { include: "@whitespace" },
+            [/[{}()[\]]/, "@brackets"],
+            [/[<>!%&^*\-+=|~]/, "operator"],
+            [/\d+/, "number"],
+            [/"([^"\\]|\\.)*$/, "string.invalid"],
+            [/'([^'\\]|\\.)*$/, "string.invalid"],
+            [/"/, "string", "@string_double"],
+            [/'/, "string", "@string_single"],
+        ],
+        whitespace: [
+            [/[ \t\r\n]+/, "white"],
+            [/#.*$/, "comment"],
+        ],
+        string_double: [
+            [/[^\\"]+/, "string"],
+            [/\\./, "string.escape"],
+            [/"/, "string", "@pop"],
+        ],
+        string_single: [
+            [/[^\\']+/, "string"],
+            [/\\./, "string.escape"],
+            [/'/, "string", "@pop"],
+        ],
+    },
+};
