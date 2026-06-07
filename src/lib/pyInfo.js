@@ -86,6 +86,26 @@ export const dsaImports = [
     "gcd",
     // functools
     "lru_cache",
+    // helper
+    "ListNode",
+    "TreeNode",
+    "QuadNode",
+    "TrieNode",
+    "GraphNode",
 ];
 
-export const dsaTypes = ["List", "Dict", "Set", "Tuple", "Optional", "Union", "Any", "Callable"];
+export const dsaTypes = [
+    "List",
+    "Dict",
+    "Set",
+    "Tuple",
+    "Optional",
+    "Union",
+    "Any",
+    "Callable",
+    "ListNode",
+    "TreeNode",
+    "QuadNode",
+    "TrieNode",
+    "GraphNode",
+];

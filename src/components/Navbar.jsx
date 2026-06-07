@@ -8,7 +8,6 @@ export default function Navbar({
     onSelectProblem,
     time,
     timerRunning,
-    setTimerRunning,
     lives,
     isSoftSolveActive,
     dailyScore = 0,

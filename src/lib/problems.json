@@ -4225,7 +4225,7 @@
                 "id": 225,
                 "name": "Clone Graph",
                 "description": "Given the input parameters, implement the function `cloneGraph` to solve the **Clone Graph** problem.",
-                "code": "cloneGraph(self, node: Optional['Node']) -> Optional['Node']",
+                "code": "cloneGraph(self, node: Optional['GraphNode']) -> Optional['GraphNode']",
                 "difficulty": "Medium",
                 "examples": [
                     {

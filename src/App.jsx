@@ -206,6 +206,20 @@ export default function App() {
         setLives(3);
         setTabSwitched(false);
         setTimerRunning(true);
+
+        setCompletedProblems((prev) => {
+            const next = new Set(prev);
+            next.delete(activeProblem.id);
+            localStorage.setItem("dsa-completed-problems", JSON.stringify(Array.from(next)));
+            return next;
+        });
+
+        setSoftSolvedProblems((prev) => {
+            const next = new Set(prev);
+            next.delete(activeProblem.id);
+            localStorage.setItem("dsa-soft-solved-problems", JSON.stringify(Array.from(next)));
+            return next;
+        });
     };
 
     const handleResetProblemCode = (problemId) => {
@@ -215,7 +229,25 @@ export default function App() {
             localStorage.setItem(`dsa-code-${prob.id}`, defaultCode);
             if (activeProblem.id === prob.id) {
                 setCode(defaultCode);
+                setTime(getInitialTime(prob.difficulty));
+                setLives(3);
+                setTabSwitched(false);
+                setTimerRunning(true);
             }
+
+            setCompletedProblems((prev) => {
+                const next = new Set(prev);
+                next.delete(prob.id);
+                localStorage.setItem("dsa-completed-problems", JSON.stringify(Array.from(next)));
+                return next;
+            });
+
+            setSoftSolvedProblems((prev) => {
+                const next = new Set(prev);
+                next.delete(prob.id);
+                localStorage.setItem("dsa-soft-solved-problems", JSON.stringify(Array.from(next)));
+                return next;
+            });
         }
     };
 
@@ -333,6 +365,10 @@ export default function App() {
         setSolveHistory([]);
         setCode(getTemplateCode(activeProblem));
         localStorage.setItem(`dsa-code-${activeProblem.id}`, getTemplateCode(activeProblem));
+        setTime(getInitialTime(activeProblem.difficulty));
+        setLives(3);
+        setTabSwitched(false);
+        setTimerRunning(true);
         window.dispatchEvent(new CustomEvent("dsa-reset-all"));
     };
 

@@ -52,6 +52,7 @@ export default function BottomPanel({ activeProblem, code, isSoftSolveActive }) 
         };
         window.addEventListener("dsa-reset-all", handleResetAll);
         return () => window.removeEventListener("dsa-reset-all", handleResetAll);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const resetTestCases = () => {
@@ -254,6 +255,7 @@ export default function BottomPanel({ activeProblem, code, isSoftSolveActive }) 
                             {r.expected || "—"}
                         </div>
                     </div>
+                    <div className="mt-4 invisible" />
                 </>
             )}
         </div>
@@ -420,21 +422,72 @@ export default function BottomPanel({ activeProblem, code, isSoftSolveActive }) 
                                                 <div className="text-emerald-400/80 text-sm">
                                                     Your solution passed all test cases.
                                                 </div>
-                                                <div className="flex items-center gap-3">
-                                                    <div className="flex-1 bg-zinc-800/60 rounded-lg p-3">
-                                                        <div className="text-zinc-500 text-xs font-medium">
-                                                            Time
+                                                <div className="flex items-center justify-center gap-4">
+                                                    <div className="w-48 flex items-center gap-3 bg-zinc-900/50 border border-zinc-800/50 rounded-xl p-3.5 hover:border-zinc-700/50 transition-all duration-200">
+                                                        <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-zinc-800/40 text-blue-400 shrink-0">
+                                                            <svg
+                                                                className="w-5 h-5"
+                                                                fill="none"
+                                                                viewBox="0 0 24 24"
+                                                                stroke="currentColor"
+                                                                strokeWidth="2"
+                                                            >
+                                                                <path
+                                                                    strokeLinecap="round"
+                                                                    strokeLinejoin="round"
+                                                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                                                                />
+                                                            </svg>
                                                         </div>
-                                                        <div className="text-zinc-100 font-mono text-sm mt-0.5">
-                                                            {maxTimeMs.toFixed(1)} ms
+                                                        <div>
+                                                            <div className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">
+                                                                Time
+                                                            </div>
+                                                            <div className="text-base font-semibold text-zinc-100 font-mono mt-0.5">
+                                                                {maxTimeMs.toFixed(1)}
+                                                                <span className="text-xs text-zinc-300 font-sans font-normal ml-1">
+                                                                    ms
+                                                                </span>
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                    <div className="flex-1 bg-zinc-800/60 rounded-lg p-3">
-                                                        <div className="text-zinc-500 text-xs font-medium">
-                                                            Memory
+                                                    <div className="w-48 flex items-center gap-3 bg-zinc-900/50 border border-zinc-800/50 rounded-xl p-3.5 hover:border-zinc-700/50 transition-all duration-200">
+                                                        <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-zinc-800/40 text-blue-400 shrink-0">
+                                                            <svg
+                                                                className="w-5 h-5"
+                                                                fill="none"
+                                                                viewBox="0 0 24 24"
+                                                                stroke="currentColor"
+                                                                strokeWidth="2"
+                                                            >
+                                                                <ellipse
+                                                                    cx="12"
+                                                                    cy="5"
+                                                                    rx="9"
+                                                                    ry="3"
+                                                                />
+                                                                <path
+                                                                    strokeLinecap="round"
+                                                                    strokeLinejoin="round"
+                                                                    d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"
+                                                                />
+                                                                <path
+                                                                    strokeLinecap="round"
+                                                                    strokeLinejoin="round"
+                                                                    d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3"
+                                                                />
+                                                            </svg>
                                                         </div>
-                                                        <div className="text-zinc-100 font-mono text-sm mt-0.5">
-                                                            {maxMemMb.toFixed(2)} MB
+                                                        <div>
+                                                            <div className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">
+                                                                Memory
+                                                            </div>
+                                                            <div className="text-base font-semibold text-zinc-100 font-mono mt-0.5">
+                                                                {maxMemMb.toFixed(2)}
+                                                                <span className="text-xs text-zinc-300 font-sans font-normal ml-1">
+                                                                    MB
+                                                                </span>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
