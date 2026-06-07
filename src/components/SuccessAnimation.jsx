@@ -1,18 +1,25 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 const COLORS = ["#34d399", "#60a5fa", "#fbbf24", "#f472b6", "#a78bfa", "#f87171"];
 
 export default function SuccessAnimation({ onDone }) {
     const [exiting, setExiting] = useState(false);
 
+    const onDoneRef = useRef(onDone);
+    useEffect(() => {
+        onDoneRef.current = onDone;
+    }, [onDone]);
+
     useEffect(() => {
         const t1 = setTimeout(() => setExiting(true), 1100);
-        const t2 = setTimeout(onDone, 1500);
+        const t2 = setTimeout(() => {
+            if (onDoneRef.current) onDoneRef.current();
+        }, 1500);
         return () => {
             clearTimeout(t1);
             clearTimeout(t2);
         };
-    }, [onDone]);
+    }, []);
 
     const [confetti] = useState(() =>
         Array.from({ length: 50 }, (_, i) => ({

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { driver, preloadPyodide } from "../lib/pyRunner";
 import { getLimits, getHiddenTests, compactValue, pythonize } from "../lib/appHelpers";
 import SuccessAnimation from "./SuccessAnimation";
@@ -12,7 +12,7 @@ const getDefaultCases = (problem) => {
     return defaults.length > 0 ? defaults : [{ input: "", expected: "" }];
 };
 
-export default function BottomPanel({ activeProblem, code }) {
+export default function BottomPanel({ activeProblem, code, isSoftSolveActive }) {
     const [activeTab, setActiveTab] = useState("testcases");
     const [testCases, setTestCases] = useState(() => getDefaultCases(activeProblem));
     const [activeCase, setActiveCase] = useState(0);
@@ -21,6 +21,9 @@ export default function BottomPanel({ activeProblem, code }) {
     const [hoveredCase, setHoveredCase] = useState(null);
     const [activeResultCase, setActiveResultCase] = useState(0);
     const [animation, setAnimation] = useState(null);
+    const handleAnimationDone = useCallback(() => {
+        setAnimation(null);
+    }, []);
 
     useEffect(() => {
         preloadPyodide();
@@ -130,6 +133,12 @@ export default function BottomPanel({ activeProblem, code }) {
             if (allAC) {
                 window.dispatchEvent(
                     new CustomEvent("dsa-problem-solved", {
+                        detail: { id: activeProblem.id, isSoft: isSoftSolveActive },
+                    }),
+                );
+            } else {
+                window.dispatchEvent(
+                    new CustomEvent("dsa-problem-wrong", {
                         detail: { id: activeProblem.id },
                     }),
                 );
@@ -171,15 +180,17 @@ export default function BottomPanel({ activeProblem, code }) {
         return status;
     };
 
-    const renderCaseResult = (r) => (
+    const renderCaseResult = (r, hideStatus = false) => (
         <div key={r.caseNum} className="space-y-2 text-sm">
             <div className="flex items-center gap-2">
-                <span className="text-zinc-500 font-medium">
-                    {r.label || `Case ${r.caseNum}`}:
+                <span className="text-zinc-300 font-semibold">
+                    {r.label || `Case ${r.caseNum}`}
                 </span>
-                <span className={`font-semibold ${statusColor(r.status)}`}>
-                    {statusLabel(r.status)}
-                </span>
+                {!hideStatus && (
+                    <span className={`font-semibold ${statusColor(r.status)}`}>
+                        {statusLabel(r.status)}
+                    </span>
+                )}
                 {(typeof r.timeMs === "number" || typeof r.memMb === "number") && (
                     <span className="text-zinc-500 text-xs ml-auto font-mono">
                         {typeof r.timeMs === "number" && `${r.timeMs.toFixed(1)} ms`}
@@ -204,47 +215,45 @@ export default function BottomPanel({ activeProblem, code }) {
                 </div>
             ) : (
                 <>
-            {r.error && (
-                <div className="bg-rose-950/30 border border-rose-900/40 rounded-lg p-3 font-mono text-xs text-rose-300">
-                    {r.error}
-                </div>
-            )}
-            {r.stdout && (
-                <div>
-                    <span className="text-zinc-500 text-xs font-medium">Stdout</span>
-                    <div className="bg-zinc-800/60 rounded-lg p-2 font-mono text-xs text-zinc-300 mt-1">
-                        {r.stdout}
+                    {r.error && r.error !== statusLabel(r.status) && (
+                        <div className="bg-rose-950/30 border border-rose-900/40 rounded-lg p-3 font-mono text-xs text-rose-300">
+                            {r.error}
+                        </div>
+                    )}
+                    {r.stdout && (
+                        <div>
+                            <span className="text-zinc-500 text-xs font-medium">Stdout</span>
+                            <div className="bg-zinc-800/60 rounded-lg p-2 font-mono text-xs text-zinc-300 mt-1">
+                                {r.stdout}
+                            </div>
+                        </div>
+                    )}
+                    <div>
+                        <span className="text-zinc-500 text-xs font-medium">Input</span>
+                        <div className="bg-zinc-800/60 rounded-lg p-2 font-mono text-xs text-zinc-300 mt-1">
+                            {r.input || "—"}
+                        </div>
                     </div>
-                </div>
-            )}
-            <div className="grid grid-cols-2 gap-3">
-                <div>
-                    <span className="text-zinc-500 text-xs font-medium">Input</span>
-                    <div className="bg-zinc-800/60 rounded-lg p-2 font-mono text-xs text-zinc-300 mt-1">
-                        {r.input || "—"}
+                    {r.output !== null && (
+                        <div>
+                            <span className="text-zinc-500 text-xs font-medium">Output</span>
+                            <div
+                                className={`rounded-lg p-2 font-mono text-xs mt-1 ${
+                                    r.status === "AC"
+                                        ? "bg-emerald-950/30 border border-emerald-900/40 text-emerald-300"
+                                        : "bg-rose-950/30 border border-rose-900/40 text-rose-300"
+                                }`}
+                            >
+                                {r.output}
+                            </div>
+                        </div>
+                    )}
+                    <div>
+                        <span className="text-zinc-500 text-xs font-medium">Expected</span>
+                        <div className="bg-zinc-800/60 rounded-lg p-2 font-mono text-xs text-zinc-300 mt-1">
+                            {r.expected || "—"}
+                        </div>
                     </div>
-                </div>
-                <div>
-                    <span className="text-zinc-500 text-xs font-medium">Expected</span>
-                    <div className="bg-zinc-800/60 rounded-lg p-2 font-mono text-xs text-zinc-300 mt-1">
-                        {r.expected || "—"}
-                    </div>
-                </div>
-            </div>
-            {r.output !== null && (
-                <div>
-                    <span className="text-zinc-500 text-xs font-medium">Output</span>
-                    <div
-                        className={`rounded-lg p-2 font-mono text-xs mt-1 ${
-                            r.status === "AC"
-                                ? "bg-emerald-950/30 border border-emerald-900/40 text-emerald-300"
-                                : "bg-rose-950/30 border border-rose-900/40 text-rose-300"
-                        }`}
-                    >
-                        {r.output}
-                    </div>
-                </div>
-            )}
                 </>
             )}
         </div>
@@ -256,8 +265,8 @@ export default function BottomPanel({ activeProblem, code }) {
     };
 
     return (
-        <div className="flex flex-col h-full bg-[#1e1e1e]">
-            <div className="flex items-center justify-between px-3 py-1.5 shrink-0">
+        <div className="flex flex-col h-full bg-[#1a1a1a]">
+            <div className="flex items-center justify-between px-3 pb-1.5 shrink-0 border-b border-zinc-800">
                 <div className="flex items-center gap-1">
                     <button
                         onClick={() => setActiveTab("testcases")}
@@ -282,7 +291,7 @@ export default function BottomPanel({ activeProblem, code }) {
                 </div>
             </div>
 
-            <div className="flex-1 min-h-0 overflow-y-auto p-3 panel-scrollbar">
+            <div className="flex-1 min-h-0 overflow-y-auto p-3 desc-scrollbar">
                 {activeTab === "testcases" && (
                     <div className="space-y-3">
                         <div className="flex items-center justify-between">
@@ -431,7 +440,7 @@ export default function BottomPanel({ activeProblem, code }) {
                                                 </div>
                                             </div>
                                         ) : (
-                                            firstFailed && renderCaseResult(firstFailed)
+                                            firstFailed && renderCaseResult(firstFailed, true)
                                         )}
                                     </>
                                 ) : (
@@ -466,8 +475,8 @@ export default function BottomPanel({ activeProblem, code }) {
                 )}
             </div>
 
-            {animation === "success" && <SuccessAnimation onDone={() => setAnimation(null)} />}
-            {animation === "failure" && <FailureAnimation onDone={() => setAnimation(null)} />}
+            {animation === "success" && <SuccessAnimation onDone={handleAnimationDone} />}
+            {animation === "failure" && <FailureAnimation onDone={handleAnimationDone} />}
         </div>
     );
 }

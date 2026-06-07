@@ -161,7 +161,7 @@ export default function Editor({ value, onChange, onMount }) {
                 lineNumbersMinChars: 3,
                 fontSize: 15,
                 scrollBeyondLastLine: false,
-                padding: { top: 16 },
+                padding: { top: 32 },
             }}
         />
     );

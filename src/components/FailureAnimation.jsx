@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 const MESSAGES = [
     "you'll be unemployed forever",
@@ -22,14 +22,21 @@ export default function FailureAnimation({ onDone }) {
     const [msg] = useState(() => MESSAGES[Math.floor(Math.random() * MESSAGES.length)]);
     const [exiting, setExiting] = useState(false);
 
+    const onDoneRef = useRef(onDone);
+    useEffect(() => {
+        onDoneRef.current = onDone;
+    }, [onDone]);
+
     useEffect(() => {
         const t1 = setTimeout(() => setExiting(true), 1100);
-        const t2 = setTimeout(onDone, 1500);
+        const t2 = setTimeout(() => {
+            if (onDoneRef.current) onDoneRef.current();
+        }, 1500);
         return () => {
             clearTimeout(t1);
             clearTimeout(t2);
         };
-    }, [onDone]);
+    }, []);
 
     return (
         <div

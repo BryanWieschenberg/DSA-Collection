@@ -38,7 +38,7 @@ export default function ProblemDescription({ activeProblem }) {
     const { description, examples, constraints } = activeProblem;
 
     return (
-        <div className="w-full h-full bg-zinc-900/30 overflow-y-auto p-4 select-text space-y-6 desc-scrollbar">
+        <div className="w-full h-full bg-zinc-900/30 overflow-y-auto p-8 select-text space-y-6 desc-scrollbar">
             <div className="text-zinc-100 text-[15px] leading-relaxed whitespace-pre-wrap">
                 {renderMarkdown(description)}
             </div>
@@ -84,9 +84,7 @@ export default function ProblemDescription({ activeProblem }) {
 
             {constraints && constraints.length > 0 && (
                 <div className="space-y-3 pt-2">
-                    <h3 className="text-base font-semibold text-zinc-100">
-                        Constraints:
-                    </h3>
+                    <h3 className="text-base font-semibold text-zinc-100">Constraints:</h3>
                     <ul className="space-y-3 pl-4 text-zinc-100 text-[15px] leading-relaxed">
                         {constraints.map((c, idx) => (
                             <li key={idx} className="flex gap-3.5">

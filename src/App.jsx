@@ -4,7 +4,13 @@ import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
 import ProblemDescription from "./components/ProblemDescription";
 import BottomPanel from "./components/BottomPanel";
-import { getTemplateCode, slugify, findProblemById, allProblems } from "./lib/appHelpers";
+import {
+    getTemplateCode,
+    slugify,
+    findProblemById,
+    allProblems,
+    getTodayNY,
+} from "./lib/appHelpers";
 
 export default function App() {
     const [activeProblem, setActiveProblem] = useState(() => {
@@ -32,10 +38,73 @@ export default function App() {
         return saved ? new Set(JSON.parse(saved)) : new Set();
     });
 
+    const [softSolvedProblems, setSoftSolvedProblems] = useState(() => {
+        const saved = localStorage.getItem("dsa-soft-solved-problems");
+        return saved ? new Set(JSON.parse(saved)) : new Set();
+    });
+
+    const [solveHistory, setSolveHistory] = useState(() => {
+        const saved = localStorage.getItem("dsa-solve-history");
+        return saved ? JSON.parse(saved) : [];
+    });
+
+    const getInitialTime = (difficulty) => {
+        if (difficulty === "Easy") return 300;
+        if (difficulty === "Medium") return 1200;
+        if (difficulty === "Hard") return 2400;
+        return 300;
+    };
+
+    const [time, setTime] = useState(() => getInitialTime(activeProblem.difficulty));
+    const [timerRunning, setTimerRunning] = useState(true);
+    const [lives, setLives] = useState(3);
+    const [tabSwitched, setTabSwitched] = useState(false);
+
+    const [prevProblemId, setPrevProblemId] = useState(activeProblem.id);
+    if (activeProblem.id !== prevProblemId) {
+        setPrevProblemId(activeProblem.id);
+        setTime(getInitialTime(activeProblem.difficulty));
+        setLives(3);
+        setTabSwitched(false);
+        setTimerRunning(true);
+    }
+
+    useEffect(() => {
+        let interval = null;
+        if (timerRunning) {
+            interval = setInterval(() => {
+                setTime((prev) => prev - 1);
+            }, 1000);
+        }
+        return () => {
+            if (interval) clearInterval(interval);
+        };
+    }, [timerRunning]);
+
+    useEffect(() => {
+        const handleVisibilityChange = () => {
+            if (document.hidden) {
+                setTabSwitched(true);
+            }
+        };
+        const handleBlur = () => {
+            setTabSwitched(true);
+        };
+        document.addEventListener("visibilitychange", handleVisibilityChange);
+        window.addEventListener("blur", handleBlur);
+        return () => {
+            document.removeEventListener("visibilitychange", handleVisibilityChange);
+            window.removeEventListener("blur", handleBlur);
+        };
+    }, []);
+
+    const isSoftSolveActive = time <= 0 || lives <= 0 || tabSwitched;
+
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
     const codeRef = useRef(code);
     const activeProblemRef = useRef(activeProblem);
+    const softSolvedProblemsRef = useRef(softSolvedProblems);
 
     useEffect(() => {
         codeRef.current = code;
@@ -44,6 +113,24 @@ export default function App() {
     useEffect(() => {
         activeProblemRef.current = activeProblem;
     }, [activeProblem]);
+
+    useEffect(() => {
+        softSolvedProblemsRef.current = softSolvedProblems;
+    }, [softSolvedProblems]);
+
+    useEffect(() => {
+        localStorage.setItem("dsa-solve-history", JSON.stringify(solveHistory));
+    }, [solveHistory]);
+
+    const todayNY = getTodayNY();
+    const dailyScore = solveHistory
+        .filter((entry) => entry.date === todayNY)
+        .reduce((sum, entry) => {
+            if (entry.difficulty === "Easy") return sum + 5;
+            if (entry.difficulty === "Medium") return sum + 20;
+            if (entry.difficulty === "Hard") return sum + 40;
+            return sum;
+        }, 0);
 
     useEffect(() => {
         const saveCode = () => {
@@ -115,45 +202,141 @@ export default function App() {
         const defaultCode = getTemplateCode(activeProblem);
         setCode(defaultCode);
         localStorage.setItem(`dsa-code-${activeProblem.id}`, defaultCode);
+        setTime(getInitialTime(activeProblem.difficulty));
+        setLives(3);
+        setTabSwitched(false);
+        setTimerRunning(true);
+    };
+
+    const handleResetProblemCode = (problemId) => {
+        const prob = findProblemById(problemId);
+        if (prob) {
+            const defaultCode = getTemplateCode(prob);
+            localStorage.setItem(`dsa-code-${prob.id}`, defaultCode);
+            if (activeProblem.id === prob.id) {
+                setCode(defaultCode);
+            }
+        }
+    };
+
+    const handleResetSoftSolvedCodes = () => {
+        softSolvedProblems.forEach((id) => {
+            const prob = findProblemById(id);
+            if (prob) {
+                localStorage.setItem(`dsa-code-${id}`, getTemplateCode(prob));
+            }
+        });
+        if (softSolvedProblems.has(activeProblem.id)) {
+            setCode(getTemplateCode(activeProblem));
+        }
     };
 
     const toggleCompleted = (id, e) => {
         e.stopPropagation();
-        const next = new Set(completedProblems);
-        if (next.has(id)) {
-            next.delete(id);
+        const nextCompleted = new Set(completedProblems);
+        const nextSoft = new Set(softSolvedProblems);
+        if (nextCompleted.has(id) || nextSoft.has(id)) {
+            nextCompleted.delete(id);
+            nextSoft.delete(id);
+            setSolveHistory((prev) => prev.filter((entry) => entry.id !== id));
         } else {
-            next.add(id);
+            nextCompleted.add(id);
+            const prob = findProblemById(id);
+            if (prob) {
+                const today = getTodayNY();
+                setSolveHistory((prev) => {
+                    const alreadySolvedToday = prev.some(
+                        (entry) => entry.id === id && entry.date === today,
+                    );
+                    if (alreadySolvedToday) return prev;
+                    return [...prev, { id, date: today, difficulty: prob.difficulty }];
+                });
+            }
         }
-        setCompletedProblems(next);
-        localStorage.setItem("dsa-completed-problems", JSON.stringify(Array.from(next)));
+        setCompletedProblems(nextCompleted);
+        setSoftSolvedProblems(nextSoft);
+        localStorage.setItem("dsa-completed-problems", JSON.stringify(Array.from(nextCompleted)));
+        localStorage.setItem("dsa-soft-solved-problems", JSON.stringify(Array.from(nextSoft)));
     };
 
     useEffect(() => {
         const handleSolved = (e) => {
-            const { id } = e.detail;
-            setCompletedProblems((prev) => {
-                if (prev.has(id)) return prev;
-                const next = new Set(prev);
-                next.add(id);
-                localStorage.setItem("dsa-completed-problems", JSON.stringify(Array.from(next)));
-                return next;
-            });
+            const { id, isSoft } = e.detail;
+            const prob = findProblemById(id);
+            if (prob) {
+                const today = getTodayNY();
+                setSolveHistory((prev) => {
+                    const alreadySolvedToday = prev.some(
+                        (entry) => entry.id === id && entry.date === today,
+                    );
+                    if (alreadySolvedToday) return prev;
+                    return [...prev, { id, date: today, difficulty: prob.difficulty }];
+                });
+            }
+            if (isSoft) {
+                setCompletedProblems((prevCompleted) => {
+                    if (prevCompleted.has(id)) return prevCompleted;
+                    setSoftSolvedProblems((prevSoft) => {
+                        if (prevSoft.has(id)) return prevSoft;
+                        const next = new Set(prevSoft);
+                        next.add(id);
+                        localStorage.setItem(
+                            "dsa-soft-solved-problems",
+                            JSON.stringify(Array.from(next)),
+                        );
+                        return next;
+                    });
+                    return prevCompleted;
+                });
+            } else {
+                setCompletedProblems((prev) => {
+                    if (prev.has(id)) return prev;
+                    const next = new Set(prev);
+                    next.add(id);
+                    localStorage.setItem(
+                        "dsa-completed-problems",
+                        JSON.stringify(Array.from(next)),
+                    );
+                    return next;
+                });
+                setSoftSolvedProblems((prev) => {
+                    if (!prev.has(id)) return prev;
+                    const next = new Set(prev);
+                    next.delete(id);
+                    localStorage.setItem(
+                        "dsa-soft-solved-problems",
+                        JSON.stringify(Array.from(next)),
+                    );
+                    return next;
+                });
+            }
         };
         window.addEventListener("dsa-problem-solved", handleSolved);
         return () => window.removeEventListener("dsa-problem-solved", handleSolved);
     }, []);
 
+    useEffect(() => {
+        const handleWrong = () => {
+            setLives((prev) => Math.max(0, prev - 1));
+        };
+        window.addEventListener("dsa-problem-wrong", handleWrong);
+        return () => window.removeEventListener("dsa-problem-wrong", handleWrong);
+    }, []);
+
     const handleResetAll = () => {
         allProblems.forEach((p) => localStorage.removeItem(`dsa-code-${p.id}`));
         localStorage.removeItem("dsa-completed-problems");
+        localStorage.removeItem("dsa-soft-solved-problems");
+        localStorage.removeItem("dsa-solve-history");
         setCompletedProblems(new Set());
+        setSoftSolvedProblems(new Set());
+        setSolveHistory([]);
         setCode(getTemplateCode(activeProblem));
         localStorage.setItem(`dsa-code-${activeProblem.id}`, getTemplateCode(activeProblem));
         window.dispatchEvent(new CustomEvent("dsa-reset-all"));
     };
 
-    const [leftWidth, setLeftWidth] = useState(50);
+    const [leftWidth, setLeftWidth] = useState(35);
     const [isDraggingH, setIsDraggingH] = useState(false);
     const containerRef = useRef(null);
 
@@ -223,9 +406,7 @@ export default function App() {
                 e.preventDefault();
                 e.stopPropagation();
                 const isSubmit = !e.shiftKey;
-                window.dispatchEvent(
-                    new CustomEvent("trigger-dsa-run", { detail: { isSubmit } })
-                );
+                window.dispatchEvent(new CustomEvent("trigger-dsa-run", { detail: { isSubmit } }));
             }
         };
         window.addEventListener("keydown", handleKeyDown, true);
@@ -263,6 +444,12 @@ export default function App() {
                 totalCount={allProblems.length}
                 onResetCode={handleResetCode}
                 onSelectProblem={handleSelectProblem}
+                time={time}
+                timerRunning={timerRunning}
+                setTimerRunning={setTimerRunning}
+                lives={lives}
+                isSoftSolveActive={isSoftSolveActive}
+                dailyScore={dailyScore}
             />
 
             <Sidebar
@@ -270,10 +457,13 @@ export default function App() {
                 onClose={() => setSidebarOpen(false)}
                 allProblems={allProblems}
                 completedProblems={completedProblems}
+                softSolvedProblems={softSolvedProblems}
                 activeProblem={activeProblem}
                 onSelectProblem={handleSelectProblem}
                 onToggleCompleted={toggleCompleted}
                 onResetAll={handleResetAll}
+                onResetSoftCodes={handleResetSoftSolvedCodes}
+                onResetProblemCode={handleResetProblemCode}
             />
 
             <main
@@ -297,21 +487,30 @@ export default function App() {
                     className={`h-full flex flex-col min-h-0 relative ${isDragging ? "pointer-events-none" : ""}`}
                 >
                     <div ref={rightPanelRef} className="flex-1 min-h-0 flex flex-col">
-                        <div style={{ height: `${topHeight}%` }} className="min-h-0 relative">
+                        <div
+                            style={{ height: consoleOpen ? `${topHeight}%` : "100%" }}
+                            className="min-h-0 relative"
+                        >
                             <Editor value={code} onChange={handleEditorChange} />
                         </div>
 
-                        <div
-                            onMouseDown={handleMouseDownV}
-                            onDoubleClick={() => setTopHeight(100)}
-                            className="h-1.5 w-full cursor-row-resize bg-[#1e1e1e] hover:bg-zinc-600 transition-colors shrink-0 z-10"
-                        />
+                        {consoleOpen && (
+                            <div
+                                onMouseDown={handleMouseDownV}
+                                onDoubleClick={() => setTopHeight(100)}
+                                className="h-2 w-full cursor-row-resize bg-[#1a1a1a] border-t border-zinc-800 hover:bg-zinc-600 transition-colors shrink-0 z-10"
+                            />
+                        )}
 
-                        <div style={{ height: `${100 - topHeight}%` }} className="min-h-0">
+                        <div
+                            style={{ height: consoleOpen ? `${100 - topHeight}%` : "0%" }}
+                            className={`min-h-0 ${consoleOpen ? "" : "hidden"}`}
+                        >
                             <BottomPanel
                                 key={activeProblem.id}
                                 activeProblem={activeProblem}
                                 code={code}
+                                isSoftSolveActive={isSoftSolveActive}
                             />
                         </div>
                     </div>
@@ -320,7 +519,6 @@ export default function App() {
                         <button
                             onClick={toggleConsole}
                             className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 rounded transition-colors cursor-pointer focus:outline-none"
-                            title={consoleOpen ? "Hide console" : "Show console"}
                         >
                             <span>Console</span>
                             <svg
@@ -339,7 +537,7 @@ export default function App() {
                                 )}
                             </svg>
                         </button>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-4">
                             <button
                                 onClick={() =>
                                     window.dispatchEvent(
@@ -349,7 +547,7 @@ export default function App() {
                                     )
                                 }
                                 disabled={isRunning}
-                                className="px-3 py-1 text-xs font-medium bg-zinc-700 hover:bg-zinc-600 text-zinc-200 rounded transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none"
+                                className="px-4 py-1.5 text-sm font-medium bg-zinc-700 hover:bg-zinc-600 text-zinc-200 rounded transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none"
                             >
                                 {isRunning ? "Running..." : "Run"}
                             </button>
@@ -362,7 +560,7 @@ export default function App() {
                                     )
                                 }
                                 disabled={isRunning}
-                                className="px-3 py-1 text-xs font-medium bg-emerald-600 hover:bg-emerald-500 text-white rounded transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none"
+                                className="px-4 py-1.5 text-sm font-semibold bg-emerald-600 hover:bg-emerald-500 text-white rounded transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none"
                             >
                                 Submit
                             </button>

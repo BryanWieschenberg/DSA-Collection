@@ -1,5 +1,15 @@
 import problemsData from "./problems.json";
 
+export const getTodayNY = () => {
+    const options = { timeZone: "America/New_York", year: "numeric", month: "2-digit", day: "2-digit" };
+    const formatter = new Intl.DateTimeFormat("en-US", options);
+    const parts = formatter.formatToParts(new Date());
+    const year = parts.find(p => p.type === 'year').value;
+    const month = parts.find(p => p.type === 'month').value;
+    const day = parts.find(p => p.type === 'day').value;
+    return `${year}-${month}-${day}`;
+};
+
 export const getTemplateCode = (problem) => {
     const rawCode = problem.code;
     if (rawCode.trim().startsWith("class")) {
