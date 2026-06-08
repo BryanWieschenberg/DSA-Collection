@@ -34,11 +34,11 @@ export default function Editor({ value, onChange, onMount }) {
             rules: [
                 { token: "keyword.control", foreground: "C586C0" },
                 { token: "keyword", foreground: "569CD6" },
-                { token: "type", foreground: "4EC9B0" },
+                { token: "type", foreground: "34D399" },
                 { token: "variable.predefined", foreground: "9CDCFE" },
                 { token: "constant", foreground: "569CD6" },
                 { token: "entity.name.function", foreground: "DCDCAA" },
-                { token: "entity.name.class", foreground: "4EC9B0" },
+                { token: "entity.name.class", foreground: "34D399" },
                 { token: "string", foreground: "CE9178" },
                 { token: "comment", foreground: "6A9955", fontStyle: "italic" },
                 { token: "number", foreground: "B5CEA8" },

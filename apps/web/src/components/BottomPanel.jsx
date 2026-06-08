@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { driver, preloadPyodide } from "../lib/pyRunner";
-import { getLimits, getHiddenTests, compactValue, pythonize } from "../lib/appHelpers";
+import { getLimits, compactValue, pythonize } from "../lib/appHelpers";
 import SuccessAnimation from "./SuccessAnimation";
 import FailureAnimation from "./FailureAnimation";
 
@@ -52,7 +52,7 @@ export default function BottomPanel({ activeProblem, code, isSoftSolveActive }) 
         };
         window.addEventListener("dsa-reset-all", handleResetAll);
         return () => window.removeEventListener("dsa-reset-all", handleResetAll);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const resetTestCases = () => {
@@ -97,11 +97,6 @@ export default function BottomPanel({ activeProblem, code, isSoftSolveActive }) 
             expected: tc.expected,
             hidden: false,
         }));
-        if (isSubmit) {
-            for (const ht of getHiddenTests(activeProblem)) {
-                cases.push({ input: ht.input, expected: ht.expected ?? ht.output, hidden: true });
-            }
-        }
 
         let caseResults;
         try {
@@ -112,6 +107,8 @@ export default function BottomPanel({ activeProblem, code, isSoftSolveActive }) 
                 cases,
                 timeLimitMs,
                 memLimitMb,
+                isSubmit,
+                problemId: activeProblem.id,
             });
         } catch (err) {
             caseResults = testCases.map((tc, idx) => ({
@@ -193,11 +190,30 @@ export default function BottomPanel({ activeProblem, code, isSoftSolveActive }) 
                     </span>
                 )}
                 {(typeof r.timeMs === "number" || typeof r.memMb === "number") && (
-                    <span className="text-zinc-500 text-xs ml-auto font-mono">
-                        {typeof r.timeMs === "number" && `${r.timeMs.toFixed(1)} ms`}
-                        {typeof r.timeMs === "number" && typeof r.memMb === "number" && " · "}
-                        {typeof r.memMb === "number" && `${r.memMb.toFixed(2)} MB`}
-                    </span>
+                    <div className="flex items-center gap-1.5 ml-auto">
+                        {typeof r.timeMs === "number" && (
+                            <div className="flex items-center gap-1 px-2 py-0.5 bg-zinc-900/50 border border-zinc-800/50 rounded-md text-[11px] select-none">
+                                <span className="text-[9px] font-semibold text-zinc-500 uppercase tracking-wider">
+                                    Time
+                                </span>
+                                <span className="text-zinc-100 font-mono font-medium">
+                                    {r.timeMs.toFixed(0)}
+                                </span>
+                                <span className="text-zinc-400 text-[10px]">ms</span>
+                            </div>
+                        )}
+                        {typeof r.memMb === "number" && (
+                            <div className="flex items-center gap-1 px-2 py-0.5 bg-zinc-900/50 border border-zinc-800/50 rounded-md text-[11px] select-none">
+                                <span className="text-[9px] font-semibold text-zinc-500 uppercase tracking-wider">
+                                    Mem
+                                </span>
+                                <span className="text-zinc-100 font-mono font-medium">
+                                    {r.memMb.toFixed(0)}
+                                </span>
+                                <span className="text-zinc-400 text-[10px]">MB</span>
+                            </div>
+                        )}
+                    </div>
                 )}
             </div>
             {r.hidden ? (
@@ -212,7 +228,7 @@ export default function BottomPanel({ activeProblem, code, isSoftSolveActive }) 
                         <rect x="3" y="11" width="18" height="11" rx="2" />
                         <path d="M7 11V7a5 5 0 0 1 10 0v4" />
                     </svg>
-                    Hidden test — input and expected output are not shown.
+                    Hidden test (input and expected output are not shown).
                 </div>
             ) : (
                 <>
@@ -232,7 +248,7 @@ export default function BottomPanel({ activeProblem, code, isSoftSolveActive }) 
                     <div>
                         <span className="text-zinc-500 text-xs font-medium">Input</span>
                         <div className="bg-zinc-800/60 rounded-lg p-2 font-mono text-xs text-zinc-300 mt-1">
-                            {r.input || "—"}
+                            {r.input || "-"}
                         </div>
                     </div>
                     {r.output !== null && (
@@ -252,7 +268,7 @@ export default function BottomPanel({ activeProblem, code, isSoftSolveActive }) 
                     <div>
                         <span className="text-zinc-500 text-xs font-medium">Expected</span>
                         <div className="bg-zinc-800/60 rounded-lg p-2 font-mono text-xs text-zinc-300 mt-1">
-                            {r.expected || "—"}
+                            {r.expected || "-"}
                         </div>
                     </div>
                     <div className="mt-4 invisible" />
@@ -444,7 +460,7 @@ export default function BottomPanel({ activeProblem, code, isSoftSolveActive }) 
                                                                 Time
                                                             </div>
                                                             <div className="text-base font-semibold text-zinc-100 font-mono mt-0.5">
-                                                                {maxTimeMs.toFixed(1)}
+                                                                {maxTimeMs.toFixed(0)}
                                                                 <span className="text-xs text-zinc-300 font-sans font-normal ml-1">
                                                                     ms
                                                                 </span>
@@ -483,7 +499,7 @@ export default function BottomPanel({ activeProblem, code, isSoftSolveActive }) 
                                                                 Memory
                                                             </div>
                                                             <div className="text-base font-semibold text-zinc-100 font-mono mt-0.5">
-                                                                {maxMemMb.toFixed(2)}
+                                                                {maxMemMb.toFixed(0)}
                                                                 <span className="text-xs text-zinc-300 font-sans font-normal ml-1">
                                                                     MB
                                                                 </span>

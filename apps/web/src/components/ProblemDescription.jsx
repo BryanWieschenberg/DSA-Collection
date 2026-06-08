@@ -54,7 +54,7 @@ export default function ProblemDescription({ activeProblem }) {
                                 <div className="space-y-1.5 font-mono text-sm text-zinc-300">
                                     <div className="flex gap-2">
                                         <span className="shrink-0 select-none">
-                                            <span style={{ color: "#4EC9B0" }}>Input</span>
+                                            <span style={{ color: "#34D399" }}>Input</span>
                                             <span className="text-zinc-200">:</span>
                                         </span>
                                         <span className="text-zinc-200">
@@ -63,7 +63,7 @@ export default function ProblemDescription({ activeProblem }) {
                                     </div>
                                     <div className="flex gap-2">
                                         <span className="shrink-0 select-none">
-                                            <span style={{ color: "#4EC9B0" }}>Output</span>
+                                            <span style={{ color: "#34D399" }}>Output</span>
                                             <span className="text-zinc-200">:</span>
                                         </span>
                                         <span className="text-zinc-200">
@@ -74,7 +74,8 @@ export default function ProblemDescription({ activeProblem }) {
                             </div>
                             {ex.explanation && (
                                 <div className="text-zinc-100 text-[15px] leading-relaxed whitespace-pre-wrap">
-                                    {renderMarkdown(ex.explanation)}
+                                    <div className="text-zinc-400">Explanation:</div>
+                                    <div className="mt-1">{renderMarkdown(ex.explanation)}</div>
                                 </div>
                             )}
                         </div>

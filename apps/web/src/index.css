@@ -123,4 +123,63 @@
     border-radius: 0 !important;
 }
 
+.evil-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 50;
+    background: radial-gradient(circle, transparent 25%, rgba(220, 38, 38, 0.24) 100%);
+    box-shadow: inset 0 0 140px rgba(220, 38, 38, 0.55);
+    mix-blend-mode: color-burn;
+    animation: evil-pulse 6s ease-in-out infinite alternate;
+}
 
+@keyframes evil-pulse {
+    0% {
+        box-shadow: inset 0 0 110px rgba(220, 38, 38, 0.45);
+        opacity: 0.9;
+    }
+    100% {
+        box-shadow: inset 0 0 180px rgba(220, 38, 38, 0.7);
+        opacity: 1;
+    }
+}
+
+.ember-container {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 49;
+    overflow: hidden;
+}
+
+.ember {
+    position: absolute;
+    bottom: -30px;
+    background: radial-gradient(circle, #ff3b30 25%, #990000 75%, transparent 100%);
+    box-shadow:
+        0 0 8px #ff3b30,
+        0 0 16px #ff453a,
+        0 0 24px #990000;
+    border-radius: 50%;
+    opacity: 0;
+    animation: rise infinite linear;
+}
+
+@keyframes rise {
+    0% {
+        transform: translate(0, 0) scale(0.6) rotate(0deg);
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.95;
+    }
+    90% {
+        opacity: 0.8;
+    }
+    100% {
+        transform: translate(var(--tx, -60vw), var(--ty, -110vh)) scale(0.3)
+            rotate(var(--rot, 360deg));
+        opacity: 0;
+    }
+}

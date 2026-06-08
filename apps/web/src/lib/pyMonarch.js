@@ -58,9 +58,7 @@ export const pythonMonarch = {
                         bool: "type",
                         ListNode: "type",
                         TreeNode: "type",
-                        QuadNode: "type",
                         TrieNode: "type",
-                        GraphNode: "type",
 
                         "@keywords": "keyword",
                         "@default": "identifier",

@@ -54,7 +54,11 @@ export default function FailureAnimation({ onDone }) {
                         stroke="currentColor"
                         strokeWidth={3}
                     >
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M6 18 18 6M6 6l12 12"
+                        />
                     </svg>
                 </div>
                 <div className="text-3xl font-bold text-rose-400">Rejected</div>

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import Editor from "./components/Editor";
 import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
@@ -11,6 +11,14 @@ import {
     allProblems,
     getTodayNY,
 } from "./lib/appHelpers";
+
+const createPrng = (seed) => {
+    let s = seed;
+    return () => {
+        s = (s * 1664525 + 1013904223) % 4294967296;
+        return s / 4294967296;
+    };
+};
 
 export default function App() {
     const [activeProblem, setActiveProblem] = useState(() => {
@@ -26,6 +34,37 @@ export default function App() {
         }
         return allProblems[0];
     });
+
+    const embers = useMemo(() => {
+        if (activeProblem.difficulty !== "Extreme") return [];
+        const rand = createPrng(activeProblem.id);
+        return Array.from({ length: 50 }, (_, i) => {
+            const startFromBottom = rand() > 0.4;
+            let left, bottom, tx, ty;
+            if (startFromBottom) {
+                left = `${rand() * 80 + 30}%`;
+                bottom = `-40px`;
+                tx = `-${rand() * 60 + 30}vw`;
+                ty = `-${rand() * 30 + 90}vh`;
+            } else {
+                left = `105%`;
+                bottom = `${rand() * 80 - 10}vh`;
+                tx = `-${rand() * 60 + 60}vw`;
+                ty = `-${rand() * 30 + 50}vh`;
+            }
+            return {
+                id: i,
+                left,
+                bottom,
+                size: `${rand() * 5 + 3}px`,
+                duration: `${rand() * 5 + 4}s`,
+                delay: `${rand() * 8}s`,
+                tx,
+                ty,
+                rot: `${rand() * 360 + 180}deg`,
+            };
+        });
+    }, [activeProblem.id, activeProblem.difficulty]);
 
     const [code, setCode] = useState(() => {
         const savedCode = localStorage.getItem(`dsa-code-${activeProblem.id}`);
@@ -52,11 +91,14 @@ export default function App() {
         if (difficulty === "Easy") return 300;
         if (difficulty === "Medium") return 1200;
         if (difficulty === "Hard") return 2400;
+        if (difficulty === "Extreme") return 3600;
         return 300;
     };
 
     const [time, setTime] = useState(() => getInitialTime(activeProblem.difficulty));
-    const [timerRunning, setTimerRunning] = useState(true);
+    const [timerRunning, setTimerRunning] = useState(
+        () => !completedProblems.has(activeProblem.id),
+    );
     const [lives, setLives] = useState(3);
     const [tabSwitched, setTabSwitched] = useState(false);
 
@@ -66,7 +108,7 @@ export default function App() {
         setTime(getInitialTime(activeProblem.difficulty));
         setLives(3);
         setTabSwitched(false);
-        setTimerRunning(true);
+        setTimerRunning(!completedProblems.has(activeProblem.id));
     }
 
     useEffect(() => {
@@ -129,6 +171,7 @@ export default function App() {
             if (entry.difficulty === "Easy") return sum + 5;
             if (entry.difficulty === "Medium") return sum + 20;
             if (entry.difficulty === "Hard") return sum + 40;
+            if (entry.difficulty === "Extreme") return sum + 1000;
             return sum;
         }, 0);
 
@@ -320,6 +363,7 @@ export default function App() {
                     });
                     return prevCompleted;
                 });
+                setTimerRunning(false);
             } else {
                 setCompletedProblems((prev) => {
                     if (prev.has(id)) return prev;
@@ -341,6 +385,7 @@ export default function App() {
                     );
                     return next;
                 });
+                setTimerRunning(false);
             }
         };
         window.addEventListener("dsa-problem-solved", handleSolved);
@@ -486,6 +531,7 @@ export default function App() {
                 lives={lives}
                 isSoftSolveActive={isSoftSolveActive}
                 dailyScore={dailyScore}
+                isHardSolved={completedProblems.has(activeProblem.id)}
             />
 
             <Sidebar
@@ -504,7 +550,7 @@ export default function App() {
 
             <main
                 ref={containerRef}
-                className={`flex-1 min-h-0 flex bg-zinc-800 ${isDragging ? "select-none" : ""} ${isDraggingH ? "cursor-col-resize" : ""} ${isDraggingV ? "cursor-row-resize" : ""}`}
+                className={`flex-1 min-h-0 flex bg-zinc-800 relative z-10 ${isDragging ? "select-none" : ""} ${isDraggingH ? "cursor-col-resize" : ""} ${isDraggingV ? "cursor-row-resize" : ""}`}
             >
                 <div
                     style={{ width: `${leftWidth}%` }}
@@ -603,6 +649,30 @@ export default function App() {
                         </div>
                     </div>
                 </div>
+                {activeProblem.difficulty === "Extreme" && (
+                    <>
+                        <div className="evil-overlay" />
+                        <div className="ember-container">
+                            {embers.map((emb) => (
+                                <div
+                                    key={emb.id}
+                                    className="ember"
+                                    style={{
+                                        left: emb.left,
+                                        bottom: emb.bottom,
+                                        width: emb.size,
+                                        height: emb.size,
+                                        animationDuration: emb.duration,
+                                        animationDelay: emb.delay,
+                                        "--tx": emb.tx,
+                                        "--ty": emb.ty,
+                                        "--rot": emb.rot,
+                                    }}
+                                />
+                            ))}
+                        </div>
+                    </>
+                )}
             </main>
         </div>
     );

@@ -11,6 +11,7 @@ export default function Navbar({
     lives,
     isSoftSolveActive,
     dailyScore = 0,
+    isHardSolved = false,
 }) {
     const activeIndex = allProblems.findIndex((p) => p.id === activeProblem.id);
     const problemNumber = activeIndex !== -1 ? activeIndex + 1 : 1;
@@ -91,7 +92,7 @@ export default function Navbar({
                     </button>
                 </div>
 
-                <span className="font-semibold text-zinc-200 text-xl">
+                <span className="font-semibold text-zinc-200 text-xl leading-[1.1]">
                     {problemNumber}. {activeProblem.name}
                 </span>
 
@@ -101,7 +102,9 @@ export default function Navbar({
                             ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
                             : activeProblem.difficulty === "Medium"
                               ? "bg-amber-500/10 text-amber-400 border border-amber-500/20"
-                              : "bg-rose-500/10 text-rose-400 border border-rose-500/20"
+                              : activeProblem.difficulty === "Hard"
+                                ? "bg-rose-500/10 text-rose-400 border border-rose-500/20"
+                                : "bg-purple-500/10 text-purple-400 border border-purple-500/20"
                     }`}
                 >
                     {activeProblem.difficulty}
@@ -109,71 +112,75 @@ export default function Navbar({
             </div>
 
             <div className="flex items-center justify-center justify-self-center">
-                <div className="w-28 flex items-center justify-end">
-                    <div className="flex items-center gap-2 text-zinc-200 text-lg">
-                        <svg
-                            className={`w-5 h-5 ${timerRunning ? "text-emerald-400" : "text-zinc-400"}`}
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                            strokeWidth={2}
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-                            />
-                        </svg>
-                        <span className={`font-mono ${time < 0 ? "text-rose-500" : ""}`}>
-                            {formatTime(time)}
-                        </span>
-                    </div>
-                </div>
-
-                <div
-                    className={`${isSoftSolveActive ? "w-16" : "w-6"} flex items-center justify-center transition-all duration-300`}
-                >
-                    {isSoftSolveActive && (
-                        <div className="text-amber-500 flex items-center justify-center">
-                            <svg
-                                className="w-6 h-6"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                                strokeWidth={2.5}
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3Z"
-                                />
-                            </svg>
+                {!isHardSolved && (
+                    <>
+                        <div className="w-28 flex items-center justify-end">
+                            <div className="flex items-center gap-2 text-zinc-200 text-lg">
+                                <svg
+                                    className={`w-5 h-5 ${timerRunning ? "text-emerald-400" : "text-zinc-400"}`}
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                    strokeWidth={2}
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+                                    />
+                                </svg>
+                                <span className={`font-mono ${time < 0 ? "text-rose-500" : ""}`}>
+                                    {formatTime(time)}
+                                </span>
+                            </div>
                         </div>
-                    )}
-                </div>
 
-                <div className="w-28 flex items-center justify-start">
-                    <div className="flex items-center gap-1">{renderHearts()}</div>
-                </div>
+                        <div
+                            className={`${isSoftSolveActive ? "w-16" : "w-6"} flex items-center justify-center transition-all duration-300`}
+                        >
+                            {isSoftSolveActive && (
+                                <div className="text-amber-500 flex items-center justify-center">
+                                    <svg
+                                        className="w-6 h-6"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                        strokeWidth={2.5}
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3Z"
+                                        />
+                                    </svg>
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="w-28 flex items-center justify-start">
+                            <div className="flex items-center gap-1">{renderHearts()}</div>
+                        </div>
+                    </>
+                )}
             </div>
 
             <div className="flex items-center gap-5 justify-self-end">
-                <div className="flex items-center gap-1.5 text-zinc-200 text-sm">
+                <div className="flex items-center gap-1.5 text-sm">
                     <span className="text-zinc-400 font-medium">Today:</span>
                     <span
                         className={`font-semibold transition-all duration-300 ${
-                            dailyScore >= 200
-                                ? "text-amber-400 drop-shadow-[0_0_8px_rgba(245,158,11,0.6)] font-bold animate-pulse"
-                                : "text-zinc-200"
+                            dailyScore >= 200 ? "text-emerald-400 font-bold" : "text-zinc-200"
                         }`}
                     >
                         {dailyScore}
                     </span>
                 </div>
 
-                <div className="text-sm text-zinc-400 font-medium">
-                    Solved: <span className="text-emerald-400 font-semibold">{completedCount}</span>{" "}
-                    <span className="text-zinc-200">/ {totalCount}</span>
+                <div className="flex items-center gap-1.5 text-sm">
+                    <span className="text-zinc-400 font-medium">Solved:</span>
+                    <span className="text-zinc-200 font-semibold">
+                        {completedCount}/{totalCount}
+                    </span>
                 </div>
 
                 <button

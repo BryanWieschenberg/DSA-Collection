@@ -89,9 +89,7 @@ export const dsaImports = [
     // helper
     "ListNode",
     "TreeNode",
-    "QuadNode",
     "TrieNode",
-    "GraphNode",
 ];
 
 export const dsaTypes = [
@@ -105,7 +103,5 @@ export const dsaTypes = [
     "Callable",
     "ListNode",
     "TreeNode",
-    "QuadNode",
     "TrieNode",
-    "GraphNode",
 ];

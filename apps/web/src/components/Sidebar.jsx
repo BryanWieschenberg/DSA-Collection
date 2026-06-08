@@ -13,6 +13,24 @@ export default function Sidebar({
     onResetSoftCodes,
     onResetProblemCode,
 }) {
+    const easyCount = allProblems.filter((p) => p.difficulty === "Easy").length;
+    const mediumCount = allProblems.filter((p) => p.difficulty === "Medium").length;
+    const hardCount = allProblems.filter((p) => p.difficulty === "Hard").length;
+    const extremeCount = allProblems.filter((p) => p.difficulty === "Extreme").length;
+
+    const easySolved = allProblems.filter(
+        (p) => p.difficulty === "Easy" && completedProblems.has(p.id),
+    ).length;
+    const mediumSolved = allProblems.filter(
+        (p) => p.difficulty === "Medium" && completedProblems.has(p.id),
+    ).length;
+    const hardSolved = allProblems.filter(
+        (p) => p.difficulty === "Hard" && completedProblems.has(p.id),
+    ).length;
+    const extremeSolved = allProblems.filter(
+        (p) => p.difficulty === "Extreme" && completedProblems.has(p.id),
+    ).length;
+
     const [confirmReset, setConfirmReset] = useState(false);
     const activeItemRef = useRef(null);
     const containerRef = useRef(null);
@@ -162,6 +180,41 @@ export default function Sidebar({
                     </div>
                 </div>
 
+                <div className="px-4 py-2.5 bg-zinc-950/40 border-b border-zinc-800 flex items-center justify-center gap-3 text-[11px] font-medium shrink-0 select-none">
+                    {easyCount >= 1 && (
+                        <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                            Easy:{" "}
+                            <span className="font-semibold text-zinc-200">
+                                {easySolved}/{easyCount}
+                            </span>
+                        </span>
+                    )}
+                    {mediumCount >= 1 && (
+                        <span className="px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                            Medium:{" "}
+                            <span className="font-semibold text-zinc-200">
+                                {mediumSolved}/{mediumCount}
+                            </span>
+                        </span>
+                    )}
+                    {hardCount >= 1 && (
+                        <span className="px-2.5 py-0.5 rounded-full bg-rose-500/10 text-rose-400 border border-rose-500/20">
+                            Hard:{" "}
+                            <span className="font-semibold text-zinc-200">
+                                {hardSolved}/{hardCount}
+                            </span>
+                        </span>
+                    )}
+                    {extremeCount >= 1 && (
+                        <span className="px-2.5 py-0.5 rounded-full bg-purple-500/15 text-purple-400 border border-purple-500/30">
+                            Extreme:{" "}
+                            <span className="font-semibold text-zinc-200">
+                                {extremeSolved}/{extremeCount}
+                            </span>
+                        </span>
+                    )}
+                </div>
+
                 <div ref={containerRef} className="flex-1 overflow-y-auto p-4 space-y-1">
                     {allProblems.map((prob, index) => {
                         const isSolved = completedProblems.has(prob.id);
@@ -179,14 +232,17 @@ export default function Sidebar({
                                 }`}
                             >
                                 <div className="flex items-center gap-2.5 min-w-0 pr-2">
-                                    <button
-                                        onClick={(e) => onToggleCompleted(prob.id, e)}
-                                        className={`w-4 h-4 rounded flex items-center justify-center border transition-colors cursor-pointer focus:outline-none shrink-0 ${
+                                    <div
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            onToggleCompleted(prob.id, e);
+                                        }}
+                                        className={`w-4 h-4 cursor-pointer rounded flex items-center justify-center border transition-colors shrink-0 ${
                                             isSolved
                                                 ? "bg-emerald-500 border-emerald-400 text-zinc-950"
                                                 : isSoftSolved
                                                   ? "bg-zinc-500 border-zinc-400 text-zinc-950"
-                                                  : "border-zinc-700 hover:border-zinc-500 bg-zinc-950"
+                                                  : "border-zinc-700 bg-zinc-950"
                                         }`}
                                     >
                                         {(isSolved || isSoftSolved) && (
@@ -203,7 +259,7 @@ export default function Sidebar({
                                                 />
                                             </svg>
                                         )}
-                                    </button>
+                                    </div>
                                     <span
                                         className={`truncate transition-colors ${isActive ? "text-zinc-100 font-medium" : "text-zinc-400 group-hover:text-zinc-200"}`}
                                     >
@@ -237,7 +293,9 @@ export default function Sidebar({
                                                 ? "text-emerald-400"
                                                 : diff === "Medium"
                                                   ? "text-amber-400"
-                                                  : "text-rose-400"
+                                                  : diff === "Hard"
+                                                    ? "text-rose-400"
+                                                    : "text-purple-400 font-bold"
                                         }`}
                                     >
                                         {diff}

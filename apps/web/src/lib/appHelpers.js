@@ -1,12 +1,17 @@
 import problemsData from "./problems.json";
 
 export const getTodayNY = () => {
-    const options = { timeZone: "America/New_York", year: "numeric", month: "2-digit", day: "2-digit" };
+    const options = {
+        timeZone: "America/New_York",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+    };
     const formatter = new Intl.DateTimeFormat("en-US", options);
     const parts = formatter.formatToParts(new Date());
-    const year = parts.find(p => p.type === 'year').value;
-    const month = parts.find(p => p.type === 'month').value;
-    const day = parts.find(p => p.type === 'day').value;
+    const year = parts.find((p) => p.type === "year").value;
+    const month = parts.find((p) => p.type === "month").value;
+    const day = parts.find((p) => p.type === "day").value;
     return `${year}-${month}-${day}`;
 };
 
@@ -26,14 +31,10 @@ export const slugify = (name) => {
 };
 
 export const findProblemById = (id) => {
-    for (const cat of problemsData) {
-        const found = cat.problems.find((p) => p.id === id);
-        if (found) return found;
-    }
-    return null;
+    return problemsData.find((p) => p.id === id) || null;
 };
 
-export const allProblems = problemsData.flatMap((cat) => cat.problems);
+export const allProblems = problemsData;
 
 export const DEFAULT_TIME_LIMIT_MS = 3000;
 export const DEFAULT_MEMORY_LIMIT_MB = 256;
@@ -48,13 +49,10 @@ export const getHiddenTests = (problem) =>
 
 export const pythonize = (text) => {
     if (!text) return text;
-    return text.replace(
-        /"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|\b(?:true|false|null)\b/g,
-        (match) => {
-            if (match[0] === '"' || match[0] === "'") return match;
-            return match === "true" ? "True" : match === "false" ? "False" : "None";
-        },
-    );
+    return text.replace(/"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|\b(?:true|false|null)\b/g, (match) => {
+        if (match[0] === '"' || match[0] === "'") return match;
+        return match === "true" ? "True" : match === "false" ? "False" : "None";
+    });
 };
 
 export const compactValue = (text) => {
