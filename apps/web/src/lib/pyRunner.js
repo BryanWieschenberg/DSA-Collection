@@ -17,7 +17,7 @@ export async function driver({
         const c = isHidden ? null : cases[i];
 
         if (isHidden) {
-            const showDetails = r.status === "RE" || r.status === "WA";
+            const showDetails = r.status === "RE" || r.status === "WA" || r.status === "TLE" || r.status === "MLE";
             return {
                 ...r,
                 hidden: !showDetails,

@@ -213,6 +213,7 @@ def run_code(req: RunRequest):
 @router.get("/solution/{problem_id}")
 def get_solution(problem_id: int):
     from fastapi import HTTPException
+
     path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "solutions.json")
     if not os.path.exists(path):
         raise HTTPException(status_code=404, detail="Solutions file not found")
@@ -222,4 +223,3 @@ def get_solution(problem_id: int):
     if sol is None:
         raise HTTPException(status_code=404, detail="Solution not found")
     return {"solution": sol}
-

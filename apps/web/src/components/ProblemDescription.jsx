@@ -60,7 +60,7 @@ export default function ProblemDescription({ activeProblem }) {
                                 ) {
                                     isClassLayout = true;
                                 }
-                            } catch (e) {
+                            } catch {
                                 isClassLayout = false;
                             }
                         }

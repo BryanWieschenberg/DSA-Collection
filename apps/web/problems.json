@@ -1,0 +1,4097 @@
+[
+    {
+        "id": 1,
+        "name": "Two Sum",
+        "difficulty": "Easy",
+        "code": "twoSum(nums: List[int], target: int) -> List[int]",
+        "description": "Find a pair of indices `i` and `j` in an integer array `nums` such that `nums[i] + nums[j]` equals `target`, with the condition that `i != j`.\n\nEach input is guaranteed to have one unique solution. Return the indices as a pair `[i, j]` with the smaller index first.",
+        "constraints": [
+            "`2 <= nums.length <= 10^4`",
+            "`-10^9 <= nums[i] <= 10^9`",
+            "`-10^9 <= target <= 10^9`",
+            "*Exactly one solution exists for each testcase.*"
+        ],
+        "examples": [
+            {
+                "input": "nums = [2, 7, 11, 15], target = 9",
+                "output": "[0, 1]"
+            },
+            {
+                "input": "nums = [3, 2, 4], target = 6",
+                "output": "[1, 2]"
+            },
+            {
+                "input": "nums = [3, 3], target = 6",
+                "output": "[0, 1]"
+            }
+        ]
+    },
+    {
+        "id": 2,
+        "name": "Contains Duplicates",
+        "difficulty": "Easy",
+        "code": "hasDuplicate(nums: List[int]) -> bool",
+        "description": "Given an array of integers `nums` and an integer `target`, return indices `i` and `j` such as that `nums[i] + nums[j] == target` and `i != j`.\n\nYou may assume that *every* input has exactly 1 pair of indices `i` and `j` that satisfy this condition.\n\nReturn the answer with the smaller index first.",
+        "constraints": [
+            "`2 <= nums.length <= 1000`",
+            "`-10,000,000 <= nums[i] <= 10,000,000`",
+            "`-10,000,000 <= target <= 10,000,000`",
+            "*Only one valid answer exists.*"
+        ],
+        "examples": [
+            {
+                "input": "nums = [1, 2, 3, 1]",
+                "output": "true"
+            },
+            {
+                "input": "nums = [1, 2, 3, 4]",
+                "output": "false"
+            }
+        ]
+    },
+    {
+        "id": 3,
+        "name": "Valid Anagram",
+        "difficulty": "Easy",
+        "code": "isAnagram(s: str, t: str) -> bool",
+        "description": "Determine if string `t` is a permutation of string `s` (an anagram), meaning it contains the exact same characters with the same frequencies, just possibly in a different order. Return `True` if it is, and `False` otherwise.",
+        "constraints": [
+            "`1 <= s.length, t.length <= 5 * 10^4`",
+            "`s` and `t` consist of lowercase English letters."
+        ],
+        "examples": [
+            {
+                "input": "s = \"anagram\", t = \"nagaram\"",
+                "output": "true"
+            },
+            {
+                "input": "s = \"rat\", t = \"car\"",
+                "output": "false"
+            }
+        ]
+    },
+    {
+        "id": 4,
+        "name": "Design Dynamic Array (Resizable Array)",
+        "difficulty": "Easy",
+        "code": "class DynamicArray:\n    def __init__(self, capacity: int):\n        \n\n    def get(self, i: int) -> int:\n        \n\n    def set(self, i: int, val: int) -> None:\n        \n\n    def pushback(self, val: int) -> None:\n        \n\n    def popback(self) -> int:\n        \n\n    def resize(self) -> None:\n        \n\n    def getSize(self) -> int:\n        \n\n    def getCapacity(self) -> int:\n        ",
+        "description": "Design a resizable array class named `DynamicArray` to manage a list of integers dynamically.\n\nThe class should implement the following functionality:\n\n* `DynamicArray(capacity)` initializes the array with a starting capacity of `capacity` (always greater than zero).\n* `get(i)` retrieves the value at index `i`.\n* `set(i, val)` replaces the value at index `i` with `val`.\n* `pushback(val)` appends `val` to the end of the array, automatically doubling the capacity via `resize()` if the array is full.\n* `popback()` removes and returns the last element of the array.\n* `resize()` doubles the current capacity of the array, copying all existing elements over.\n* `getSize()` returns the current number of elements.\n* `getCapacity()` returns the total capacity of the array.",
+        "constraints": [
+            "`1 <= capacity <= 100`",
+            "`-1000 <= val <= 1000`",
+            "`0 <= i < size` for `get` and `set` calls.",
+            "At most `5000` method calls in total."
+        ],
+        "examples": [
+            {
+                "input": "[[\"DynamicArray\", [1]], [\"pushback\", [10]], [\"getSize\", []], [\"getCapacity\", []]]",
+                "output": "[null, null, 1, 1]"
+            },
+            {
+                "input": "[[\"DynamicArray\", [2]], [\"pushback\", [1]], [\"pushback\", [2]], [\"pushback\", [3]], [\"getSize\", []], [\"getCapacity\", []]]",
+                "output": "[null, null, null, null, 3, 4]"
+            }
+        ]
+    },
+    {
+        "id": 5,
+        "name": "Max Consecutive Ones",
+        "difficulty": "Easy",
+        "code": "findMaxConsecutiveOnes(nums: List[int]) -> int",
+        "description": "Find the length of the longest contiguous subarray consisting only of the number `1` within a binary array `nums` containing only `0`s and `1`s.",
+        "constraints": [
+            "`1 <= nums.length <= 10^5`",
+            "`nums[i]` is either `0` or `1`."
+        ],
+        "examples": [
+            {
+                "input": "nums = [1, 1, 0, 1, 1, 1]",
+                "output": "3"
+            },
+            {
+                "input": "nums = [1, 0, 1, 1, 0, 1]",
+                "output": "2"
+            }
+        ]
+    },
+    {
+        "id": 6,
+        "name": "Longest Common Prefix",
+        "difficulty": "Easy",
+        "code": "longestCommonPrefix(strs: List[str]) -> str",
+        "description": "Find the longest common prefix string amongst an array of strings `strs`. If there is no common prefix, return an empty string.",
+        "constraints": [
+            "`1 <= strs.length <= 200`",
+            "`0 <= strs[i].length <= 200`",
+            "`strs[i]` consists of only lowercase English letters."
+        ],
+        "examples": [
+            {
+                "input": "strs = [\"flower\", \"flow\", \"flight\"]",
+                "output": "\"fl\""
+            },
+            {
+                "input": "strs = [\"dog\", \"racecar\", \"car\"]",
+                "output": "\"\""
+            }
+        ]
+    },
+    {
+        "id": 7,
+        "name": "Replace Elements With Greatest Element On Right Side",
+        "difficulty": "Easy",
+        "code": "replaceElements(arr: List[int]) -> List[int]",
+        "description": "Given an array `arr`, replace each element with the largest element among the elements to its right, and replace the last element with `-1`. Return the modified array.",
+        "constraints": [
+            "`1 <= arr.length <= 10^4`",
+            "`-10^5 <= arr[i] <= 10^5`"
+        ],
+        "examples": [
+            {
+                "input": "arr = [17, 18, 5, 4, 6, 1]",
+                "output": "[18, 6, 6, 6, 1, -1]"
+            },
+            {
+                "input": "arr = [400]",
+                "output": "[-1]"
+            }
+        ]
+    },
+    {
+        "id": 8,
+        "name": "Remove Element",
+        "difficulty": "Easy",
+        "code": "removeElement(nums: List[int], val: int) -> int",
+        "description": "Given an integer array `nums` and an integer `val`, remove all occurrences of `val` in-place. The order of the elements may be changed. Return the number of elements in `nums` which are not equal to `val`.",
+        "constraints": [
+            "`0 <= nums.length <= 100`",
+            "`0 <= nums[i] <= 50`",
+            "`0 <= val <= 100`"
+        ],
+        "examples": [
+            {
+                "input": "nums = [3, 2, 2, 3], val = 3",
+                "output": "2"
+            },
+            {
+                "input": "nums = [0, 1, 2, 2, 3, 0, 4, 2], val = 2",
+                "output": "5"
+            }
+        ]
+    },
+    {
+        "id": 9,
+        "name": "Number of Students Unable to Eat Lunch",
+        "difficulty": "Easy",
+        "code": "countStudents(students: List[int], sandwiches: List[int]) -> int",
+        "description": "You are given two integer arrays `students` and `sandwiches` where `sandwiches[i]` is the type of the sandwich in the stack and `students[j]` is the preference of the student in the queue. Return the number of students unable to eat.",
+        "constraints": [
+            "`1 <= students.length, sandwiches.length <= 100`",
+            "`students.length == sandwiches.length`",
+            "`students[i]` is either `0` or `1`.",
+            "`sandwiches[i]` is either `0` or `1`."
+        ],
+        "examples": [
+            {
+                "input": "students = [1, 1, 0, 0], sandwiches = [0, 1, 0, 1]",
+                "output": "0"
+            },
+            {
+                "input": "students = [1, 1, 1, 0, 0, 1], sandwiches = [1, 0, 0, 0, 1, 1]",
+                "output": "3"
+            }
+        ]
+    },
+    {
+        "id": 10,
+        "name": "Majority Element",
+        "difficulty": "Easy",
+        "code": "majorityElement(nums: List[int]) -> int",
+        "description": "Given an array `nums` of size `n`, return the majority element. The majority element is the element that appears more than `\u230an / 2\u230b` times. You may assume that the majority element always exists in the array.",
+        "constraints": [
+            "`1 <= nums.length <= 5 * 10^4`",
+            "`-10^9 <= nums[i] <= 10^9`"
+        ],
+        "examples": [
+            {
+                "input": "nums = [3, 2, 3]",
+                "output": "3"
+            },
+            {
+                "input": "nums = [2, 2, 1, 1, 1, 2, 2]",
+                "output": "2"
+            }
+        ]
+    },
+    {
+        "id": 11,
+        "name": "Find Pivot Index",
+        "difficulty": "Easy",
+        "code": "pivotIndex(nums: List[int]) -> int",
+        "description": "Given an array of integers `nums`, calculate the pivot index of this array. The pivot index is the index where the sum of all the numbers strictly to the left of the index is equal to the sum of all the numbers strictly to the right of the index. If no such index exists, return `-1`. If there are multiple pivot indices, return the left-most pivot index.",
+        "constraints": [
+            "`1 <= nums.length <= 10^4`",
+            "`-1000 <= nums[i] <= 1000`"
+        ],
+        "examples": [
+            {
+                "input": "nums = [1, 7, 3, 6, 5, 6]",
+                "output": "3"
+            },
+            {
+                "input": "nums = [1, 2, 3]",
+                "output": "-1"
+            },
+            {
+                "input": "nums = [2, 1, -1]",
+                "output": "0"
+            }
+        ]
+    },
+    {
+        "id": 12,
+        "name": "Repeated Substring Pattern",
+        "difficulty": "Easy",
+        "code": "repeatedSubstringPattern(s: str) -> bool",
+        "description": "Given a string `s`, check if it can be constructed by taking a substring of it and repeating multiple times.",
+        "constraints": [
+            "`1 <= s.length <= 10^4`",
+            "`s` consists of lowercase English letters."
+        ],
+        "examples": [
+            {
+                "input": "s = \"abab\"",
+                "output": "true"
+            },
+            {
+                "input": "s = \"aba\"",
+                "output": "false"
+            },
+            {
+                "input": "s = \"abcabcabcabc\"",
+                "output": "true"
+            }
+        ]
+    },
+    {
+        "id": 13,
+        "name": "Range Sum Query - Immutable",
+        "difficulty": "Easy",
+        "code": "class NumArray:\n    def __init__(self, nums: List[int]):\n        \n\n    def sumRange(self, left: int, right: int) -> int:\n        ",
+        "description": "Design a class `NumArray` that supports calculating the sum of a prefix range of elements in an integer array.\n\nThe class should implement the following functionality:\n\n* `NumArray(nums)` initializes the object with the integer array `nums`.\n* `sumRange(left, right)` returns the sum of the elements of `nums` between indices `left` and `right` inclusive (i.e. `nums[left] + nums[left + 1] + ... + nums[right]`).",
+        "constraints": [
+            "`1 <= nums.length <= 10^4`",
+            "`-10^5 <= nums[i] <= 10^5`",
+            "`0 <= left <= right < nums.length`",
+            "At most `10^4` calls will be made to `sumRange`."
+        ],
+        "examples": [
+            {
+                "input": "[[\"NumArray\", [[-2, 0, 3, -5, 2, -1]]], [\"sumRange\", [0, 2]], [\"sumRange\", [2, 5]], [\"sumRange\", [0, 5]]]",
+                "output": "[null, 1, -1, -3]"
+            }
+        ]
+    },
+    {
+        "id": 14,
+        "name": "Design HashSet",
+        "difficulty": "Easy",
+        "code": "class MyHashSet:\n    def __init__(self):\n        \n\n    def add(self, key: int) -> None:\n        \n\n    def remove(self, key: int) -> None:\n        \n\n    def contains(self, key: int) -> bool:\n        ",
+        "description": "Design a HashSet without using any built-in hash table libraries.\n\nImplement `MyHashSet` class:\n\n* `add(key)` Inserts the value `key` into the HashSet.\n* `contains(key)` Returns whether the value `key` exists in the HashSet or not.\n* `remove(key)` Removes the value `key` in the HashSet. If `key` does not exist in the HashSet, do nothing.",
+        "constraints": [
+            "`0 <= key <= 10^6`",
+            "At most `10^4` calls will be made to `add`, `remove`, and `contains`."
+        ],
+        "examples": [
+            {
+                "input": "[[\"MyHashSet\", []], [\"add\", [1]], [\"add\", [2]], [\"contains\", [1]], [\"contains\", [3]], [\"add\", [2]], [\"contains\", [2]], [\"remove\", [2]], [\"contains\", [2]]]",
+                "output": "[null, null, null, true, false, null, true, null, false]"
+            }
+        ]
+    },
+    {
+        "id": 15,
+        "name": "Design HashMap",
+        "difficulty": "Easy",
+        "code": "class MyHashMap:\n    def __init__(self):\n        \n\n    def put(self, key: int, value: int) -> None:\n        \n\n    def get(self, key: int) -> int:\n        \n\n    def remove(self, key: int) -> None:\n        ",
+        "description": "Design a HashMap without using any built-in hash table libraries.\n\nImplement the `MyHashMap` class:\n\n* `put(key, value)` inserts a `(key, value)` pair into the HashMap. If the `key` already exists in the map, update the corresponding `value`.\n* `get(key)` returns the `value` to which the specified `key` is mapped, or `-1` if this map contains no mapping for the `key`.\n* `remove(key)` removes the mapping for the `key` if this map contains the mapping for the `key`.",
+        "constraints": [
+            "`0 <= key, value <= 10^6`",
+            "At most `10^4` calls will be made to `put`, `get`, and `remove`."
+        ],
+        "examples": [
+            {
+                "input": "[[\"MyHashMap\", []], [\"put\", [1, 1]], [\"put\", [2, 2]], [\"get\", [1]], [\"get\", [3]], [\"put\", [2, 1]], [\"get\", [2]], [\"remove\", [2]], [\"get\", [2]]]",
+                "output": "[null, null, null, 1, -1, null, 1, null, -1]"
+            }
+        ]
+    },
+    {
+        "id": 16,
+        "name": "Group Anagrams",
+        "difficulty": "Medium",
+        "code": "groupAnagrams(strs: List[str]) -> List[List[str]]",
+        "description": "Given an array of strings `strs`, group the anagrams together. To ensure deterministic testing, return the groups sorted lexicographically, and the strings within each group sorted lexicographically.",
+        "constraints": [
+            "`1 <= strs.length <= 10^4`",
+            "`0 <= strs[i].length <= 100`",
+            "`strs[i]` consists of lowercase English letters."
+        ],
+        "examples": [
+            {
+                "input": "strs = [\"eat\", \"tea\", \"tan\", \"ate\", \"nat\", \"bat\"]",
+                "output": "[[\"ate\", \"eat\", \"tea\"], [\"bat\"], [\"nat\", \"tan\"]]"
+            },
+            {
+                "input": "strs = [\"\"]",
+                "output": "[[\"\"]]"
+            },
+            {
+                "input": "strs = [\"a\"]",
+                "output": "[[\"a\"]]"
+            }
+        ]
+    },
+    {
+        "id": 17,
+        "name": "Top K Frequent Elements",
+        "difficulty": "Medium",
+        "code": "topKFrequent(nums: List[int], k: int) -> List[int]",
+        "description": "Given an integer array `nums` and an integer `k`, return the `k` most frequent elements. To make the output deterministic, return the final list of elements sorted in ascending order.",
+        "constraints": [
+            "`1 <= nums.length <= 10^5`",
+            "`-10^4 <= nums[i] <= 10^4`",
+            "`1 <= k <= number of unique elements`"
+        ],
+        "examples": [
+            {
+                "input": "nums = [1, 1, 1, 2, 2, 3], k = 2",
+                "output": "[1, 2]"
+            },
+            {
+                "input": "nums = [1], k = 1",
+                "output": "[1]"
+            }
+        ]
+    },
+    {
+        "id": 18,
+        "name": "Encode and Decode Strings",
+        "difficulty": "Medium",
+        "code": "class Codec:\n    def encode(self, strs: List[str]) -> str:\n        \n\n    def decode(self, s: str) -> List[str]:\n        ",
+        "description": "Design an algorithm to encode a list of strings to a single string, and decode the single string back to the original list of strings. Implement `Codec` class with `encode` and `decode` methods.",
+        "constraints": [
+            "`0 <= strs.length <= 200`",
+            "`0 <= strs[i].length <= 200`",
+            "`strs[i]` consists of any printable ASCII characters."
+        ],
+        "examples": [
+            {
+                "input": "[[\"Codec\", []], [\"encode_and_decode\", [[\"hello\", \"world\"]]], [\"encode_and_decode\", [[\"\"]]]]",
+                "output": "[null, [\"hello\", \"world\"], [\"\"]]"
+            }
+        ]
+    },
+    {
+        "id": 19,
+        "name": "Range Sum Query 2D - Immutable",
+        "difficulty": "Medium",
+        "code": "class NumMatrix:\n    def __init__(self, matrix: List[List[int]]):\n        \n\n    def sumRegion(self, row1: int, col1: int, row2: int, col2: int) -> int:\n        ",
+        "description": "Design a 2D matrix class `NumMatrix` that supports calculating the sum of a submatrix region.\n\nThe class should implement the following functionality:\n\n* `NumMatrix(matrix)` initializes the object with the 2D integer matrix `matrix`.\n* `sumRegion(row1, col1, row2, col2)` returns the sum of the elements of `matrix` inside the rectangle defined by its upper left corner `(row1, col1)` and lower right corner `(row2, col2)` inclusive.",
+        "constraints": [
+            "`1 <= m, n <= 200`",
+            "`-10^5 <= matrix[i][j] <= 10^5`",
+            "`0 <= row1 <= row2 < m`",
+            "`0 <= col1 <= col2 < n`",
+            "At most `10^4` calls will be made to `sumRegion`."
+        ],
+        "examples": [
+            {
+                "input": "[[\"NumMatrix\", [[[3, 0, 1, 4, 2], [5, 6, 3, 2, 1], [1, 2, 0, 1, 5], [4, 1, 0, 1, 7], [1, 0, 3, 0, 5]]]], [\"sumRegion\", [2, 1, 4, 3]], [\"sumRegion\", [1, 1, 2, 2]], [\"sumRegion\", [1, 2, 2, 4]]]",
+                "output": "[null, 8, 11, 12]"
+            }
+        ]
+    },
+    {
+        "id": 20,
+        "name": "Product of Array Except Self",
+        "difficulty": "Medium",
+        "code": "productExceptSelf(nums: List[int]) -> List[int]",
+        "description": "Given an integer array `nums`, return an array `answer` such that `answer[i]` is equal to the product of all the elements of `nums` except `nums[i]`. The product is guaranteed to fit in a 32-bit integer. You must write an algorithm that runs in $O(N)$ time and without using the division operation.",
+        "constraints": [
+            "`2 <= nums.length <= 10^5`",
+            "`-30 <= nums[i] <= 30`"
+        ],
+        "examples": [
+            {
+                "input": "nums = [1, 2, 3, 4]",
+                "output": "[24, 12, 8, 6]"
+            },
+            {
+                "input": "nums = [-1, 1, 0, -3, 3]",
+                "output": "[0, 0, 9, 0, 0]"
+            }
+        ]
+    },
+    {
+        "id": 21,
+        "name": "Valid Sudoku",
+        "difficulty": "Medium",
+        "code": "isValidSudoku(board: List[List[str]]) -> bool",
+        "description": "Determine if a $9 \\times 9$ Sudoku board is valid. Only the filled cells need to be validated according to the following rules:\n\n* Each row must contain the digits `1-9` without repetition.\n* Each column must contain the digits `1-9` without repetition.\n* Each of the nine $3 \\times 3$ sub-boxes of the grid must contain the digits `1-9` without repetition.\n\nNote: A Sudoku board (partially filled) could be valid but is not necessarily solvable. Only the filled cells need to be validated.",
+        "constraints": [
+            "`board.length == 9`",
+            "`board[i].length == 9`",
+            "`board[i][j]` is a digit `1-9` or `.`."
+        ],
+        "examples": [
+            {
+                "input": "board = [[\"5\", \"3\", \".\", \".\", \"7\", \".\", \".\", \".\", \".\"], [\"6\", \".\", \".\", \"1\", \"9\", \"5\", \".\", \".\", \".\"], [\".\", \"9\", \"8\", \".\", \".\", \".\", \".\", \"6\", \".\"], [\"8\", \".\", \".\", \".\", \"6\", \".\", \".\", \".\", \"3\"], [\"4\", \".\", \".\", \"8\", \".\", \"3\", \".\", \".\", \"1\"], [\"7\", \".\", \".\", \".\", \"2\", \".\", \".\", \".\", \"6\"], [\".\", \"6\", \".\", \".\", \".\", \".\", \"2\", \"8\", \".\"], [\".\", \".\", \".\", \"4\", \"1\", \"9\", \".\", \".\", \"5\"], [\".\", \".\", \".\", \".\", \"8\", \".\", \".\", \"7\", \"9\"]]",
+                "output": "true"
+            },
+            {
+                "input": "board = [[\"8\", \"3\", \".\", \".\", \"7\", \".\", \".\", \".\", \".\"], [\"6\", \".\", \".\", \"1\", \"9\", \"5\", \".\", \".\", \".\"], [\".\", \"9\", \"8\", \".\", \".\", \".\", \".\", \"6\", \".\"], [\"8\", \".\", \".\", \".\", \"6\", \".\", \".\", \".\", \"3\"], [\"4\", \".\", \".\", \"8\", \".\", \"3\", \".\", \".\", \"1\"], [\"7\", \".\", \".\", \".\", \"2\", \".\", \".\", \".\", \"6\"], [\".\", \"6\", \".\", \".\", \".\", \".\", \"2\", \"8\", \".\"], [\".\", \".\", \".\", \"4\", \"1\", \"9\", \".\", \".\", \"5\"], [\".\", \".\", \".\", \".\", \"8\", \".\", \".\", \"7\", \"9\"]]",
+                "output": "false"
+            }
+        ]
+    },
+    {
+        "id": 22,
+        "name": "Longest Consecutive Sequence",
+        "difficulty": "Medium",
+        "code": "longestConsecutive(nums: List[int]) -> int",
+        "description": "Given an unsorted array of integers `nums`, return the length of the longest consecutive elements sequence. You must write an algorithm that runs in $O(N)$ time.",
+        "constraints": [
+            "`0 <= nums.length <= 10^5`",
+            "`-10^9 <= nums[i] <= 10^9`"
+        ],
+        "examples": [
+            {
+                "input": "nums = [100, 4, 200, 1, 3, 2]",
+                "output": "4"
+            },
+            {
+                "input": "nums = [0, 3, 7, 2, 5, 8, 4, 6, 0, 1]",
+                "output": "9"
+            }
+        ]
+    },
+    {
+        "id": 23,
+        "name": "Best Time to Buy And Sell Stock II",
+        "difficulty": "Medium",
+        "code": "maxProfit(prices: List[int]) -> int",
+        "description": "You are given an integer array `prices` where `prices[i]` is the price of a given stock on the $i$-th day. On each day, you may decide to buy and/or sell the stock. You can only hold at most one share of the stock at any time. Find and return the maximum profit you can achieve.",
+        "constraints": [
+            "`1 <= prices.length <= 10^5`",
+            "`0 <= prices[i] <= 10^4`"
+        ],
+        "examples": [
+            {
+                "input": "prices = [7, 1, 5, 3, 6, 4]",
+                "output": "7"
+            },
+            {
+                "input": "prices = [1, 2, 3, 4, 5]",
+                "output": "4"
+            },
+            {
+                "input": "prices = [7, 6, 4, 3, 1]",
+                "output": "0"
+            }
+        ]
+    },
+    {
+        "id": 24,
+        "name": "Majority Element II",
+        "difficulty": "Medium",
+        "code": "majorityElement(nums: List[int]) -> List[int]",
+        "description": "Given an integer array `nums` of size $n$, find all elements that appear more than $\\lfloor n / 3 \\rfloor$ times. To ensure deterministic testing, return the final list of elements sorted in ascending order.",
+        "constraints": [
+            "`1 <= nums.length <= 5 * 10^4`",
+            "`-10^9 <= nums[i] <= 10^9`"
+        ],
+        "examples": [
+            {
+                "input": "nums = [3, 2, 3]",
+                "output": "[3]"
+            },
+            {
+                "input": "nums = [1]",
+                "output": "[1]"
+            },
+            {
+                "input": "nums = [1, 2]",
+                "output": "[1, 2]"
+            }
+        ]
+    },
+    {
+        "id": 25,
+        "name": "Repeated DNA Sequences",
+        "difficulty": "Medium",
+        "code": "findRepeatedDnaSequences(s: str) -> List[str]",
+        "description": "Given a string `s` that represents a DNA sequence, return all the `10`-letter-long sequences (substrings) that occur more than once in a DNA molecule. To ensure deterministic testing, return the final list of substrings sorted lexicographically.",
+        "constraints": [
+            "`1 <= s.length <= 10^5`",
+            "`s[i]` is either `A`, `C`, `G`, or `T`."
+        ],
+        "examples": [
+            {
+                "input": "s = \"AAAAACCCCCAAAAACCCCCCAAAAAGGGTTT\"",
+                "output": "[\"AAAAACCCCC\", \"CCCCCAAAAA\"]"
+            },
+            {
+                "input": "s = \"AAAAAAAAAAAAA\"",
+                "output": "[\"AAAAAAAAAA\"]"
+            }
+        ]
+    },
+    {
+        "id": 26,
+        "name": "Subarray Sum Equals K",
+        "difficulty": "Medium",
+        "code": "subarraySum(nums: List[int], k: int) -> int",
+        "description": "Given an array of integers `nums` and an integer `k`, return the total number of subarrays whose sum equals to `k`.",
+        "constraints": [
+            "`1 <= nums.length <= 2 * 10^4`",
+            "`-1000 <= nums[i] <= 1000`",
+            "`-10^7 <= k <= 10^7`"
+        ],
+        "examples": [
+            {
+                "input": "nums = [1, 1, 1], k = 2",
+                "output": "2"
+            },
+            {
+                "input": "nums = [1, 2, 3], k = 3",
+                "output": "2"
+            }
+        ]
+    },
+    {
+        "id": 27,
+        "name": "First Missing Positive",
+        "difficulty": "Hard",
+        "code": "firstMissingPositive(nums: List[int]) -> int",
+        "description": "Given an unsorted integer array `nums`, return the smallest positive integer that is not present in `nums`. You must implement an algorithm that runs in $O(N)$ time and uses $O(1)$ auxiliary space.",
+        "constraints": [
+            "`1 <= nums.length <= 10^5`",
+            "`-2^31 <= nums[i] <= 2^31 - 1`"
+        ],
+        "examples": [
+            {
+                "input": "nums = [1, 2, 0]",
+                "output": "3"
+            },
+            {
+                "input": "nums = [1, -1, 3, 4]",
+                "output": "2"
+            },
+            {
+                "input": "nums = [7, 8, 9, 11, 12]",
+                "output": "1"
+            }
+        ]
+    },
+    {
+        "id": 28,
+        "name": "Design Bogo Sort",
+        "difficulty": "Easy",
+        "code": "bogoSort(nums: List[int]) -> List[int]",
+        "description": "Implement Bogo Sort to sort an integer array `nums` in ascending order. Bogo Sort (permutation sort) successively generates permutations of its input until it finds one that is sorted. *Note: due to $O(N \\times N!)$ complexity, the array sizes are very small.*",
+        "constraints": [
+            "`1 <= nums.length <= 8`",
+            "`-100 <= nums[i] <= 100`"
+        ],
+        "examples": [
+            {
+                "input": "nums = [3, 2, 1]",
+                "output": "[1, 2, 3]"
+            },
+            {
+                "input": "nums = [1, 2, 3]",
+                "output": "[1, 2, 3]"
+            },
+            {
+                "input": "nums = [4, 2, 1, 3]",
+                "output": "[1, 2, 3, 4]"
+            }
+        ]
+    },
+    {
+        "id": 29,
+        "name": "Design Bubble Sort",
+        "difficulty": "Easy",
+        "code": "bubbleSort(nums: List[int]) -> List[int]",
+        "description": "Implement Bubble Sort to sort an integer array `nums` in ascending order. Bubble Sort works by repeatedly swapping adjacent elements if they are in the wrong order.",
+        "constraints": [
+            "`1 <= nums.length <= 1000`",
+            "`-10^4 <= nums[i] <= 10^4`"
+        ],
+        "examples": [
+            {
+                "input": "nums = [1, 2, 3, 5]",
+                "output": "[1, 2, 3, 5]"
+            },
+            {
+                "input": "nums = [0, 0, 1, 1, 2, 5]",
+                "output": "[0, 0, 1, 1, 2, 5]"
+            }
+        ]
+    },
+    {
+        "id": 30,
+        "name": "Design Selection Sort",
+        "difficulty": "Easy",
+        "code": "selectionSort(nums: List[int]) -> List[int]",
+        "description": "Implement Selection Sort to sort an integer array `nums` in ascending order. Selection Sort works by repeatedly finding the minimum element from the unsorted part and putting it at the beginning.",
+        "constraints": [
+            "`1 <= nums.length <= 1000`",
+            "`-10^4 <= nums[i] <= 10^4`"
+        ],
+        "examples": [
+            {
+                "input": "nums = [1, 2, 3, 5]",
+                "output": "[1, 2, 3, 5]"
+            },
+            {
+                "input": "nums = [0, 0, 1, 1, 2, 5]",
+                "output": "[0, 0, 1, 1, 2, 5]"
+            }
+        ]
+    },
+    {
+        "id": 31,
+        "name": "Design Insertion Sort",
+        "difficulty": "Easy",
+        "code": "insertionSort(nums: List[int]) -> List[int]",
+        "description": "Implement Insertion Sort to sort an integer array `nums` in ascending order. Insertion Sort works by building the sorted array one item at a time, inserting each element into its proper position relative to the already sorted part.",
+        "constraints": [
+            "`1 <= nums.length <= 1000`",
+            "`-10^4 <= nums[i] <= 10^4`"
+        ],
+        "examples": [
+            {
+                "input": "nums = [1, 2, 3, 5]",
+                "output": "[1, 2, 3, 5]"
+            },
+            {
+                "input": "nums = [0, 0, 1, 1, 2, 5]",
+                "output": "[0, 0, 1, 1, 2, 5]"
+            }
+        ]
+    },
+    {
+        "id": 32,
+        "name": "Design Merge Sort",
+        "difficulty": "Medium",
+        "code": "mergeSort(nums: List[int]) -> List[int]",
+        "description": "Implement Merge Sort to sort an integer array `nums` in ascending order. Merge Sort is a divide-and-conquer algorithm that recursively splits the array in half, sorts each half, and merges the sorted halves.",
+        "constraints": [
+            "`1 <= nums.length <= 10^5`",
+            "`-10^5 <= nums[i] <= 10^5`"
+        ],
+        "examples": [
+            {
+                "input": "nums = [5, 2, 3, 1]",
+                "output": "[1, 2, 3, 5]"
+            },
+            {
+                "input": "nums = [5, 1, 1, 2, 0, 0]",
+                "output": "[0, 0, 1, 1, 2, 5]"
+            }
+        ]
+    },
+    {
+        "id": 33,
+        "name": "Design Quick Sort",
+        "difficulty": "Medium",
+        "code": "quickSort(nums: List[int]) -> List[int]",
+        "description": "Implement Quick Sort to sort an integer array `nums` in ascending order. Quick Sort is a divide-and-conquer algorithm that selects a 'pivot' element, partitions the array such that elements less than pivot go left and elements greater than pivot go right, and then recursively sorts the sub-arrays.",
+        "constraints": [
+            "`1 <= nums.length <= 10^5`",
+            "`-10^5 <= nums[i] <= 10^5`"
+        ],
+        "examples": [
+            {
+                "input": "nums = [5, 2, 3, 1]",
+                "output": "[1, 2, 3, 5]"
+            },
+            {
+                "input": "nums = [5, 1, 1, 2, 0, 0]",
+                "output": "[0, 0, 1, 1, 2, 5]"
+            }
+        ]
+    },
+    {
+        "id": 34,
+        "name": "Design Counting Sort",
+        "difficulty": "Medium",
+        "code": "countingSort(nums: List[int]) -> List[int]",
+        "description": "Implement Counting Sort to sort an integer array `nums` in ascending order. Counting Sort works by counting the number of occurrences of each unique value in the array, and using arithmetic to calculate their target positions in the sorted output. *Note: Counting Sort is efficient for arrays where the range of elements ($K$) is small.*",
+        "constraints": [
+            "`1 <= nums.length <= 10^5`",
+            "`0 <= nums[i] <= 10^4`"
+        ],
+        "examples": [
+            {
+                "input": "nums = [4, 2, 2, 8, 3, 3, 1]",
+                "output": "[1, 2, 2, 3, 3, 4, 8]"
+            },
+            {
+                "input": "nums = [1, 0, 3, 1, 3, 1]",
+                "output": "[0, 1, 1, 1, 3, 3]"
+            }
+        ]
+    },
+    {
+        "id": 35,
+        "name": "Design Bucket Sort",
+        "difficulty": "Medium",
+        "code": "bucketSort(nums: List[int]) -> List[int]",
+        "description": "Implement Bucket Sort to sort an integer array `nums` in ascending order. Bucket Sort divides elements into several 'buckets', sorts each bucket individually (e.g. using insertion sort or another sorting algorithm), and then concatenates the buckets. *Note: Bucket Sort assumes the inputs are uniformly distributed over a range.*",
+        "constraints": [
+            "`1 <= nums.length <= 10^5`",
+            "`0 <= nums[i] <= 10^4`"
+        ],
+        "examples": [
+            {
+                "input": "nums = [4, 2, 2, 8, 3, 3, 1]",
+                "output": "[1, 2, 2, 3, 3, 4, 8]"
+            },
+            {
+                "input": "nums = [1, 0, 3, 1, 3, 1]",
+                "output": "[0, 1, 1, 1, 3, 3]"
+            }
+        ]
+    },
+    {
+        "id": 36,
+        "name": "Design Radix Sort",
+        "difficulty": "Medium",
+        "code": "radixSort(nums: List[int]) -> List[int]",
+        "description": "Implement Radix Sort to sort an integer array `nums` in ascending order. Radix Sort is a non-comparative sorting algorithm that sorts integers by grouping keys by individual digits that share the same significant position and value. *Note: Radix Sort is efficient for sorting non-negative integers.*",
+        "constraints": [
+            "`1 <= nums.length <= 10^5`",
+            "`0 <= nums[i] <= 10^9`"
+        ],
+        "examples": [
+            {
+                "input": "nums = [170, 45, 75, 90, 802, 24, 2, 66]",
+                "output": "[2, 24, 45, 66, 75, 90, 170, 802]"
+            },
+            {
+                "input": "nums = [1, 0, 3, 1, 3, 1]",
+                "output": "[0, 1, 1, 1, 3, 3]"
+            }
+        ]
+    },
+    {
+        "id": 37,
+        "name": "Reverse String",
+        "difficulty": "Easy",
+        "code": "reverseString(s: List[str]) -> List[str]",
+        "description": "Write a function that reverses a list of characters `s`. You must return the reversed list.",
+        "constraints": [
+            "`1 <= s.length <= 10^5`",
+            "`s[i]` is a printable ASCII character."
+        ],
+        "examples": [
+            {
+                "input": "s = [\"h\", \"e\", \"l\", \"l\", \"o\"]",
+                "output": "[\"o\", \"l\", \"l\", \"e\", \"h\"]"
+            },
+            {
+                "input": "s = [\"H\", \"a\", \"n\", \"n\", \"a\", \"h\"]",
+                "output": "[\"h\", \"a\", \"n\", \"n\", \"a\", \"H\"]"
+            }
+        ]
+    },
+    {
+        "id": 38,
+        "name": "Valid Palindrome",
+        "difficulty": "Easy",
+        "code": "isPalindrome(s: str) -> bool",
+        "description": "Given a string `s`, return `true` if it is a palindrome, or `false` otherwise. A palindrome is a string that reads the same backward as forward after converting all uppercase letters into lowercase letters and removing all non-alphanumeric characters.",
+        "constraints": [
+            "`1 <= s.length <= 2 * 10^5`",
+            "`s` consists only of printable ASCII characters."
+        ],
+        "examples": [
+            {
+                "input": "s = \"A man, a plan, a canal: Panama\"",
+                "output": "true"
+            },
+            {
+                "input": "s = \"race a car\"",
+                "output": "false"
+            },
+            {
+                "input": "s = \" \"",
+                "output": "true"
+            }
+        ]
+    },
+    {
+        "id": 39,
+        "name": "Valid Palindrome II",
+        "difficulty": "Easy",
+        "code": "validPalindrome(s: str) -> bool",
+        "description": "Given a string `s`, return `true` if the `s` can be a palindrome after deleting **at most one** character from it.",
+        "constraints": [
+            "`1 <= s.length <= 10^5`",
+            "`s` consists of lowercase English letters."
+        ],
+        "examples": [
+            {
+                "input": "s = \"aba\"",
+                "output": "true"
+            },
+            {
+                "input": "s = \"abca\"",
+                "output": "true"
+            },
+            {
+                "input": "s = \"abc\"",
+                "output": "false"
+            }
+        ]
+    },
+    {
+        "id": 40,
+        "name": "Merge Strings Alternately",
+        "difficulty": "Easy",
+        "code": "mergeAlternately(word1: str, word2: str) -> str",
+        "description": "You are given two strings `word1` and `word2`. Merge the strings by adding letters in alternating order, starting with `word1`. If a string is longer than the other, append the additional letters onto the end of the merged string.",
+        "constraints": [
+            "`1 <= word1.length, word2.length <= 100`",
+            "`word1` and `word2` consist of lowercase English letters."
+        ],
+        "examples": [
+            {
+                "input": "word1 = \"abc\", word2 = \"pqr\"",
+                "output": "\"apbqcr\""
+            },
+            {
+                "input": "word1 = \"ab\", word2 = \"rs\"",
+                "output": "\"arbs\""
+            },
+            {
+                "input": "word1 = \"abcd\", word2 = \"pq\"",
+                "output": "\"apbqcd\""
+            }
+        ]
+    },
+    {
+        "id": 41,
+        "name": "Merge Sorted Array",
+        "difficulty": "Easy",
+        "code": "merge(nums1: List[int], m: int, nums2: List[int], n: int) -> List[int]",
+        "description": "You are given two integer arrays `nums1` and `nums2`, sorted in non-decreasing order, and two integers `m` and `n`, representing the number of elements in `nums1` and `nums2` respectively. `nums1` has a length of `m + n`, where the first `m` elements denote the elements that should be merged, and the last `n` elements are set to `0` and should be ignored. Merge `nums1` and `nums2` into a single array sorted in non-decreasing order and return the merged array.",
+        "constraints": [
+            "`nums1.length == m + n`",
+            "`nums2.length == n`",
+            "`0 <= m, n <= 200`",
+            "`1 <= m + n <= 200`",
+            "`-10^9 <= nums1[i], nums2[j] <= 10^9`"
+        ],
+        "examples": [
+            {
+                "input": "nums1 = [1, 2, 3, 0, 0, 0], m = 3, nums2 = [2, 5, 6], n = 3",
+                "output": "[1, 2, 2, 3, 5, 6]"
+            },
+            {
+                "input": "nums1 = [1], m = 1, nums2 = [], n = 0",
+                "output": "[1]"
+            },
+            {
+                "input": "nums1 = [0], m = 0, nums2 = [1], n = 1",
+                "output": "[1]"
+            }
+        ]
+    },
+    {
+        "id": 42,
+        "name": "Remove Duplicates from Sorted Array",
+        "difficulty": "Easy",
+        "code": "removeDuplicates(nums: List[int]) -> int",
+        "description": "Given an integer array `nums` sorted in non-decreasing order, remove the duplicates in-place such that each unique element appears only once. Return the number of unique elements `k` in `nums`.",
+        "constraints": [
+            "`1 <= nums.length <= 3 * 10^4`",
+            "`-100 <= nums[i] <= 100`",
+            "`nums` is sorted in non-decreasing order."
+        ],
+        "examples": [
+            {
+                "input": "nums = [1, 1, 2]",
+                "output": "2"
+            },
+            {
+                "input": "nums = [0, 0, 1, 1, 1, 2, 2, 3, 3, 4]",
+                "output": "5"
+            }
+        ]
+    },
+    {
+        "id": 43,
+        "name": "Remove Duplicates from Sorted Array II",
+        "difficulty": "Medium",
+        "code": "removeDuplicatesII(nums: List[int]) -> int",
+        "description": "Remove duplicates in-place from a sorted integer array `nums` such that each unique element is allowed to appear at most two times. Return the number of elements `k` in the modified array.",
+        "constraints": [
+            "`1 <= nums.length <= 3 * 10^4`",
+            "`-10^4 <= nums[i] <= 10^4`",
+            "`nums` is sorted in non-decreasing order."
+        ],
+        "examples": [
+            {
+                "input": "nums = [1, 1, 1, 2, 2, 3]",
+                "output": "5"
+            },
+            {
+                "input": "nums = [0, 0, 1, 1, 1, 1, 2, 3, 3]",
+                "output": "7"
+            }
+        ]
+    },
+    {
+        "id": 44,
+        "name": "Two Sum II - Input Array Is Sorted",
+        "difficulty": "Medium",
+        "code": "twoSumSorted(numbers: List[int], target: int) -> List[int]",
+        "description": "Given a **1-indexed** array of integers `numbers` that is already sorted in non-decreasing order, find two numbers such that they add up to a specific `target` number. Return the indices of the two numbers, `[index1, index2]`, added by one. Your solution must use only constant extra space.",
+        "constraints": [
+            "`2 <= numbers.length <= 3 * 10^4`",
+            "`-1000 <= numbers[i] <= 1000`",
+            "`numbers` is sorted in non-decreasing order.",
+            "`-2000 <= target <= 2000`",
+            "*Exactly one solution exists.*"
+        ],
+        "examples": [
+            {
+                "input": "numbers = [2, 7, 11, 15], target = 9",
+                "output": "[1, 2]"
+            },
+            {
+                "input": "numbers = [2, 3, 4], target = 6",
+                "output": "[1, 3]"
+            },
+            {
+                "input": "numbers = [-1, 0], target = -1",
+                "output": "[1, 2]"
+            }
+        ]
+    },
+    {
+        "id": 45,
+        "name": "3Sum",
+        "difficulty": "Medium",
+        "code": "threeSum(nums: List[int]) -> List[List[int]]",
+        "description": "Given an integer array `nums`, return all the unique triplets `[nums[i], nums[j], nums[k]]` such that `i != j`, `i != k`, `j != k`, and `nums[i] + nums[j] + nums[k] == 0`. Return the triplets sorted.",
+        "constraints": [
+            "`3 <= nums.length <= 3000`",
+            "`-10^5 <= nums[i] <= 10^5`"
+        ],
+        "examples": [
+            {
+                "input": "nums = [-1, 0, 1, 2, -1, -4]",
+                "output": "[[-1, -1, 2], [-1, 0, 1]]"
+            },
+            {
+                "input": "nums = [0, 1, 1]",
+                "output": "[]"
+            },
+            {
+                "input": "nums = [0, 0, 0]",
+                "output": "[[0, 0, 0]]"
+            }
+        ]
+    },
+    {
+        "id": 46,
+        "name": "4Sum",
+        "difficulty": "Medium",
+        "code": "fourSum(nums: List[int], target: int) -> List[List[int]]",
+        "description": "Given an array `nums` of `n` integers and an integer `target`, return an array of all the **unique** quadruplets `[nums[a], nums[b], nums[c], nums[d]]` such that their sum equals `target`. Return the quadruplets sorted.",
+        "constraints": [
+            "`4 <= nums.length <= 200`",
+            "`-10^9 <= nums[i] <= 10^9`",
+            "`-10^9 <= target <= 10^9`"
+        ],
+        "examples": [
+            {
+                "input": "nums = [1, 0, -1, 0, -2, 2], target = 0",
+                "output": "[[-2, -1, 1, 2], [-2, 0, 0, 2], [-1, 0, 0, 1]]"
+            },
+            {
+                "input": "nums = [2, 2, 2, 2, 2], target = 8",
+                "output": "[[2, 2, 2, 2]]"
+            }
+        ]
+    },
+    {
+        "id": 47,
+        "name": "Rotate Array",
+        "difficulty": "Medium",
+        "code": "rotate(nums: List[int], k: int) -> List[int]",
+        "description": "Given an integer array `nums`, rotate the array to the right by `k` steps, where `k` is non-negative. Return the rotated array.",
+        "constraints": [
+            "`1 <= nums.length <= 10^5`",
+            "`-2^31 <= nums[i] <= 2^31 - 1`",
+            "`0 <= k <= 10^5`"
+        ],
+        "examples": [
+            {
+                "input": "nums = [1, 2, 3, 4, 5, 6, 7], k = 3",
+                "output": "[5, 6, 7, 1, 2, 3, 4]"
+            },
+            {
+                "input": "nums = [-1, -100, 3, 99], k = 2",
+                "output": "[3, 99, -1, -100]"
+            }
+        ]
+    },
+    {
+        "id": 48,
+        "name": "Container With Most Water",
+        "difficulty": "Medium",
+        "code": "maxArea(height: List[int]) -> int",
+        "description": "You are given an integer array `height` of length `n`. Find two lines that together with the x-axis form a container, such that the container contains the most water. Return the maximum amount of water a container can store.",
+        "constraints": [
+            "`2 <= height.length <= 10^5`",
+            "`0 <= height[i] <= 10^4`"
+        ],
+        "examples": [
+            {
+                "input": "height = [1, 8, 6, 2, 5, 4, 8, 3, 7]",
+                "output": "49"
+            },
+            {
+                "input": "height = [1, 1]",
+                "output": "1"
+            }
+        ]
+    },
+    {
+        "id": 49,
+        "name": "Boats to Save People",
+        "difficulty": "Medium",
+        "code": "numRescueBoats(people: List[int], limit: int) -> int",
+        "description": "You are given an array `people` representing weights, and a weight limit for each boat. Each boat carries at most two people at the same time, provided their combined weight is at most `limit`. Return the minimum number of boats to carry every person.",
+        "constraints": [
+            "`1 <= people.length <= 5 * 10^4`",
+            "`1 <= people[i] <= limit <= 3 * 10^4`"
+        ],
+        "examples": [
+            {
+                "input": "people = [1, 2], limit = 3",
+                "output": "1"
+            },
+            {
+                "input": "people = [3, 2, 2, 1], limit = 3",
+                "output": "3"
+            },
+            {
+                "input": "people = [3, 5, 3, 4], limit = 5",
+                "output": "4"
+            }
+        ]
+    },
+    {
+        "id": 50,
+        "name": "Trapping Rain Water",
+        "difficulty": "Hard",
+        "code": "trap(height: List[int]) -> int",
+        "description": "Given `n` non-negative integers representing an elevation map where the width of each bar is `1`, compute how much water it can trap after raining.",
+        "constraints": [
+            "`1 <= height.length <= 2 * 10^4`",
+            "`0 <= height[i] <= 10^5`"
+        ],
+        "examples": [
+            {
+                "input": "height = [0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1]",
+                "output": "6"
+            },
+            {
+                "input": "height = [4, 2, 0, 3, 2, 5]",
+                "output": "9"
+            }
+        ]
+    },
+    {
+        "id": 51,
+        "name": "Contains Duplicate II",
+        "difficulty": "Easy",
+        "code": "containsNearbyDuplicate(nums: List[int], k: int) -> bool",
+        "description": "Given an integer array `nums` and an integer `k`, return `True` if there are two distinct indices `i` and `j` in the array such that `nums[i] == nums[j]` and `abs(i - j) <= k`.",
+        "constraints": [
+            "`1 <= nums.length <= 10^5`",
+            "`-10^9 <= nums[i] <= 10^9`",
+            "`0 <= k <= 10^5`"
+        ],
+        "examples": [
+            {
+                "input": "nums = [1, 2, 3, 1], k = 3",
+                "output": "true"
+            },
+            {
+                "input": "nums = [1, 0, 1, 1], k = 1",
+                "output": "true"
+            },
+            {
+                "input": "nums = [1, 2, 3, 1, 2, 3], k = 2",
+                "output": "false"
+            }
+        ]
+    },
+    {
+        "id": 52,
+        "name": "Best Time to Buy And Sell Stock",
+        "difficulty": "Easy",
+        "code": "maxProfit(prices: List[int]) -> int",
+        "description": "Given an array `prices` where `prices[i]` is the price of a given stock on the `i`-th day, return the maximum profit you can achieve from this transaction. If you cannot achieve any profit, return `0`.",
+        "constraints": [
+            "`1 <= prices.length <= 10^5`",
+            "`0 <= prices[i] <= 10^4`"
+        ],
+        "examples": [
+            {
+                "input": "prices = [7, 1, 5, 3, 6, 4]",
+                "output": "5"
+            },
+            {
+                "input": "prices = [7, 6, 4, 3, 1]",
+                "output": "0"
+            }
+        ]
+    },
+    {
+        "id": 53,
+        "name": "Number of Sub Arrays of Size K and Avg >= Threshold",
+        "difficulty": "Medium",
+        "code": "numOfSubarrays(arr: List[int], k: int, threshold: int) -> int",
+        "description": "Given an array of integers `arr` and two integers `k` and `threshold`, return the number of sub-arrays of size `k` whose average is greater than or equal to `threshold`.",
+        "constraints": [
+            "`1 <= arr.length <= 10^5`",
+            "`1 <= arr[i] <= 10^4`",
+            "`1 <= k <= arr.length`",
+            "`0 <= threshold <= 10^4`"
+        ],
+        "examples": [
+            {
+                "input": "arr = [2, 2, 2, 2, 5, 5, 5, 8], k = 3, threshold = 4",
+                "output": "3"
+            },
+            {
+                "input": "arr = [11, 13, 17, 23, 29, 31, 7, 5, 2, 3], k = 3, threshold = 5",
+                "output": "6"
+            }
+        ]
+    },
+    {
+        "id": 54,
+        "name": "Longest Substring Without Repeating Characters",
+        "difficulty": "Medium",
+        "code": "lengthOfLongestSubstring(s: str) -> int",
+        "description": "Given a string `s`, find the length of the longest substring without repeating characters.",
+        "constraints": [
+            "`0 <= s.length <= 5 * 10^4`",
+            "`s` consists of English letters, digits, symbols, and spaces."
+        ],
+        "examples": [
+            {
+                "input": "s = \"abcabcbb\"",
+                "output": "3"
+            },
+            {
+                "input": "s = \"bbbbb\"",
+                "output": "1"
+            },
+            {
+                "input": "s = \"pwwkew\"",
+                "output": "3"
+            }
+        ]
+    },
+    {
+        "id": 55,
+        "name": "Longest Repeating Character Replacement",
+        "difficulty": "Medium",
+        "code": "characterReplacement(s: str, k: int) -> int",
+        "description": "You are given a string `s` consisting of uppercase English letters. You can choose any character of the string and change it to any other uppercase English character. You can perform this operation at most `k` times. Return the length of the longest substring containing the same letter you can get after performing the above operations.",
+        "constraints": [
+            "`1 <= s.length <= 10^5`",
+            "`0 <= k <= s.length`",
+            "`s` consists of only uppercase English letters."
+        ],
+        "examples": [
+            {
+                "input": "s = \"ABAB\", k = 2",
+                "output": "4"
+            },
+            {
+                "input": "s = \"AABABBA\", k = 1",
+                "output": "4"
+            }
+        ]
+    },
+    {
+        "id": 56,
+        "name": "Permutation In String",
+        "difficulty": "Medium",
+        "code": "checkInclusion(s1: str, s2: str) -> bool",
+        "description": "Given two strings `s1` and `s2`, return `True` if `s2` contains a permutation of `s1`, or `False` otherwise.",
+        "constraints": [
+            "`1 <= s1.length, s2.length <= 10^4`",
+            "`s1` and `s2` consist of lowercase English letters."
+        ],
+        "examples": [
+            {
+                "input": "s1 = \"ab\", s2 = \"eidbaooo\"",
+                "output": "true"
+            },
+            {
+                "input": "s1 = \"ab\", s2 = \"eidboaoo\"",
+                "output": "false"
+            }
+        ]
+    },
+    {
+        "id": 57,
+        "name": "Minimum Size Subarray Sum",
+        "difficulty": "Medium",
+        "code": "minSubArrayLen(target: int, nums: List[int]) -> int",
+        "description": "Given an array of positive integers `nums` and a positive integer `target`, return the minimal length of a contiguous subarray of which the sum is greater than or equal to `target`. If there is no such subarray, return `0` instead.",
+        "constraints": [
+            "`1 <= target <= 10^9`",
+            "`1 <= nums.length <= 10^5`",
+            "`1 <= nums[i] <= 10^4`"
+        ],
+        "examples": [
+            {
+                "input": "target = 7, nums = [2, 3, 1, 2, 4, 3]",
+                "output": "2"
+            },
+            {
+                "input": "target = 4, nums = [1, 4, 4]",
+                "output": "1"
+            },
+            {
+                "input": "target = 11, nums = [1, 1, 1, 1, 1, 1, 1, 1]",
+                "output": "0"
+            }
+        ]
+    },
+    {
+        "id": 58,
+        "name": "Find K Closest Elements",
+        "difficulty": "Medium",
+        "code": "findClosestElements(arr: List[int], k: int, x: int) -> List[int]",
+        "description": "Given a sorted integer array `arr`, two integers `k` and `x`, return the `k` closest integers to `x` in the array. The result should also be sorted in ascending order.",
+        "constraints": [
+            "`1 <= k <= arr.length <= 10^4`",
+            "`arr` is sorted in non-decreasing order.",
+            "`-10^4 <= arr[i], x <= 10^4`"
+        ],
+        "examples": [
+            {
+                "input": "arr = [1, 2, 3, 4, 5], k = 4, x = 3",
+                "output": "[1, 2, 3, 4]"
+            },
+            {
+                "input": "arr = [1, 2, 3, 4, 5], k = 4, x = -1",
+                "output": "[1, 2, 3, 4]"
+            }
+        ]
+    },
+    {
+        "id": 59,
+        "name": "Design Hit Counter",
+        "difficulty": "Medium",
+        "code": "class HitCounter:\n    def __init__(self):\n        \n\n    def hit(self, timestamp: int) -> None:\n        \n\n    def getHits(self, timestamp: int) -> int:\n        ",
+        "description": "Design a hit counter which counts the number of hits received in the past 300 seconds (i.e., the time range `[timestamp - 300 + 1, timestamp]`).",
+        "constraints": [
+            "`1 <= timestamp <= 2 * 10^9`",
+            "All timestamps are in non-decreasing order.",
+            "At most `10^4` calls will be made to `hit` and `getHits`."
+        ],
+        "examples": [
+            {
+                "input": "[[\"HitCounter\", []], [\"hit\", [1]], [\"hit\", [2]], [\"hit\", [3]], [\"getHits\", [4]], [\"hit\", [300]], [\"getHits\", [300]], [\"getHits\", [301]]]",
+                "output": "[null, null, null, null, 3, null, 4, 3]"
+            }
+        ]
+    },
+    {
+        "id": 60,
+        "name": "Minimum Window Substring",
+        "difficulty": "Hard",
+        "code": "minWindow(s: str, t: str) -> str",
+        "description": "Given two strings `s` and `t` of lengths `m` and `n` respectively, return the minimum window substring of `s` such that every character in `t` (including duplicates) is included in the window. If there is no such substring, return the empty string ``.",
+        "constraints": [
+            "`1 <= s.length, t.length <= 10^5`",
+            "`s` and `t` consist of uppercase and lowercase English letters."
+        ],
+        "examples": [
+            {
+                "input": "s = \"ADOBECODEBANC\", t = \"ABC\"",
+                "output": "\"BANC\""
+            },
+            {
+                "input": "s = \"a\", t = \"a\"",
+                "output": "\"a\""
+            },
+            {
+                "input": "s = \"a\", t = \"aa\"",
+                "output": "\"\""
+            }
+        ]
+    },
+    {
+        "id": 61,
+        "name": "Sliding Window Maximum",
+        "difficulty": "Hard",
+        "code": "maxSlidingWindow(nums: List[int], k: int) -> List[int]",
+        "description": "You are given an array of integers `nums`, there is a sliding window of size `k` which is moving from the very left of the array to the very right. You can only see the `k` numbers in the window. Each time the sliding window moves right by one position. Return the max sliding window.",
+        "constraints": [
+            "`1 <= nums.length <= 10^5`",
+            "`-10^4 <= nums[i] <= 10^4`",
+            "`1 <= k <= nums.length`"
+        ],
+        "examples": [
+            {
+                "input": "nums = [1, 3, -1, -3, 5, 3, 6, 7], k = 3",
+                "output": "[3, 3, 5, 5, 6, 7]"
+            },
+            {
+                "input": "nums = [1], k = 1",
+                "output": "[1]"
+            }
+        ]
+    },
+    {
+        "id": 62,
+        "name": "Binary Search",
+        "difficulty": "Easy",
+        "code": "search(nums: List[int], target: int) -> int",
+        "description": "Given an array of integers `nums` which is sorted in ascending order, and an integer `target`, write a function to search `target` in `nums`. If `target` exists, then return its index. Otherwise, return `-1`.",
+        "constraints": [
+            "`1 <= nums.length <= 10^5`",
+            "`-10^4 <= nums[i], target <= 10^4`",
+            "All the integers in `nums` are unique.",
+            "`nums` is sorted in ascending order."
+        ],
+        "examples": [
+            {
+                "input": "nums = [-1, 0, 3, 5, 9, 12], target = 9",
+                "output": "4"
+            },
+            {
+                "input": "nums = [-1, 0, 3, 5, 9, 12], target = 2",
+                "output": "-1"
+            }
+        ]
+    },
+    {
+        "id": 63,
+        "name": "Search Insert Position",
+        "difficulty": "Easy",
+        "code": "searchInsert(nums: List[int], target: int) -> int",
+        "description": "Given a sorted array of distinct integers `nums` and a target value `target`, return the index if the target is found. If not, return the index where it would be if it were inserted in order.",
+        "constraints": [
+            "`1 <= nums.length <= 10^5`",
+            "`-10^4 <= nums[i], target <= 10^4`",
+            "`nums` contains distinct values sorted in ascending order."
+        ],
+        "examples": [
+            {
+                "input": "nums = [1, 3, 5, 6], target = 5",
+                "output": "2"
+            },
+            {
+                "input": "nums = [1, 3, 5, 6], target = 2",
+                "output": "1"
+            },
+            {
+                "input": "nums = [1, 3, 5, 6], target = 7",
+                "output": "4"
+            }
+        ]
+    },
+    {
+        "id": 64,
+        "name": "Guess Number Higher Or Lower",
+        "difficulty": "Easy",
+        "code": "guessNumber(n: int) -> int",
+        "description": "We are playing the Guess Game. The game is as follows: I choose a number from `1` to `n`. You have to guess which number I chose. Every time you guess wrong, I will tell you whether the number I chose is higher or lower than your guess. You call a pre-defined API `guess(num: int) -> int` which returns: `-1` if your guess is higher than the pick, `1` if your guess is lower than the pick, and `0` if your guess is equal to the pick.",
+        "constraints": [
+            "`1 <= n <= 2^31 - 1`",
+            "`1 <= pick <= n`"
+        ],
+        "examples": [
+            {
+                "input": "n = 10, pick = 6",
+                "output": "6"
+            },
+            {
+                "input": "n = 1, pick = 1",
+                "output": "1"
+            },
+            {
+                "input": "n = 2, pick = 1",
+                "output": "1"
+            }
+        ]
+    },
+    {
+        "id": 65,
+        "name": "Sqrt(x)",
+        "difficulty": "Easy",
+        "code": "mySqrt(x: int) -> int",
+        "description": "Given a non-negative integer `x`, return the square root of `x` rounded down to the nearest integer. The returned integer should be non-negative as well. You must not use any built-in exponent function or operator.",
+        "constraints": [
+            "`0 <= x <= 2^31 - 1`"
+        ],
+        "examples": [
+            {
+                "input": "x = 4",
+                "output": "2"
+            },
+            {
+                "input": "x = 8",
+                "output": "2"
+            }
+        ]
+    },
+    {
+        "id": 66,
+        "name": "Search a 2D Matrix",
+        "difficulty": "Medium",
+        "code": "searchMatrix(matrix: List[List[int]], target: int) -> bool",
+        "description": "You are given an `m x n` integer matrix `matrix` with the following two properties: Each row is sorted in non-decreasing order. The first integer of each row is greater than the last integer of the previous row. Given an integer `target`, return `True` if `target` is in `matrix` or `False` otherwise.",
+        "constraints": [
+            "`1 <= m, n <= 300`",
+            "`-10^4 <= matrix[i][j], target <= 10^4`"
+        ],
+        "examples": [
+            {
+                "input": "matrix = [[1, 3, 5, 7], [10, 11, 16, 20], [23, 30, 34, 60]], target = 3",
+                "output": "true"
+            },
+            {
+                "input": "matrix = [[1, 3, 5, 7], [10, 11, 16, 20], [23, 30, 34, 60]], target = 13",
+                "output": "false"
+            }
+        ]
+    },
+    {
+        "id": 67,
+        "name": "Koko Eating Bananas",
+        "difficulty": "Medium",
+        "code": "minEatingSpeed(piles: List[int], h: int) -> int",
+        "description": "Return the minimum integer `k` such that Koko can eat all the bananas from all piles within `h` hours.",
+        "constraints": [
+            "`1 <= piles.length <= 10^5`",
+            "`piles.length <= h <= 10^9`",
+            "`1 <= piles[i] <= 10^9`"
+        ],
+        "examples": [
+            {
+                "input": "piles = [3, 6, 7, 11], h = 8",
+                "output": "4"
+            },
+            {
+                "input": "piles = [30, 11, 23, 4, 20], h = 5",
+                "output": "30"
+            },
+            {
+                "input": "piles = [30, 11, 23, 4, 20], h = 6",
+                "output": "23"
+            }
+        ]
+    },
+    {
+        "id": 68,
+        "name": "Capacity to Ship Packages Within D Days",
+        "difficulty": "Medium",
+        "code": "shipWithinDays(weights: List[int], days: int) -> int",
+        "description": "Return the least weight capacity of the ship that will result in all the packages on the conveyor belt being shipped within `days` days.",
+        "constraints": [
+            "`1 <= days <= weights.length <= 5 * 10^4`",
+            "`1 <= weights[i] <= 500`"
+        ],
+        "examples": [
+            {
+                "input": "weights = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], days = 5",
+                "output": "15"
+            },
+            {
+                "input": "weights = [3, 2, 2, 4, 1, 4], days = 3",
+                "output": "6"
+            },
+            {
+                "input": "weights = [1, 2, 3, 1, 1], days = 4",
+                "output": "3"
+            }
+        ]
+    },
+    {
+        "id": 69,
+        "name": "Find Minimum In Rotated Sorted Array",
+        "difficulty": "Medium",
+        "code": "findMin(nums: List[int]) -> int",
+        "description": "Given a sorted rotated array `nums` of unique elements, return the minimum element of this array. You must write an algorithm that runs in $O(\\log n)$ time.",
+        "constraints": [
+            "`1 <= nums.length <= 5 * 10^4`",
+            "`-9999 <= nums[i] <= 9999`",
+            "All the integers of `nums` are unique."
+        ],
+        "examples": [
+            {
+                "input": "nums = [3, 4, 5, 1, 2]",
+                "output": "1"
+            },
+            {
+                "input": "nums = [4, 5, 6, 7, 0, 1, 2]",
+                "output": "0"
+            },
+            {
+                "input": "nums = [11, 13, 15, 17]",
+                "output": "11"
+            }
+        ]
+    },
+    {
+        "id": 70,
+        "name": "Search In Rotated Sorted Array",
+        "difficulty": "Medium",
+        "code": "search(nums: List[int], target: int) -> int",
+        "description": "Given the array `nums` after a possible rotation and an integer `target`, return the index of `target` if it is in `nums`, or `-1` if it is not in `nums`.",
+        "constraints": [
+            "`1 <= nums.length <= 5 * 10^4`",
+            "`-10^4 <= nums[i], target <= 10^4`",
+            "All values of `nums` are unique."
+        ],
+        "examples": [
+            {
+                "input": "nums = [4, 5, 6, 7, 0, 1, 2], target = 0",
+                "output": "4"
+            },
+            {
+                "input": "nums = [4, 5, 6, 7, 0, 1, 2], target = 3",
+                "output": "-1"
+            },
+            {
+                "input": "nums = [1], target = 0",
+                "output": "-1"
+            }
+        ]
+    },
+    {
+        "id": 71,
+        "name": "Search In Rotated Sorted Array II",
+        "difficulty": "Medium",
+        "code": "search(nums: List[int], target: int) -> bool",
+        "description": "Given the array `nums` after a possible rotation containing duplicates, and an integer `target`, return `True` if `target` is in `nums`, or `False` otherwise.",
+        "constraints": [
+            "`1 <= nums.length <= 10^5`",
+            "`-10^4 <= nums[i], target <= 10^4`"
+        ],
+        "examples": [
+            {
+                "input": "nums = [2, 5, 6, 0, 0, 1, 2], target = 0",
+                "output": "true"
+            },
+            {
+                "input": "nums = [2, 5, 6, 0, 0, 1, 2], target = 3",
+                "output": "false"
+            }
+        ]
+    },
+    {
+        "id": 72,
+        "name": "Time Based Key Value Store",
+        "difficulty": "Medium",
+        "code": "class TimeMap:\n    def __init__(self):\n        \n\n    def set(self, key: str, value: str, timestamp: int) -> None:\n        \n\n    def get(self, key: str, timestamp: int) -> str:\n        ",
+        "description": "Design a time-based key-value data structure that can store multiple values for the same key at different timestamps and retrieve the key's value at a certain timestamp.",
+        "constraints": [
+            "`1 <= key.length, value.length <= 100`",
+            "`1 <= timestamp <= 10^7`",
+            "All the timestamps `timestamp` of `set` are strictly increasing.",
+            "At most `2 * 10^4` calls will be made to `set` and `get`."
+        ],
+        "examples": [
+            {
+                "input": "[[\"TimeMap\", []], [\"set\", [\"foo\", \"bar\", 1]], [\"get\", [\"foo\", 1]], [\"get\", [\"foo\", 3]], [\"set\", [\"foo\", \"bar2\", 4]], [\"get\", [\"foo\", 4]], [\"get\", [\"foo\", 5]]]",
+                "output": "[null, null, \"bar\", \"bar\", null, \"bar2\", \"bar2\"]"
+            }
+        ]
+    },
+    {
+        "id": 73,
+        "name": "Split Array Largest Sum",
+        "difficulty": "Hard",
+        "code": "splitArray(nums: List[int], k: int) -> int",
+        "description": "Given an integer array `nums` and an integer `k`, split `nums` into `k` non-empty contiguous subarrays such that the largest sum of any subarray is minimized.",
+        "constraints": [
+            "`1 <= nums.length <= 10^4`",
+            "`1 <= k <= min(50, nums.length)`",
+            "`0 <= nums[i] <= 10^6`"
+        ],
+        "examples": [
+            {
+                "input": "nums = [7, 2, 5, 10, 8], k = 2",
+                "output": "18"
+            },
+            {
+                "input": "nums = [1, 2, 3, 4, 5], k = 2",
+                "output": "9"
+            }
+        ]
+    },
+    {
+        "id": 74,
+        "name": "Median of Two Sorted Arrays",
+        "difficulty": "Hard",
+        "code": "findMedianSortedArrays(nums1: List[int], nums2: List[int]) -> float",
+        "description": "Given two sorted arrays `nums1` and `nums2` of size `m` and `n` respectively, return the median of the two sorted arrays.",
+        "constraints": [
+            "`0 <= nums1.length, nums2.length <= 2000`",
+            "`1 <= nums1.length + nums2.length <= 4000`",
+            "`-10^6 <= nums1[i], nums2[i] <= 10^6`"
+        ],
+        "examples": [
+            {
+                "input": "nums1 = [1, 3], nums2 = [2]",
+                "output": "2.0"
+            },
+            {
+                "input": "nums1 = [1, 2], nums2 = [3, 4]",
+                "output": "2.5"
+            }
+        ]
+    },
+    {
+        "id": 75,
+        "name": "Find in Mountain Array",
+        "difficulty": "Hard",
+        "code": "findInMountainArray(target: int, mountain_arr: MountainArray) -> int",
+        "description": "You are given a mountain array `mountain_arr`. You want to find the minimum index `i` such that `mountain_arr.get(i) == target`. You cannot access the mountain array directly. You may only access it using the `MountainArray` interface.",
+        "constraints": [
+            "`3 <= mountain_arr.length <= 10^4`",
+            "`0 <= target <= 10^9`",
+            "`0 <= mountain_arr[i] <= 10^9`"
+        ],
+        "examples": [
+            {
+                "input": "target = 3, mountain_arr = [1, 2, 3, 4, 5, 3, 1]",
+                "output": "2"
+            },
+            {
+                "input": "target = 3, mountain_arr = [0, 1, 2, 4, 2, 1]",
+                "output": "-1"
+            }
+        ]
+    },
+    {
+        "id": 76,
+        "name": "Excel Sheet Column Title",
+        "difficulty": "Easy",
+        "code": "convertToTitle(columnNumber: int) -> str",
+        "description": "Given an integer `columnNumber`, return its corresponding column title as it appears in an Excel sheet.",
+        "constraints": [
+            "`1 <= columnNumber <= 2^31 - 1`"
+        ],
+        "examples": [
+            {
+                "input": "columnNumber = 1",
+                "output": "\"A\""
+            },
+            {
+                "input": "columnNumber = 28",
+                "output": "\"AB\""
+            },
+            {
+                "input": "columnNumber = 701",
+                "output": "\"ZY\""
+            }
+        ]
+    },
+    {
+        "id": 77,
+        "name": "Greatest Common Divisor of Strings",
+        "difficulty": "Easy",
+        "code": "gcdOfStrings(str1: str, str2: str) -> str",
+        "description": "Given two strings `str1` and `str2`, return the largest string `x` such that `x` divides both `str1` and `str2`.",
+        "constraints": [
+            "`1 <= str1.length, str2.length <= 1000`",
+            "`str1` and `str2` consist of English uppercase letters."
+        ],
+        "examples": [
+            {
+                "input": "str1 = \"ABCABC\", str2 = \"ABC\"",
+                "output": "\"ABC\""
+            },
+            {
+                "input": "str1 = \"ABABAB\", str2 = \"ABAB\"",
+                "output": "\"AB\""
+            },
+            {
+                "input": "str1 = \"LEET\", str2 = \"CODE\"",
+                "output": "\"\""
+            }
+        ]
+    },
+    {
+        "id": 78,
+        "name": "Transpose Matrix",
+        "difficulty": "Easy",
+        "code": "transpose(matrix: List[List[int]]) -> List[List[int]]",
+        "description": "Given a 2D integer array `matrix`, return the transpose of `matrix`.",
+        "constraints": [
+            "`1 <= matrix.length, matrix[i].length <= 1000`",
+            "`1 <= matrix.length * matrix[i].length <= 10^5`",
+            "`-10^9 <= matrix[i][j] <= 10^9`"
+        ],
+        "examples": [
+            {
+                "input": "matrix = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]",
+                "output": "[[1, 4, 7], [2, 5, 8], [3, 6, 9]]"
+            },
+            {
+                "input": "matrix = [[1, 2, 3], [4, 5, 6]]",
+                "output": "[[1, 4], [2, 5], [3, 6]]"
+            }
+        ]
+    },
+    {
+        "id": 79,
+        "name": "Happy Number",
+        "difficulty": "Easy",
+        "code": "isHappy(n: int) -> bool",
+        "description": "Determine if a number `n` is happy. A happy number is a number defined by the following process: Starting with any positive integer, replace the number by the sum of the squares of its digits, and repeat the process until the number equals 1, or it loops endlessly in a cycle which does not include 1.",
+        "constraints": [
+            "`1 <= n <= 2^31 - 1`"
+        ],
+        "examples": [
+            {
+                "input": "n = 19",
+                "output": "true"
+            },
+            {
+                "input": "n = 2",
+                "output": "false"
+            }
+        ]
+    },
+    {
+        "id": 80,
+        "name": "Plus One",
+        "difficulty": "Easy",
+        "code": "plusOne(digits: List[int]) -> List[int]",
+        "description": "You are given a large integer represented as an integer array `digits`, where each `digits[i]` is the `i`-th digit of the integer. The digits are ordered from most significant to least significant in left-to-right order. The large integer does not contain any leading 0's. Increment the large integer by one and return the resulting array of digits.",
+        "constraints": [
+            "`1 <= digits.length <= 10^4`",
+            "`0 <= digits[i] <= 9`",
+            "`digits` does not contain leading 0's."
+        ],
+        "examples": [
+            {
+                "input": "digits = [1, 2, 3]",
+                "output": "[1, 2, 4]"
+            },
+            {
+                "input": "digits = [4, 3, 2, 1]",
+                "output": "[4, 3, 2, 2]"
+            },
+            {
+                "input": "digits = [9]",
+                "output": "[1, 0]"
+            }
+        ]
+    },
+    {
+        "id": 81,
+        "name": "Roman to Integer",
+        "difficulty": "Easy",
+        "code": "romanToInt(s: str) -> int",
+        "description": "Given a roman numeral string `s`, convert it to an integer. The input is guaranteed to be in the range `[1, 3999]`.",
+        "constraints": [
+            "`1 <= s.length <= 15`",
+            "`s` contains only the characters ('I', 'V', 'X', 'L', 'C', 'D', 'M')."
+        ],
+        "examples": [
+            {
+                "input": "s = \"III\"",
+                "output": "3"
+            },
+            {
+                "input": "s = \"LVIII\"",
+                "output": "58"
+            },
+            {
+                "input": "s = \"MCMXCIV\"",
+                "output": "1994"
+            }
+        ]
+    },
+    {
+        "id": 82,
+        "name": "Pascal's Triangle",
+        "difficulty": "Easy",
+        "code": "generate(numRows: int) -> List[List[int]]",
+        "description": "Given an integer `numRows`, return the first `numRows` of Pascal's triangle.",
+        "constraints": [
+            "`1 <= numRows <= 50`"
+        ],
+        "examples": [
+            {
+                "input": "numRows = 5",
+                "output": "[[1], [1, 1], [1, 2, 1], [1, 3, 3, 1], [1, 4, 6, 4, 1]]"
+            },
+            {
+                "input": "numRows = 1",
+                "output": "[[1]]"
+            }
+        ]
+    },
+    {
+        "id": 83,
+        "name": "Count Primes",
+        "difficulty": "Medium",
+        "code": "countPrimes(n: int) -> int",
+        "description": "Given an integer `n`, return the number of prime numbers that are strictly less than `n`.",
+        "constraints": [
+            "`0 <= n <= 5 * 10^6`"
+        ],
+        "examples": [
+            {
+                "input": "n = 10",
+                "output": "4"
+            },
+            {
+                "input": "n = 0",
+                "output": "0"
+            }
+        ]
+    },
+    {
+        "id": 84,
+        "name": "Insert Greatest Common Divisors in Linked List",
+        "difficulty": "Medium",
+        "code": "insertGreatestCommonDivisors(head: Optional[ListNode]) -> Optional[ListNode]",
+        "description": "Given the `head` of a linked list where each node contains an integer value. Between every pair of adjacent nodes, insert a new node with a value equal to the greatest common divisor of the two nodes' values. Return the linked list after insertion.",
+        "constraints": [
+            "The number of nodes in the list is in the range `[1, 5000]`.",
+            "`1 <= Node.val <= 1000`"
+        ],
+        "examples": [
+            {
+                "input": "head = L[18, 6, 10, 3]",
+                "output": "[18, 6, 6, 2, 10, 1, 3]"
+            },
+            {
+                "input": "head = L[7]",
+                "output": "[7]"
+            }
+        ]
+    },
+    {
+        "id": 85,
+        "name": "Rotate Image",
+        "difficulty": "Medium",
+        "code": "rotate(matrix: List[List[int]]) -> List[List[int]]",
+        "description": "You are given an `n x n` 2D matrix representing an image, rotate the image by 90 degrees (clockwise). You must rotate the image in-place, which means you have to modify the input 2D matrix directly. Return the rotated matrix.",
+        "constraints": [
+            "`1 <= matrix.length <= 500`",
+            "`matrix[i].length == matrix.length`",
+            "`-1000 <= matrix[i][j] <= 1000`"
+        ],
+        "examples": [
+            {
+                "input": "matrix = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]",
+                "output": "[[7, 4, 1], [8, 5, 2], [9, 6, 3]]"
+            },
+            {
+                "input": "matrix = [[5, 1, 9, 11], [2, 4, 8, 10], [13, 3, 6, 7], [15, 14, 12, 16]]",
+                "output": "[[15, 13, 2, 5], [14, 3, 4, 1], [12, 6, 8, 9], [16, 7, 10, 11]]"
+            }
+        ]
+    },
+    {
+        "id": 86,
+        "name": "Spiral Matrix",
+        "difficulty": "Medium",
+        "code": "spiralOrder(matrix: List[List[int]]) -> List[int]",
+        "description": "Given an `m x n` matrix, return all elements of the matrix in spiral order.",
+        "constraints": [
+            "`1 <= matrix.length, matrix[i].length <= 100`",
+            "`-100 <= matrix[i][j] <= 100`"
+        ],
+        "examples": [
+            {
+                "input": "matrix = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]",
+                "output": "[1, 2, 3, 6, 9, 8, 7, 4, 5]"
+            },
+            {
+                "input": "matrix = [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12]]",
+                "output": "[1, 2, 3, 4, 8, 12, 11, 10, 9, 5, 6, 7]"
+            }
+        ]
+    },
+    {
+        "id": 87,
+        "name": "Set Matrix Zeroes",
+        "difficulty": "Medium",
+        "code": "setZeroes(matrix: List[List[int]]) -> List[List[int]]",
+        "description": "Given an `m x n` integer matrix `matrix`, if an element is 0, set its entire row and column to 0's. Return the matrix.",
+        "constraints": [
+            "`1 <= matrix.length, matrix[i].length <= 200`",
+            "`-2^31 <= matrix[i][j] <= 2^31 - 1`"
+        ],
+        "examples": [
+            {
+                "input": "matrix = [[1, 1, 1], [1, 0, 1], [1, 1, 1]]",
+                "output": "[[1, 0, 1], [0, 0, 0], [1, 0, 1]]"
+            },
+            {
+                "input": "matrix = [[0, 1, 2, 0], [3, 4, 5, 2], [1, 3, 1, 5]]",
+                "output": "[[0, 0, 0, 0], [0, 4, 5, 0], [0, 3, 1, 0]]"
+            }
+        ]
+    },
+    {
+        "id": 88,
+        "name": "Pow(x, n)",
+        "difficulty": "Medium",
+        "code": "myPow(x: float, n: int) -> float",
+        "description": "Implement `pow(x, n)`, which calculates `x` raised to the power `n` (i.e., $x^n$).",
+        "constraints": [
+            "`-100.0 < x < 100.0`",
+            "`-2^31 <= n <= 2^31 - 1`",
+            "`-10^4 <= x^n <= 10^4`"
+        ],
+        "examples": [
+            {
+                "input": "x = 2.0, n = 10",
+                "output": "1024.0"
+            },
+            {
+                "input": "x = 2.1, n = 3",
+                "output": "9.261"
+            },
+            {
+                "input": "x = 2.0, n = -2",
+                "output": "0.25"
+            }
+        ]
+    },
+    {
+        "id": 89,
+        "name": "Multiply Strings",
+        "difficulty": "Medium",
+        "code": "multiply(num1: str, num2: str) -> str",
+        "description": "Given two non-negative integers `num1` and `num2` represented as strings, return the product of `num1` and `num2`, also represented as a string. Note: You must not convert the inputs to integer directly.",
+        "constraints": [
+            "`1 <= num1.length, num2.length <= 400`",
+            "`num1` and `num2` consist of digits only.",
+            "Both `num1` and `num2` do not contain any leading zero, except the number 0 itself."
+        ],
+        "examples": [
+            {
+                "input": "num1 = \"2\", num2 = \"3\"",
+                "output": "\"6\""
+            },
+            {
+                "input": "num1 = \"123\", num2 = \"456\"",
+                "output": "\"56088\""
+            }
+        ]
+    },
+    {
+        "id": 90,
+        "name": "Detect Squares",
+        "difficulty": "Medium",
+        "code": "class DetectSquares:\n    def __init__(self):\n        \n\n    def add(self, point: List[int]) -> None:\n        \n\n    def count(self, point: List[int]) -> int:\n        ",
+        "description": "Detect squares from a stream of 2D points. Implement the `DetectSquares` class to support adding points and counting the number of ways to form axis-aligned squares with a query point.",
+        "constraints": [
+            "`point.length == 2`",
+            "`0 <= x, y <= 1000`",
+            "At most 3000 calls in total will be made to `add` and `count`."
+        ],
+        "examples": [
+            {
+                "input": "[[\"DetectSquares\", []], [\"add\", [[3, 10]]], [\"add\", [[11, 2]]], [\"add\", [[3, 2]]], [\"count\", [[11, 10]]], [\"count\", [[14, 8]]], [\"add\", [[11, 2]]], [\"count\", [[11, 10]]]]",
+                "output": "[null, null, null, null, 1, 0, null, 2]"
+            }
+        ]
+    },
+    {
+        "id": 91,
+        "name": "Single Number",
+        "difficulty": "Easy",
+        "code": "singleNumber(nums: List[int]) -> int",
+        "description": "Given a non-empty array of integers `nums`, every element appears twice except for one. Find that single one.",
+        "constraints": [
+            "`1 <= nums.length <= 3 * 10^4`",
+            "`-3 * 10^4 <= nums[i] <= 3 * 10^4`",
+            "Each element in the array appears twice except for one element which appears only once."
+        ],
+        "examples": [
+            {
+                "input": "nums = [2, 2, 1]",
+                "output": "1"
+            },
+            {
+                "input": "nums = [4, 1, 2, 1, 2]",
+                "output": "4"
+            },
+            {
+                "input": "nums = [1]",
+                "output": "1"
+            }
+        ]
+    },
+    {
+        "id": 92,
+        "name": "Number of 1 Bits",
+        "difficulty": "Easy",
+        "code": "hammingWeight(n: int) -> int",
+        "description": "Write a function that takes an unsigned integer and returns the number of '1' bits it has (also known as the Hamming weight).",
+        "constraints": [
+            "`0 <= n <= 2^31 - 1`"
+        ],
+        "examples": [
+            {
+                "input": "n = 11",
+                "output": "3"
+            },
+            {
+                "input": "n = 128",
+                "output": "1"
+            }
+        ]
+    },
+    {
+        "id": 93,
+        "name": "Counting Bits",
+        "difficulty": "Easy",
+        "code": "countBits(n: int) -> List[int]",
+        "description": "Given an integer `n`, return an array `ans` of length `n + 1` such that for each `i` (`0 <= i <= n`), `ans[i]` is the number of `1` bits in the binary representation of `i`.",
+        "constraints": [
+            "`0 <= n <= 10^5`"
+        ],
+        "examples": [
+            {
+                "input": "n = 2",
+                "output": "[0, 1, 1]"
+            },
+            {
+                "input": "n = 5",
+                "output": "[0, 1, 1, 2, 1, 2]"
+            }
+        ]
+    },
+    {
+        "id": 94,
+        "name": "Add Binary",
+        "difficulty": "Easy",
+        "code": "addBinary(a: str, b: str) -> str",
+        "description": "Given two binary strings `a` and `b`, return their sum as a binary string.",
+        "constraints": [
+            "`1 <= a.length, b.length <= 10^4`",
+            "`a` and `b` consist only of '0' or '1' characters.",
+            "Each string does not contain leading zeros except for the zero itself."
+        ],
+        "examples": [
+            {
+                "input": "a = \"11\", b = \"1\"",
+                "output": "\"100\""
+            },
+            {
+                "input": "a = \"1010\", b = \"1011\"",
+                "output": "\"10101\""
+            }
+        ]
+    },
+    {
+        "id": 95,
+        "name": "Reverse Bits",
+        "difficulty": "Easy",
+        "code": "reverseBits(n: int) -> int",
+        "description": "Reverse bits of a given 32 bits unsigned integer.",
+        "constraints": [
+            "`0 <= n <= 2^32 - 1`"
+        ],
+        "examples": [
+            {
+                "input": "n = 43261596",
+                "output": "964176192"
+            }
+        ]
+    },
+    {
+        "id": 96,
+        "name": "Missing Number",
+        "difficulty": "Easy",
+        "code": "missingNumber(nums: List[int]) -> int",
+        "description": "Given an array `nums` containing `n` distinct numbers in the range `[0, n]`, return the only number in the range that is missing from the array.",
+        "constraints": [
+            "`1 <= nums.length <= 10^4`",
+            "`0 <= nums[i] <= nums.length`",
+            "All the numbers of `nums` are unique."
+        ],
+        "examples": [
+            {
+                "input": "nums = [3, 0, 1]",
+                "output": "2"
+            },
+            {
+                "input": "nums = [0, 1]",
+                "output": "2"
+            },
+            {
+                "input": "nums = [9, 6, 4, 2, 3, 5, 7, 0, 1]",
+                "output": "8"
+            }
+        ]
+    },
+    {
+        "id": 97,
+        "name": "Sum of Two Integers",
+        "difficulty": "Medium",
+        "code": "getSum(a: int, b: int) -> int",
+        "description": "Given two integers `a` and `b`, return the sum of the two integers without using the operators `+` and `-`.",
+        "constraints": [
+            "`-1000 <= a, b <= 1000`"
+        ],
+        "examples": [
+            {
+                "input": "a = 1, b = 2",
+                "output": "3"
+            },
+            {
+                "input": "a = 2, b = 3",
+                "output": "5"
+            }
+        ]
+    },
+    {
+        "id": 98,
+        "name": "Reverse Integer",
+        "difficulty": "Medium",
+        "code": "reverse(x: int) -> int",
+        "description": "Given a signed 32-bit integer `x`, return `x` with its digits reversed. If reversing `x` causes the value to go outside the signed 32-bit integer range `[-2^31, 2^31 - 1]`, then return `0`.",
+        "constraints": [
+            "`-2^31 <= x <= 2^31 - 1`"
+        ],
+        "examples": [
+            {
+                "input": "x = 123",
+                "output": "321"
+            },
+            {
+                "input": "x = -123",
+                "output": "-321"
+            },
+            {
+                "input": "x = 120",
+                "output": "21"
+            }
+        ]
+    },
+    {
+        "id": 99,
+        "name": "Bitwise AND of Numbers Range",
+        "difficulty": "Medium",
+        "code": "rangeBitwiseAnd(left: int, right: int) -> int",
+        "description": "Given two integers `left` and `right` that represent the range `[left, right]`, return the bitwise AND of all numbers in this range, inclusive.",
+        "constraints": [
+            "`0 <= left <= right <= 2^31 - 1`"
+        ],
+        "examples": [
+            {
+                "input": "left = 5, right = 7",
+                "output": "4"
+            },
+            {
+                "input": "left = 0, right = 0",
+                "output": "0"
+            },
+            {
+                "input": "left = 1, right = 2147483647",
+                "output": "0"
+            }
+        ]
+    },
+    {
+        "id": 100,
+        "name": "Minimum Array End",
+        "difficulty": "Medium",
+        "code": "minEnd(n: int, x: int) -> int",
+        "description": "Given two integers `n` and `x`, return the minimum possible value of `nums[n - 1]` after constructing a positive integer array `nums` of size `n` with strictly increasing elements such that the bitwise AND of all elements is `x`.",
+        "constraints": [
+            "`1 <= n, x <= 10^8`"
+        ],
+        "examples": [
+            {
+                "input": "n = 3, x = 4",
+                "output": "6"
+            },
+            {
+                "input": "n = 2, x = 7",
+                "output": "15"
+            }
+        ]
+    },
+    {
+        "id": 101,
+        "name": "Reverse Linked List",
+        "difficulty": "Easy",
+        "code": "reverseList(head: Optional[ListNode]) -> Optional[ListNode]",
+        "description": "Given the `head` of a singly linked list, reverse the list, and return the reversed list.",
+        "constraints": [
+            "`0 <= head.length <= 5000`",
+            "`-5000 <= Node.val <= 5000`"
+        ],
+        "examples": [
+            {
+                "input": "head = L[1, 2, 3, 4, 5]",
+                "output": "L[5, 4, 3, 2, 1]"
+            },
+            {
+                "input": "head = L[1, 2]",
+                "output": "L[2, 1]"
+            },
+            {
+                "input": "head = L[]",
+                "output": "null"
+            }
+        ]
+    },
+    {
+        "id": 102,
+        "name": "Merge Two Sorted Lists",
+        "difficulty": "Easy",
+        "code": "mergeTwoLists(list1: Optional[ListNode], list2: Optional[ListNode]) -> Optional[ListNode]",
+        "description": "Merge two sorted linked lists into one sorted list.",
+        "constraints": [
+            "`0 <= list1.length, list2.length <= 50`",
+            "`-100 <= Node.val <= 100`",
+            "Both `list1` and `list2` are sorted in non-decreasing order."
+        ],
+        "examples": [
+            {
+                "input": "list1 = L[1, 2, 4], list2 = L[1, 3, 4]",
+                "output": "L[1, 1, 2, 3, 4, 4]"
+            },
+            {
+                "input": "list1 = L[], list2 = L[]",
+                "output": "null"
+            },
+            {
+                "input": "list1 = L[], list2 = L[0]",
+                "output": "L[0]"
+            }
+        ]
+    },
+    {
+        "id": 103,
+        "name": "Linked List Cycle",
+        "difficulty": "Easy",
+        "code": "hasCycle(head: Optional[ListNode]) -> bool",
+        "description": "Given `head`, the head of a linked list, determine if the linked list has a cycle in it.",
+        "constraints": [
+            "`0 <= head.length <= 10^4`",
+            "`-10^5 <= Node.val <= 10^5`",
+            "`pos` is `-1` or a valid index in the linked-list."
+        ],
+        "examples": [
+            {
+                "input": "head = L[3, 2, 0, -4], pos = 1",
+                "output": "true"
+            },
+            {
+                "input": "head = L[1, 2], pos = 0",
+                "output": "true"
+            },
+            {
+                "input": "head = L[1], pos = -1",
+                "output": "false"
+            }
+        ]
+    },
+    {
+        "id": 104,
+        "name": "Middle of the Linked List",
+        "difficulty": "Easy",
+        "code": "middleNode(head: Optional[ListNode]) -> Optional[ListNode]",
+        "description": "Given the `head` of a singly linked list, return the middle node of the linked list. If there are two middle nodes, return the second middle node.",
+        "constraints": [
+            "`1 <= head.length <= 100`",
+            "`1 <= Node.val <= 100`"
+        ],
+        "examples": [
+            {
+                "input": "head = L[1, 2, 3, 4, 5]",
+                "output": "L[3, 4, 5]"
+            },
+            {
+                "input": "head = L[1, 2, 3, 4, 5, 6]",
+                "output": "L[4, 5, 6]"
+            }
+        ]
+    },
+    {
+        "id": 105,
+        "name": "Design Singly Linked List",
+        "difficulty": "Medium",
+        "code": "class MyLinkedList:\n    def __init__(self):\n        \n\n    def get(self, index: int) -> int:\n        \n\n    def addAtHead(self, val: int) -> None:\n        \n\n    def addAtTail(self, val: int) -> None:\n        \n\n    def addAtIndex(self, index: int, val: int) -> None:\n        \n\n    def deleteAtIndex(self, index: int) -> None:\n        ",
+        "description": "Design your implementation of the linked list. You can choose to use a singly or doubly linked list.",
+        "constraints": [
+            "`0 <= index, val <= 1000`",
+            "At most 2000 calls will be made to `get`, `addAtHead`, `addAtTail`, `addAtIndex`, and `deleteAtIndex`."
+        ],
+        "examples": [
+            {
+                "input": "[[\"MyLinkedList\", []], [\"addAtHead\", [1]], [\"addAtTail\", [3]], [\"addAtIndex\", [1, 2]], [\"get\", [1]], [\"deleteAtIndex\", [1]], [\"get\", [1]]]",
+                "output": "[null, null, null, null, 2, null, 3]"
+            }
+        ]
+    },
+    {
+        "id": 106,
+        "name": "Reorder List",
+        "difficulty": "Medium",
+        "code": "reorderList(head: Optional[ListNode]) -> Optional[ListNode]",
+        "description": "Reorder the singly linked list to be in-place as L0 -> Ln -> L1 -> Ln-1 -> L2 -> Ln-2 -> ...",
+        "constraints": [
+            "`1 <= head.length <= 5 * 10^4`",
+            "`1 <= Node.val <= 1000`"
+        ],
+        "examples": [
+            {
+                "input": "head = L[1, 2, 3, 4]",
+                "output": "L[1, 4, 2, 3]"
+            },
+            {
+                "input": "head = L[1, 2, 3, 4, 5]",
+                "output": "L[1, 5, 2, 4, 3]"
+            }
+        ]
+    },
+    {
+        "id": 107,
+        "name": "Remove Nth Node From End of List",
+        "difficulty": "Medium",
+        "code": "removeNthFromEnd(head: Optional[ListNode], n: int) -> Optional[ListNode]",
+        "description": "Given the `head` of a linked list, remove the `n`th node from the end of the list and return its head.",
+        "constraints": [
+            "sz = head.length",
+            "`1 <= sz <= 30`",
+            "`0 <= Node.val <= 100`",
+            "`1 <= n <= sz`"
+        ],
+        "examples": [
+            {
+                "input": "head = L[1, 2, 3, 4, 5], n = 2",
+                "output": "L[1, 2, 3, 5]"
+            },
+            {
+                "input": "head = L[1], n = 1",
+                "output": "null"
+            },
+            {
+                "input": "head = L[1, 2], n = 1",
+                "output": "L[1]"
+            }
+        ]
+    },
+    {
+        "id": 108,
+        "name": "Copy List With Random Pointer",
+        "difficulty": "Medium",
+        "code": "copyRandomList(head: 'Optional[Node]') -> 'Optional[Node]'",
+        "description": "Construct a deep copy of a linked list where each node has a random pointer pointing to any node in the list or null.",
+        "constraints": [
+            "`0 <= n <= 1000`",
+            "`-10^4 <= Node.val <= 10^4`",
+            "Node.random is null or is pointing to some node in the linked list."
+        ],
+        "examples": [
+            {
+                "input": "head = [[7, null], [13, 0], [11, 4], [10, 2], [1, 0]]",
+                "output": "[[7, null], [13, 0], [11, 4], [10, 2], [1, 0]]"
+            },
+            {
+                "input": "head = [[1, 1], [2, 1]]",
+                "output": "[[1, 1], [2, 1]]"
+            },
+            {
+                "input": "head = [[3, null], [3, 0], [3, null]]",
+                "output": "[[3, null], [3, 0], [3, null]]"
+            }
+        ]
+    },
+    {
+        "id": 109,
+        "name": "Maximum Twin Sum Of A Linked List",
+        "difficulty": "Medium",
+        "code": "pairSum(head: Optional[ListNode]) -> int",
+        "description": "Return the maximum twin sum of a linked list of even length.",
+        "constraints": [
+            "`2 <= head.length <= 10^5`",
+            "`head.length` is even",
+            "`1 <= Node.val <= 10^5`"
+        ],
+        "examples": [
+            {
+                "input": "head = L[5, 4, 2, 1]",
+                "output": "6"
+            },
+            {
+                "input": "head = L[4, 2, 2, 3]",
+                "output": "7"
+            },
+            {
+                "input": "head = L[1, 100000]",
+                "output": "100001"
+            }
+        ]
+    },
+    {
+        "id": 110,
+        "name": "Add Two Numbers",
+        "difficulty": "Medium",
+        "code": "addTwoNumbers(l1: Optional[ListNode], l2: Optional[ListNode]) -> Optional[ListNode]",
+        "description": "Add two numbers represented as reverse linked lists and return the sum as a linked list.",
+        "constraints": [
+            "`1 <= l1.length, l2.length <= 100`",
+            "`0 <= Node.val <= 9`",
+            "It is guaranteed that the list represents a number that does not have leading zeros."
+        ],
+        "examples": [
+            {
+                "input": "l1 = L[2, 4, 3], l2 = L[5, 6, 4]",
+                "output": "L[7, 0, 8]"
+            },
+            {
+                "input": "l1 = L[0], l2 = L[0]",
+                "output": "L[0]"
+            },
+            {
+                "input": "l1 = L[9, 9, 9, 9, 9, 9, 9], l2 = L[9, 9, 9, 9]",
+                "output": "L[8, 9, 9, 9, 0, 0, 0, 1]"
+            }
+        ]
+    },
+    {
+        "id": 111,
+        "name": "Find The Duplicate Number",
+        "difficulty": "Medium",
+        "code": "findDuplicate(nums: List[int]) -> int",
+        "description": "Find the duplicate number in an array nums containing n + 1 integers where each integer is in the range [1, n] inclusive.",
+        "constraints": [
+            "`1 <= n <= 10^5`",
+            "`nums.length == n + 1`",
+            "`1 <= nums[i] <= n`",
+            "All the integers in `nums` appear only once except for precisely one integer which appears two or more times."
+        ],
+        "examples": [
+            {
+                "input": "nums = [1, 3, 4, 2, 2]",
+                "output": "2"
+            },
+            {
+                "input": "nums = [3, 1, 3, 4, 2]",
+                "output": "3"
+            },
+            {
+                "input": "nums = [3, 3, 3, 3, 3]",
+                "output": "3"
+            }
+        ]
+    },
+    {
+        "id": 112,
+        "name": "Reverse Linked List II",
+        "difficulty": "Medium",
+        "code": "reverseBetween(head: Optional[ListNode], left: int, right: int) -> Optional[ListNode]",
+        "description": "Given the `head` of a singly linked list and two integers `left` and `right` where `left <= right`, reverse the nodes of the list from position `left` to position `right`.",
+        "constraints": [
+            "n = head.length",
+            "`1 <= n <= 500`",
+            "`-500 <= Node.val <= 500`",
+            "`1 <= left <= right <= n`"
+        ],
+        "examples": [
+            {
+                "input": "head = L[1, 2, 3, 4, 5], left = 2, right = 4",
+                "output": "L[1, 4, 3, 2, 5]"
+            },
+            {
+                "input": "head = L[5], left = 1, right = 1",
+                "output": "L[5]"
+            }
+        ]
+    },
+    {
+        "id": 113,
+        "name": "Linked List Random Node",
+        "difficulty": "Medium",
+        "code": "class Solution:\n    def __init__(self, head: Optional[ListNode]):\n        \n\n    def getRandom(self) -> int:\n        ",
+        "description": "Given a singly linked list, return a random node's value from the linked list. Each node must have the same probability of being chosen.",
+        "constraints": [
+            "`1 <= head.length <= 10^4`",
+            "`-10^4 <= Node.val <= 10^4`",
+            "At most 10^4 calls will be made to `getRandom`"
+        ],
+        "examples": [
+            {
+                "input": "[[\"Solution\", [\"L[1, 2, 3]\"]], [\"getRandom\", []], [\"getRandom\", []], [\"getRandom\", []]]",
+                "output": "[null, 3, 2, 3]"
+            }
+        ]
+    },
+    {
+        "id": 114,
+        "name": "Design Browser History",
+        "difficulty": "Medium",
+        "code": "class BrowserHistory:\n    def __init__(self, homepage: str):\n        \n\n    def visit(self, url: str) -> None:\n        \n\n    def back(self, steps: int) -> str:\n        \n\n    def forward(self, steps: int) -> str:\n        ",
+        "description": "Design a browser class to visit URLs, and navigate backwards/forwards in history.",
+        "constraints": [
+            "`1 <= homepage.length, url.length <= 20`",
+            "`1 <= steps <= 100`",
+            "At most 5000 calls will be made to `visit`, `back`, and `forward`."
+        ],
+        "examples": [
+            {
+                "input": "[[\"BrowserHistory\", [\"leetcode.com\"]], [\"visit\", [\"google.com\"]], [\"visit\", [\"facebook.com\"]], [\"visit\", [\"youtube.com\"]], [\"back\", [1]], [\"back\", [1]], [\"forward\", [1]], [\"visit\", [\"linkedin.com\"]], [\"forward\", [2]], [\"back\", [2]], [\"back\", [7]]]",
+                "output": "[null, null, null, null, \"facebook.com\", \"google.com\", \"facebook.com\", null, \"linkedin.com\", \"google.com\", \"leetcode.com\"]"
+            }
+        ]
+    },
+    {
+        "id": 115,
+        "name": "Design Circular Queue",
+        "difficulty": "Medium",
+        "code": "class MyCircularQueue:\n    def __init__(self, k: int):\n        \n\n    def enQueue(self, value: int) -> bool:\n        \n\n    def deQueue(self) -> bool:\n        \n\n    def Front(self) -> int:\n        \n\n    def Rear(self) -> int:\n        \n\n    def isEmpty(self) -> bool:\n        \n\n    def isFull(self) -> bool:\n        ",
+        "description": "Design your implementation of the circular queue.",
+        "constraints": [
+            "`1 <= k <= 1000`",
+            "`0 <= value <= 1000`",
+            "At most 3000 calls will be made to `enQueue`, `deQueue`, `Front`, `Rear`, `isEmpty`, and `isFull`."
+        ],
+        "examples": [
+            {
+                "input": "[[\"MyCircularQueue\", [3]], [\"enQueue\", [1]], [\"enQueue\", [2]], [\"enQueue\", [3]], [\"enQueue\", [4]], [\"Rear\", []], [\"isFull\", []], [\"deQueue\", []], [\"enQueue\", [4]], [\"Front\", []]]",
+                "output": "[null, true, true, true, false, 3, true, true, true, 2]"
+            }
+        ]
+    },
+    {
+        "id": 116,
+        "name": "Design LRU Cache",
+        "difficulty": "Medium",
+        "code": "class LRUCache:\n    def __init__(self, capacity: int):\n        \n\n    def get(self, key: int) -> int:\n        \n\n    def put(self, key: int, value: int) -> None:\n        ",
+        "description": "Design a data structure that follows the constraints of a Least Recently Used (LRU) cache.",
+        "constraints": [
+            "`1 <= capacity <= 3000`",
+            "`0 <= key <= 10^4`",
+            "`0 <= value <= 10^5`",
+            "At most 2 * 10^5 calls will be made to `get` and `put`."
+        ],
+        "examples": [
+            {
+                "input": "[[\"LRUCache\", [2]], [\"put\", [1, 1]], [\"put\", [2, 2]], [\"get\", [1]], [\"put\", [3, 3]], [\"get\", [2]], [\"put\", [4, 4]], [\"get\", [1]], [\"get\", [3]], [\"get\", [4]]]",
+                "output": "[null, null, null, 1, null, -1, null, -1, 3, 4]"
+            }
+        ]
+    },
+    {
+        "id": 117,
+        "name": "Design LFU Cache",
+        "difficulty": "Hard",
+        "code": "class LFUCache:\n    def __init__(self, capacity: int):\n        \n\n    def get(self, key: int) -> int:\n        \n\n    def put(self, key: int, value: int) -> None:\n        ",
+        "description": "Design and implement a data structure for a Least Frequently Used (LFU) cache.",
+        "constraints": [
+            "`1 <= capacity <= 10^4`",
+            "`0 <= key <= 10^5`",
+            "`0 <= value <= 10^9`",
+            "At most 2 * 10^5 calls will be made to `get` and `put`."
+        ],
+        "examples": [
+            {
+                "input": "[[\"LFUCache\", [2]], [\"put\", [1, 1]], [\"put\", [2, 2]], [\"get\", [1]], [\"put\", [3, 3]], [\"get\", [2]], [\"get\", [3]], [\"put\", [4, 4]], [\"get\", [1]], [\"get\", [3]], [\"get\", [4]]]",
+                "output": "[null, null, null, 1, null, -1, 3, null, -1, 3, 4]"
+            }
+        ]
+    },
+    {
+        "id": 118,
+        "name": "Reverse Nodes In K Group",
+        "difficulty": "Hard",
+        "code": "reverseKGroup(head: Optional[ListNode], k: int) -> Optional[ListNode]",
+        "description": "Given the `head` of a linked list, reverse the nodes of the list `k` at a time, and return the modified list.",
+        "constraints": [
+            "n = head.length",
+            "`1 <= k <= n <= 5000`",
+            "`0 <= Node.val <= 1000`"
+        ],
+        "examples": [
+            {
+                "input": "head = L[1, 2, 3, 4, 5], k = 2",
+                "output": "L[2, 1, 4, 3, 5]"
+            },
+            {
+                "input": "head = L[1, 2, 3, 4, 5], k = 3",
+                "output": "L[3, 2, 1, 4, 5]"
+            }
+        ]
+    },
+    {
+        "id": 119,
+        "name": "Baseball Game",
+        "difficulty": "Easy",
+        "code": "calPoints(operations: List[str]) -> int",
+        "description": "Keep score for a baseball game based on a list of operations.",
+        "constraints": [
+            "`1 <= operations.length <= 1000`",
+            "`operations[i]` is `'C'`, `'D'`, `'+'`, or an integer in the range `[-3 * 10^4, 3 * 10^4]`"
+        ],
+        "examples": [
+            {
+                "input": "operations = [\"5\", \"2\", \"C\", \"D\", \"+\"]",
+                "output": "30"
+            },
+            {
+                "input": "operations = [\"5\", \"-2\", \"4\", \"C\", \"D\", \"9\", \"+\", \"+\"]",
+                "output": "27"
+            },
+            {
+                "input": "operations = [\"1\", \"C\"]",
+                "output": "0"
+            }
+        ]
+    },
+    {
+        "id": 120,
+        "name": "Valid Parentheses",
+        "difficulty": "Easy",
+        "code": "isValid(s: str) -> bool",
+        "description": "Determine if an input string containing brackets is valid.",
+        "constraints": [
+            "`1 <= s.length <= 10^4`",
+            "`s` consists of parentheses only: `'()[]{}'`"
+        ],
+        "examples": [
+            {
+                "input": "s = \"()\"",
+                "output": "true"
+            },
+            {
+                "input": "s = \"()[]{}\"",
+                "output": "true"
+            },
+            {
+                "input": "s = \"(]\"",
+                "output": "false"
+            }
+        ]
+    },
+    {
+        "id": 121,
+        "name": "Design Stack Using Queues",
+        "difficulty": "Easy",
+        "code": "class MyStack:\n    def __init__(self):\n        \n\n    def push(self, x: int) -> None:\n        \n\n    def pop(self) -> int:\n        \n\n    def top(self) -> int:\n        \n\n    def empty(self) -> bool:\n        ",
+        "description": "Implement a last-in-first-out (LIFO) stack using queues.",
+        "constraints": [
+            "`1 <= x <= 9`",
+            "At most 100 calls will be made to `push`, `pop`, `top`, and `empty`."
+        ],
+        "examples": [
+            {
+                "input": "[[\"MyStack\", []], [\"push\", [1]], [\"push\", [2]], [\"top\", []], [\"pop\", []], [\"empty\", []]]",
+                "output": "[null, null, null, 2, 2, false]"
+            }
+        ]
+    },
+    {
+        "id": 122,
+        "name": "Design Queue using Stacks",
+        "difficulty": "Easy",
+        "code": "class MyQueue:\n    def __init__(self):\n        \n\n    def push(self, x: int) -> None:\n        \n\n    def pop(self) -> int:\n        \n\n    def peek(self) -> int:\n        \n\n    def empty(self) -> bool:\n        ",
+        "description": "Implement a first-in-first-out (FIFO) queue using stacks.",
+        "constraints": [
+            "`1 <= x <= 9`",
+            "At most 100 calls will be made to `push`, `pop`, `peek`, and `empty`."
+        ],
+        "examples": [
+            {
+                "input": "[[\"MyQueue\", []], [\"push\", [1]], [\"push\", [2]], [\"peek\", []], [\"pop\", []], [\"empty\", []]]",
+                "output": "[null, null, null, 1, 1, false]"
+            }
+        ]
+    },
+    {
+        "id": 123,
+        "name": "Min Stack",
+        "difficulty": "Medium",
+        "code": "class MinStack:\n    def __init__(self):\n        \n\n    def push(self, val: int) -> None:\n        \n\n    def pop(self) -> None:\n        \n\n    def top(self) -> int:\n        \n\n    def getMin(self) -> int:\n        ",
+        "description": "Design a stack that supports push, pop, top, and retrieving the minimum element in constant time.",
+        "constraints": [
+            "`-2^31 <= val <= 2^31 - 1`",
+            "At most 3 * 10^4 calls will be made to `push`, `pop`, `top`, and `getMin`."
+        ],
+        "examples": [
+            {
+                "input": "[[\"MinStack\", []], [\"push\", [-2]], [\"push\", [0]], [\"push\", [-3]], [\"getMin\", []], [\"pop\", []], [\"top\", []], [\"getMin\", []]]",
+                "output": "[null, null, null, null, -3, null, 0, -2]"
+            }
+        ]
+    },
+    {
+        "id": 124,
+        "name": "Evaluate Reverse Polish Notation",
+        "difficulty": "Medium",
+        "code": "evalRPN(tokens: List[str]) -> int",
+        "description": "Evaluate the value of an arithmetic expression in Reverse Polish Notation.",
+        "constraints": [
+            "`1 <= tokens.length <= 10^4`",
+            "`tokens[i]` is either an operator, or an integer in the range `[-200, 200]`"
+        ],
+        "examples": [
+            {
+                "input": "tokens = [\"2\", \"1\", \"+\", \"3\", \"*\"]",
+                "output": "9"
+            },
+            {
+                "input": "tokens = [\"4\", \"13\", \"5\", \"/\", \"+\"]",
+                "output": "6"
+            },
+            {
+                "input": "tokens = [\"10\", \"6\", \"9\", \"3\", \"+\", \"-11\", \"*\", \"/\", \"*\", \"17\", \"+\", \"5\", \"+\"]",
+                "output": "22"
+            }
+        ]
+    },
+    {
+        "id": 125,
+        "name": "Asteroid Collision",
+        "difficulty": "Medium",
+        "code": "asteroidCollision(asteroids: List[int]) -> List[int]",
+        "description": "Find the state of the asteroids after all collisions.",
+        "constraints": [
+            "`2 <= asteroids.length <= 10^4`",
+            "`-1000 <= asteroids[i] <= 1000`"
+        ],
+        "examples": [
+            {
+                "input": "asteroids = [5, 10, -5]",
+                "output": "[5, 10]"
+            },
+            {
+                "input": "asteroids = [8, -8]",
+                "output": "[]"
+            },
+            {
+                "input": "asteroids = [10, 2, -5]",
+                "output": "[10]"
+            }
+        ]
+    },
+    {
+        "id": 126,
+        "name": "Daily Temperatures",
+        "difficulty": "Medium",
+        "code": "dailyTemperatures(temperatures: List[int]) -> List[int]",
+        "description": "Return an array representing the number of days to wait for a warmer temperature.",
+        "constraints": [
+            "`1 <= temperatures.length <= 10^5`",
+            "`30 <= temperatures[i] <= 100`"
+        ],
+        "examples": [
+            {
+                "input": "temperatures = [73, 74, 75, 71, 69, 72, 76, 73]",
+                "output": "[1, 1, 4, 2, 1, 1, 0, 0]"
+            },
+            {
+                "input": "temperatures = [30, 40, 50, 60]",
+                "output": "[1, 1, 1, 0]"
+            },
+            {
+                "input": "temperatures = [30, 30, 30]",
+                "output": "[0, 0, 0]"
+            }
+        ]
+    },
+    {
+        "id": 127,
+        "name": "Online Stock Span",
+        "difficulty": "Medium",
+        "code": "class StockSpanner:\n    def __init__(self):\n        \n\n    def next(self, price: int) -> int:\n        ",
+        "description": "Retrieve the span of stock price for the current day.",
+        "constraints": [
+            "`1 <= price <= 10^5`",
+            "At most 10^4 calls will be made to `next`."
+        ],
+        "examples": [
+            {
+                "input": "[[\"StockSpanner\", []], [\"next\", [100]], [\"next\", [80]], [\"next\", [60]], [\"next\", [70]], [\"next\", [60]], [\"next\", [75]], [\"next\", [85]]]",
+                "output": "[null, 1, 1, 1, 2, 1, 4, 6]"
+            }
+        ]
+    },
+    {
+        "id": 128,
+        "name": "Car Fleet",
+        "difficulty": "Medium",
+        "code": "carFleet(target: int, position: List[int], speed: List[int]) -> int",
+        "description": "Find the number of car fleets that will arrive at the destination.",
+        "constraints": [
+            "`n == position.length == speed.length`",
+            "`1 <= n <= 10^5`",
+            "`0 < target <= 10^6`",
+            "`0 <= position[i] < target`",
+            "`0 < speed[i] <= 10^6`"
+        ],
+        "examples": [
+            {
+                "input": "target = 12, position = [10, 8, 0, 5, 3], speed = [2, 4, 1, 1, 3]",
+                "output": "3"
+            },
+            {
+                "input": "target = 10, position = [3], speed = [3]",
+                "output": "1"
+            },
+            {
+                "input": "target = 100, position = [0, 2, 4], speed = [4, 2, 1]",
+                "output": "1"
+            }
+        ]
+    },
+    {
+        "id": 129,
+        "name": "Simplify Path",
+        "difficulty": "Medium",
+        "code": "simplifyPath(path: str) -> str",
+        "description": "Simplify an absolute Unix-style path.",
+        "constraints": [
+            "`1 <= path.length <= 3000`",
+            "`path` consists of English letters, digits, period `.`, slash `/`, or underscore `_`"
+        ],
+        "examples": [
+            {
+                "input": "path = \"/home/\"",
+                "output": "\"/home\""
+            },
+            {
+                "input": "path = \"/home//foo/\"",
+                "output": "\"/home/foo\""
+            },
+            {
+                "input": "path = \"/home/user/Documents/../Pictures\"",
+                "output": "\"/home/user/Pictures\""
+            }
+        ]
+    },
+    {
+        "id": 130,
+        "name": "Decode String",
+        "difficulty": "Medium",
+        "code": "decodeString(s: str) -> str",
+        "description": "Decode an encoded string of the pattern k[encoded_string].",
+        "constraints": [
+            "`1 <= s.length <= 30`",
+            "`s` consists of lowercase English letters, digits, and square brackets `[]`"
+        ],
+        "examples": [
+            {
+                "input": "s = \"3[a]2[bc]\"",
+                "output": "\"aaabcbc\""
+            },
+            {
+                "input": "s = \"3[a2[c]]\"",
+                "output": "\"accaccacc\""
+            },
+            {
+                "input": "s = \"2[abc]3[cd]ef\"",
+                "output": "\"abcabccdcdcdef\""
+            }
+        ]
+    },
+    {
+        "id": 131,
+        "name": "Maximum Frequency Stack",
+        "difficulty": "Hard",
+        "code": "class FreqStack:\n    def __init__(self):\n        \n\n    def push(self, val: int) -> None:\n        \n\n    def pop(self) -> int:\n        ",
+        "description": "Implement a stack-like data structure where the most frequent element is popped first.",
+        "constraints": [
+            "`0 <= val <= 10^9`",
+            "At most 2 * 10^4 calls will be made to `push` and `pop`."
+        ],
+        "examples": [
+            {
+                "input": "[[\"FreqStack\", []], [\"push\", [5]], [\"push\", [7]], [\"push\", [5]], [\"push\", [7]], [\"push\", [4]], [\"push\", [5]], [\"pop\", []], [\"pop\", []], [\"pop\", []], [\"pop\", []]]",
+                "output": "[null, null, null, null, null, null, null, 5, 7, 5, 4]"
+            }
+        ]
+    },
+    {
+        "id": 132,
+        "name": "Largest Rectangle In Histogram",
+        "difficulty": "Hard",
+        "code": "largestRectangleArea(heights: List[int]) -> int",
+        "description": "Find the area of the largest rectangle in the histogram.",
+        "constraints": [
+            "`1 <= heights.length <= 10^5`",
+            "`0 <= heights[i] <= 10^4`"
+        ],
+        "examples": [
+            {
+                "input": "heights = [2, 1, 5, 6, 2, 3]",
+                "output": "10"
+            },
+            {
+                "input": "heights = [2, 4]",
+                "output": "4"
+            }
+        ]
+    },
+    {
+        "id": 133,
+        "name": "Insert Interval",
+        "difficulty": "Medium",
+        "code": "insert(intervals: List[List[int]], newInterval: List[int]) -> List[List[int]]",
+        "description": "Insert a new interval into a sorted list of non-overlapping intervals and merge if necessary.",
+        "constraints": [
+            "`0 <= intervals.length <= 10^4`",
+            "`intervals[i].length == 2`",
+            "`0 <= start <= end <= 10^5`",
+            "`newInterval.length == 2`"
+        ],
+        "examples": [
+            {
+                "input": "intervals = [[1, 3], [6, 9]], newInterval = [2, 5]",
+                "output": "[[1, 5], [6, 9]]"
+            },
+            {
+                "input": "intervals = [[1, 2], [3, 5], [6, 7], [8, 10], [12, 16]], newInterval = [4, 8]",
+                "output": "[[1, 2], [3, 10], [12, 16]]"
+            }
+        ]
+    },
+    {
+        "id": 134,
+        "name": "Merge Intervals",
+        "difficulty": "Medium",
+        "code": "merge(intervals: List[List[int]]) -> List[List[int]]",
+        "description": "Merge all overlapping intervals.",
+        "constraints": [
+            "`1 <= intervals.length <= 10^4`",
+            "`intervals[i].length == 2`",
+            "`0 <= start <= end <= 10^4`"
+        ],
+        "examples": [
+            {
+                "input": "intervals = [[1, 3], [2, 6], [8, 10], [15, 18]]",
+                "output": "[[1, 6], [8, 10], [15, 18]]"
+            },
+            {
+                "input": "intervals = [[1, 4], [4, 5]]",
+                "output": "[[1, 5]]"
+            }
+        ]
+    },
+    {
+        "id": 135,
+        "name": "Non Overlapping Intervals",
+        "difficulty": "Medium",
+        "code": "eraseOverlapIntervals(intervals: List[List[int]]) -> int",
+        "description": "Find the minimum number of intervals to remove to make the rest non-overlapping.",
+        "constraints": [
+            "`1 <= intervals.length <= 10^5`",
+            "`intervals[i].length == 2`",
+            "`-5 * 10^4 <= start < end <= 5 * 10^4`"
+        ],
+        "examples": [
+            {
+                "input": "intervals = [[1, 2], [2, 3], [3, 4], [1, 3]]",
+                "output": "1"
+            },
+            {
+                "input": "intervals = [[1, 2], [1, 2], [1, 2]]",
+                "output": "2"
+            },
+            {
+                "input": "intervals = [[1, 2], [2, 3]]",
+                "output": "0"
+            }
+        ]
+    },
+    {
+        "id": 136,
+        "name": "Meeting Rooms",
+        "difficulty": "Easy",
+        "code": "canAttendMeetings(intervals: List[List[int]]) -> bool",
+        "description": "Determine if a person could attend all meetings.",
+        "constraints": [
+            "`0 <= intervals.length <= 10^4`",
+            "`intervals[i].length == 2`",
+            "`0 <= start < end <= 10^6`"
+        ],
+        "examples": [
+            {
+                "input": "intervals = [[0, 30], [5, 10], [15, 20]]",
+                "output": "false"
+            },
+            {
+                "input": "intervals = [[7, 10], [2, 4]]",
+                "output": "true"
+            }
+        ]
+    },
+    {
+        "id": 137,
+        "name": "Meeting Rooms II",
+        "difficulty": "Medium",
+        "code": "minMeetingRooms(intervals: List[List[int]]) -> int",
+        "description": "Find the minimum number of conference rooms required.",
+        "constraints": [
+            "`0 <= intervals.length <= 10^4`",
+            "`intervals[i].length == 2`",
+            "`0 <= start < end <= 10^6`"
+        ],
+        "examples": [
+            {
+                "input": "intervals = [[0, 30], [5, 10], [15, 20]]",
+                "output": "2"
+            },
+            {
+                "input": "intervals = [[7, 10], [2, 4]]",
+                "output": "1"
+            }
+        ]
+    },
+    {
+        "id": 138,
+        "name": "Meeting Rooms III",
+        "difficulty": "Hard",
+        "code": "mostBooked(n: int, meetings: List[List[int]]) -> int",
+        "description": "Return the number of the room that held the most meetings.",
+        "constraints": [
+            "`1 <= n <= 100`",
+            "`1 <= meetings.length <= 10^5`",
+            "`meetings[i].length == 2`",
+            "`0 <= start < end <= 5 * 10^5`"
+        ],
+        "examples": [
+            {
+                "input": "n = 2, meetings = [[0, 10], [1, 5], [2, 7], [3, 4]]",
+                "output": "0"
+            },
+            {
+                "input": "n = 3, meetings = [[1, 20], [2, 10], [3, 5], [4, 9], [6, 8]]",
+                "output": "1"
+            }
+        ]
+    },
+    {
+        "id": 139,
+        "name": "Minimum Interval to Include Each Query",
+        "difficulty": "Hard",
+        "code": "minInterval(intervals: List[List[int]], queries: List[int]) -> List[int]",
+        "description": "For each query, find the size of the smallest interval that contains it.",
+        "constraints": [
+            "`1 <= intervals.length <= 10^5`",
+            "`1 <= queries.length <= 10^5`",
+            "`intervals[i].length == 2`",
+            "`1 <= start <= end <= 10^7`",
+            "`1 <= queries[i] <= 10^7`"
+        ],
+        "examples": [
+            {
+                "input": "intervals = [[1, 4], [2, 4], [3, 6], [4, 4]], queries = [2, 3, 4, 5]",
+                "output": "[3, 3, 1, 4]"
+            },
+            {
+                "input": "intervals = [[2, 3], [2, 5], [1, 8], [20, 25]], queries = [2, 19, 5, 22]",
+                "output": "[2, -1, 4, 6]"
+            }
+        ]
+    },
+    {
+        "id": 140,
+        "name": "Lemonade Change",
+        "difficulty": "Easy",
+        "code": "lemonadeChange(bills: List[int]) -> bool",
+        "description": "Determine if you can provide correct change to every customer in a line.",
+        "constraints": [
+            "`1 <= bills.length <= 10^5`",
+            "`bills[i]` is either `5`, `10`, or `20`"
+        ],
+        "examples": [
+            {
+                "input": "bills = [5, 5, 5, 10, 20]",
+                "output": "true"
+            },
+            {
+                "input": "bills = [5, 5, 10, 10, 20]",
+                "output": "false"
+            }
+        ]
+    },
+    {
+        "id": 141,
+        "name": "Maximum Subarray",
+        "difficulty": "Medium",
+        "code": "maxSubArray(nums: List[int]) -> int",
+        "description": "Find the contiguous subarray which has the largest sum and return its sum.",
+        "constraints": [
+            "`1 <= nums.length <= 10^5`",
+            "`-10^4 <= nums[i] <= 10^4`"
+        ],
+        "examples": [
+            {
+                "input": "nums = [-2, 1, -3, 4, -1, 2, 1, -5, 4]",
+                "output": "6"
+            },
+            {
+                "input": "nums = [1]",
+                "output": "1"
+            },
+            {
+                "input": "nums = [5, 4, -1, 7, 8]",
+                "output": "23"
+            }
+        ]
+    },
+    {
+        "id": 142,
+        "name": "Maximum Sum Circular Subarray",
+        "difficulty": "Medium",
+        "code": "maxSubarraySumCircular(nums: List[int]) -> int",
+        "description": "Find the maximum possible sum of a non-empty subarray of a circular array.",
+        "constraints": [
+            "`1 <= nums.length <= 10^5`",
+            "`-3 * 10^4 <= nums[i] <= 3 * 10^4`"
+        ],
+        "examples": [
+            {
+                "input": "nums = [1, -2, 3, -2]",
+                "output": "3"
+            },
+            {
+                "input": "nums = [5, -3, 5]",
+                "output": "10"
+            },
+            {
+                "input": "nums = [-3, -2, -3]",
+                "output": "-2"
+            }
+        ]
+    },
+    {
+        "id": 143,
+        "name": "Longest Turbulent Subarray",
+        "difficulty": "Medium",
+        "code": "maxTurbulenceSize(arr: List[int]) -> int",
+        "description": "Return the length of a maximum size turbulent subarray of arr.",
+        "constraints": [
+            "`1 <= arr.length <= 10^5`",
+            "`0 <= arr[i] <= 10^9`"
+        ],
+        "examples": [
+            {
+                "input": "arr = [9, 4, 2, 10, 7, 8, 8, 1, 9]",
+                "output": "5"
+            },
+            {
+                "input": "arr = [4, 8, 12, 16]",
+                "output": "2"
+            },
+            {
+                "input": "arr = [100]",
+                "output": "1"
+            }
+        ]
+    },
+    {
+        "id": 144,
+        "name": "Jump Game",
+        "difficulty": "Medium",
+        "code": "canJump(nums: List[int]) -> bool",
+        "description": "Determine if you are able to reach the last index starting from the first index.",
+        "constraints": [
+            "`1 <= nums.length <= 10^5`",
+            "`0 <= nums[i] <= 10^5`"
+        ],
+        "examples": [
+            {
+                "input": "nums = [2, 3, 1, 1, 4]",
+                "output": "true"
+            },
+            {
+                "input": "nums = [3, 2, 1, 0, 4]",
+                "output": "false"
+            }
+        ]
+    },
+    {
+        "id": 145,
+        "name": "Jump Game II",
+        "difficulty": "Medium",
+        "code": "jump(nums: List[int]) -> int",
+        "description": "Return the minimum number of jumps to reach the last index.",
+        "constraints": [
+            "`1 <= nums.length <= 10^4`",
+            "`0 <= nums[i] <= 1000`"
+        ],
+        "examples": [
+            {
+                "input": "nums = [2, 3, 1, 1, 4]",
+                "output": "2"
+            },
+            {
+                "input": "nums = [2, 3, 0, 1, 4]",
+                "output": "2"
+            }
+        ]
+    },
+    {
+        "id": 146,
+        "name": "Jump Game VII",
+        "difficulty": "Medium",
+        "code": "canReach(s: str, minJump: int, maxJump: int) -> bool",
+        "description": "Determine if you can reach the last index of binary string s.",
+        "constraints": [
+            "`2 <= s.length <= 10^5`",
+            "`s[i]` is either `'0'` or `'1'`",
+            "`s[0] == '0'`"
+        ],
+        "examples": [
+            {
+                "input": "s = \"011010\", minJump = 2, maxJump = 3",
+                "output": "true"
+            },
+            {
+                "input": "s = \"01101110\", minJump = 2, maxJump = 3",
+                "output": "false"
+            }
+        ]
+    },
+    {
+        "id": 147,
+        "name": "Gas Station",
+        "difficulty": "Medium",
+        "code": "canCompleteCircuit(gas: List[int], cost: List[int]) -> int",
+        "description": "Find the starting gas station's index if you can travel around the circuit once.",
+        "constraints": [
+            "`1 <= gas.length <= 10^5`",
+            "`gas.length == cost.length`",
+            "`0 <= gas[i], cost[i] <= 10^4`"
+        ],
+        "examples": [
+            {
+                "input": "gas = [1, 2, 3, 4, 5], cost = [3, 4, 5, 1, 2]",
+                "output": "3"
+            },
+            {
+                "input": "gas = [2, 3, 4], cost = [3, 4, 3]",
+                "output": "-1"
+            }
+        ]
+    },
+    {
+        "id": 148,
+        "name": "Hand of Straights",
+        "difficulty": "Medium",
+        "code": "isNStraightHand(hand: List[int], groupSize: int) -> bool",
+        "description": "Determine if a hand of cards can be rearranged into groups of groupSize consecutive cards.",
+        "constraints": [
+            "`1 <= hand.length <= 10^4`",
+            "`1 <= groupSize <= hand.length`",
+            "`0 <= hand[i] <= 10^9`"
+        ],
+        "examples": [
+            {
+                "input": "hand = [1, 2, 3, 6, 2, 3, 4, 7, 8], groupSize = 3",
+                "output": "true"
+            },
+            {
+                "input": "hand = [1, 2, 3, 4, 5], groupSize = 4",
+                "output": "false"
+            }
+        ]
+    },
+    {
+        "id": 149,
+        "name": "Dota2 Senate",
+        "difficulty": "Medium",
+        "code": "predictPartyVictory(senate: str) -> str",
+        "description": "Predict which party victory is guaranteed based on the Dota2 Senate.",
+        "constraints": [
+            "`1 <= senate.length <= 10^4`",
+            "`senate[i]` is either `'R'` or `'D'`"
+        ],
+        "examples": [
+            {
+                "input": "senate = \"RD\"",
+                "output": "\"Radiant\""
+            },
+            {
+                "input": "senate = \"RDD\"",
+                "output": "\"Dire\""
+            }
+        ]
+    },
+    {
+        "id": 150,
+        "name": "Merge Triplets to Form Target Triplet",
+        "difficulty": "Medium",
+        "code": "mergeTriplets(triplets: List[List[int]], target: List[int]) -> bool",
+        "description": "Determine if you can obtain target by merging triplets.",
+        "constraints": [
+            "`1 <= triplets.length <= 10^5`",
+            "`triplets[i].length == 3`",
+            "`target.length == 3`",
+            "`1 <= triplets[i][j], target[j] <= 1000`"
+        ],
+        "examples": [
+            {
+                "input": "triplets = [[2, 5, 3], [1, 8, 4], [1, 7, 5]], target = [2, 7, 5]",
+                "output": "true"
+            },
+            {
+                "input": "triplets = [[3, 4, 5], [4, 5, 6]], target = [3, 2, 5]",
+                "output": "false"
+            },
+            {
+                "input": "triplets = [[2, 5, 3], [2, 3, 4], [1, 2, 5], [5, 2, 3]], target = [5, 5, 5]",
+                "output": "true"
+            }
+        ]
+    },
+    {
+        "id": 151,
+        "name": "Partition Labels",
+        "difficulty": "Medium",
+        "code": "partitionLabels(s: str) -> List[int]",
+        "description": "Partition string s into as many parts as possible so that each letter appears in at most one part.",
+        "constraints": [
+            "`1 <= s.length <= 500`",
+            "`s` consists of lowercase English letters"
+        ],
+        "examples": [
+            {
+                "input": "s = \"ababcbacadefegdehijhklij\"",
+                "output": "[9, 7, 8]"
+            },
+            {
+                "input": "s = \"eccbbbbdec\"",
+                "output": "[10]"
+            }
+        ]
+    },
+    {
+        "id": 152,
+        "name": "Valid Parenthesis String",
+        "difficulty": "Medium",
+        "code": "checkValidString(s: str) -> bool",
+        "description": "Determine if s is a valid parenthesis string considering asterisks.",
+        "constraints": [
+            "`1 <= s.length <= 100`",
+            "`s[i]` is either `'('`, `')'`, or `'*'`"
+        ],
+        "examples": [
+            {
+                "input": "s = \"()\"",
+                "output": "true"
+            },
+            {
+                "input": "s = \"(*)\"",
+                "output": "true"
+            },
+            {
+                "input": "s = \"(*))\"",
+                "output": "true"
+            }
+        ]
+    },
+    {
+        "id": 153,
+        "name": "Candy",
+        "difficulty": "Hard",
+        "code": "candy(ratings: List[int]) -> int",
+        "description": "Find the minimum number of candies you must give to the children.",
+        "constraints": [
+            "`1 <= ratings.length <= 2 * 10^4`",
+            "`0 <= ratings[i] <= 2 * 10^4`"
+        ],
+        "examples": [
+            {
+                "input": "ratings = [1, 0, 2]",
+                "output": "5"
+            },
+            {
+                "input": "ratings = [1, 2, 2]",
+                "output": "4"
+            }
+        ]
+    },
+    {
+        "id": 154,
+        "name": "Design Elevator System",
+        "difficulty": "Hard",
+        "code": "class Elevator:\n    def __init__(self):\n        \n\n    def addRequest(self, floor: int) -> None:\n        \n\n    def step(self) -> int:\n        ",
+        "description": "Design an elevator system using the SCAN scheduling algorithm.",
+        "constraints": [
+            "`1 <= operations.length <= 1000`",
+            "`-10^5 <= floor <= 10^5`"
+        ],
+        "examples": [
+            {
+                "input": "[[\"Elevator\", []], [\"addRequest\", [3]], [\"step\", []], [\"step\", []], [\"step\", []], [\"step\", []]]",
+                "output": "[null, null, 1, 2, 3, 3]"
+            },
+            {
+                "input": "[[\"Elevator\", []], [\"addRequest\", [2]], [\"step\", []], [\"addRequest\", [0]], [\"step\", []], [\"step\", []], [\"step\", []]]",
+                "output": "[null, null, 1, null, 2, 1, 0]"
+            }
+        ]
+    },
+    {
+        "id": 155,
+        "name": "Binary Tree Inorder Traversal",
+        "difficulty": "Easy",
+        "code": "inorderTraversal(root: TreeNode) -> List[int]",
+        "description": "Return the inorder traversal of a binary tree's nodes' values.",
+        "constraints": [
+            "`0 <= node.val <= 100`",
+            "`0 <= tree.size <= 1000`"
+        ],
+        "examples": [
+            {
+                "input": "root = T[1, null, 2, 3]",
+                "output": "[1, 3, 2]"
+            },
+            {
+                "input": "root = T[]",
+                "output": "[]"
+            },
+            {
+                "input": "root = T[1]",
+                "output": "[1]"
+            }
+        ]
+    },
+    {
+        "id": 156,
+        "name": "Binary Tree Preorder Traversal",
+        "difficulty": "Easy",
+        "code": "preorderTraversal(root: TreeNode) -> List[int]",
+        "description": "Return the preorder traversal of a binary tree's nodes' values.",
+        "constraints": [
+            "`0 <= node.val <= 100`",
+            "`0 <= tree.size <= 1000`"
+        ],
+        "examples": [
+            {
+                "input": "root = T[1, null, 2, 3]",
+                "output": "[1, 2, 3]"
+            },
+            {
+                "input": "root = T[]",
+                "output": "[]"
+            },
+            {
+                "input": "root = T[1]",
+                "output": "[1]"
+            }
+        ]
+    },
+    {
+        "id": 157,
+        "name": "Binary Tree Postorder Traversal",
+        "difficulty": "Easy",
+        "code": "postorderTraversal(root: TreeNode) -> List[int]",
+        "description": "Return the postorder traversal of a binary tree's nodes' values.",
+        "constraints": [
+            "`0 <= node.val <= 100`",
+            "`0 <= tree.size <= 1000`"
+        ],
+        "examples": [
+            {
+                "input": "root = T[1, null, 2, 3]",
+                "output": "[3, 2, 1]"
+            },
+            {
+                "input": "root = T[]",
+                "output": "[]"
+            },
+            {
+                "input": "root = T[1]",
+                "output": "[1]"
+            }
+        ]
+    },
+    {
+        "id": 158,
+        "name": "Invert Binary Tree",
+        "difficulty": "Easy",
+        "code": "invertTree(root: TreeNode) -> TreeNode",
+        "description": "Invert a binary tree (mirror it) and return its root.",
+        "constraints": [
+            "`-100 <= node.val <= 100`",
+            "`0 <= tree.size <= 1000`"
+        ],
+        "examples": [
+            {
+                "input": "root = T[4, 2, 7, 1, 3, 6, 9]",
+                "output": "T[4, 7, 2, 9, 6, 3, 1]"
+            },
+            {
+                "input": "root = T[2, 1, 3]",
+                "output": "T[2, 3, 1]"
+            },
+            {
+                "input": "root = T[]",
+                "output": "null"
+            }
+        ]
+    },
+    {
+        "id": 159,
+        "name": "Maximum Depth of Binary Tree",
+        "difficulty": "Easy",
+        "code": "maxDepth(root: TreeNode) -> int",
+        "description": "Find the maximum depth (number of nodes along the longest path) of a binary tree.",
+        "constraints": [
+            "`-100 <= node.val <= 100`",
+            "`0 <= tree.size <= 1.2 * 10^4`"
+        ],
+        "examples": [
+            {
+                "input": "root = T[3, 9, 20, null, null, 15, 7]",
+                "output": "3"
+            },
+            {
+                "input": "root = T[1, null, 2]",
+                "output": "2"
+            },
+            {
+                "input": "root = T[]",
+                "output": "0"
+            }
+        ]
+    },
+    {
+        "id": 160,
+        "name": "Diameter of Binary Tree",
+        "difficulty": "Easy",
+        "code": "diameterOfBinaryTree(root: TreeNode) -> int",
+        "description": "Return the length of the diameter (longest path between any two nodes) of the tree.",
+        "constraints": [
+            "`-100 <= node.val <= 100`",
+            "`0 <= tree.size <= 1.2 * 10^4`"
+        ],
+        "examples": [
+            {
+                "input": "root = T[1, 2, 3, 4, 5]",
+                "output": "3"
+            },
+            {
+                "input": "root = T[1, 2]",
+                "output": "1"
+            },
+            {
+                "input": "root = T[]",
+                "output": "0"
+            }
+        ]
+    },
+    {
+        "id": 161,
+        "name": "Balanced Binary Tree",
+        "difficulty": "Easy",
+        "code": "isBalanced(root: TreeNode) -> bool",
+        "description": "Determine if a binary tree is height-balanced (depth of the two subtrees of every node never differs by more than 1).",
+        "constraints": [
+            "`-10^4 <= node.val <= 10^4`",
+            "`0 <= tree.size <= 6000`"
+        ],
+        "examples": [
+            {
+                "input": "root = T[3, 9, 20, null, null, 15, 7]",
+                "output": "true"
+            },
+            {
+                "input": "root = T[1, 2, 2, 3, 3, null, null, 4, 4]",
+                "output": "false"
+            },
+            {
+                "input": "root = T[]",
+                "output": "true"
+            }
+        ]
+    },
+    {
+        "id": 162,
+        "name": "Same Tree",
+        "difficulty": "Easy",
+        "code": "isSameTree(p: TreeNode, q: TreeNode) -> bool",
+        "description": "Check if two binary trees are structurally identical and have the same node values.",
+        "constraints": [
+            "`-100 <= node.val <= 100`",
+            "`0 <= tree.size <= 1000`"
+        ],
+        "examples": [
+            {
+                "input": "p = T[1, 2, 3], q = T[1, 2, 3]",
+                "output": "true"
+            },
+            {
+                "input": "p = T[1, 2], q = T[1, null, 2]",
+                "output": "false"
+            },
+            {
+                "input": "p = T[1, 2, 1], q = T[1, 1, 2]",
+                "output": "false"
+            }
+        ]
+    },
+    {
+        "id": 163,
+        "name": "Subtree of Another Tree",
+        "difficulty": "Easy",
+        "code": "isSubtree(root: TreeNode, subRoot: TreeNode) -> bool",
+        "description": "Check if a binary tree `subRoot` is structurally identical to a subtree of `root`.",
+        "constraints": [
+            "`-100 <= node.val <= 100`",
+            "`0 <= root.size <= 2500`",
+            "`0 <= subRoot.size <= 1200`"
+        ],
+        "examples": [
+            {
+                "input": "root = T[3, 4, 5, 1, 2], subRoot = T[4, 1, 2]",
+                "output": "true"
+            },
+            {
+                "input": "root = T[3, 4, 5, 1, 2, null, null, null, null, 0], subRoot = T[4, 1, 2]",
+                "output": "false"
+            },
+            {
+                "input": "root = T[1, 1], subRoot = T[1]",
+                "output": "true"
+            }
+        ]
+    },
+    {
+        "id": 164,
+        "name": "Lowest Common Ancestor of a Binary Search Tree",
+        "difficulty": "Medium",
+        "code": "lowestCommonAncestor(root: TreeNode, p: TreeNode, q: TreeNode) -> TreeNode",
+        "description": "Find the lowest common ancestor (LCA) node of two given nodes in a BST.",
+        "constraints": [
+            "`-10^9 <= node.val <= 10^9`",
+            "`2 <= tree.size <= 1.2 * 10^5`"
+        ],
+        "examples": [
+            {
+                "input": "root = T[6, 2, 8, 0, 4, 7, 9, null, null, 3, 5], p = 2, q = 8",
+                "output": "T[6, 2, 8, 0, 4, 7, 9, null, null, 3, 5]"
+            },
+            {
+                "input": "root = T[6, 2, 8, 0, 4, 7, 9, null, null, 3, 5], p = 2, q = 4",
+                "output": "T[2, 0, 4, null, null, 3, 5]"
+            },
+            {
+                "input": "root = T[2, 1], p = 2, q = 1",
+                "output": "T[2, 1]"
+            }
+        ]
+    },
+    {
+        "id": 165,
+        "name": "Insert into a Binary Search Tree",
+        "difficulty": "Medium",
+        "code": "insertIntoBST(root: TreeNode, val: int) -> TreeNode",
+        "description": "Insert a value into a BST and return the root of the modified BST.",
+        "constraints": [
+            "`-10^8 <= node.val <= 10^8`",
+            "`0 <= tree.size <= 1.2 * 10^4`",
+            "`-10^8 <= val <= 10^8`"
+        ],
+        "examples": [
+            {
+                "input": "root = T[4, 2, 7, 1, 3], val = 5",
+                "output": "T[4, 2, 7, 1, 3, 5]"
+            },
+            {
+                "input": "root = T[40, 20, 60, 10, 30, 50, 70], val = 25",
+                "output": "T[40, 20, 60, 10, 30, 50, 70, null, null, 25]"
+            },
+            {
+                "input": "root = T[4, 2, 7, 1, 3, null, null, null, null, null, null], val = 5",
+                "output": "T[4, 2, 7, 1, 3, 5]"
+            }
+        ]
+    },
+    {
+        "id": 166,
+        "name": "Delete Node in a BST",
+        "difficulty": "Medium",
+        "code": "deleteNode(root: TreeNode, key: int) -> TreeNode",
+        "description": "Delete a node with a given key from a BST and return the root.",
+        "constraints": [
+            "`-10^8 <= node.val <= 10^8`",
+            "`0 <= tree.size <= 1.2 * 10^4`",
+            "`-10^8 <= key <= 10^8`"
+        ],
+        "examples": [
+            {
+                "input": "root = T[5, 3, 6, 2, 4, null, 7], key = 3",
+                "output": "T[5, 4, 6, 2, null, null, 7]"
+            },
+            {
+                "input": "root = T[5, 3, 6, 2, 4, null, 7], key = 0",
+                "output": "T[5, 3, 6, 2, 4, null, 7]"
+            },
+            {
+                "input": "root = T[], key = 0",
+                "output": "null"
+            }
+        ]
+    },
+    {
+        "id": 167,
+        "name": "Design Binary Tree",
+        "difficulty": "Medium",
+        "code": "class BinaryTree:\n    def __init__(self):\n        \n\n    def insert(self, val: int) -> None:\n        \n\n    def inorder(self) -> List[int]:\n        \n\n    def preorder(self) -> List[int]:\n        ",
+        "description": "Design a binary tree class that supports complete level-order insertion and traversals.",
+        "constraints": [
+            "`1 <= operations.length <= 5000`",
+            "`-1000 <= val <= 1000`"
+        ],
+        "examples": [
+            {
+                "input": "[[\"BinaryTree\", []], [\"insert\", [1]], [\"insert\", [2]], [\"inorder\", []], [\"preorder\", []]]",
+                "output": "[null, null, null, [2, 1], [1, 2]]"
+            }
+        ]
+    },
+    {
+        "id": 168,
+        "name": "Binary Search Tree Iterator",
+        "difficulty": "Medium",
+        "code": "class BSTIterator:\n    def __init__(self, root: TreeNode):\n        \n\n    def next(self) -> int:\n        \n\n    def hasNext(self) -> bool:\n        ",
+        "description": "Implement an iterator over the in-order traversal of a BST.",
+        "constraints": [
+            "`-1000 <= node.val <= 1000`",
+            "`0 <= tree.size <= 10^4`"
+        ],
+        "examples": [
+            {
+                "input": "[[\"BSTIterator\", [\"T[7, 3, 15, null, null, 9, 20]\"]], [\"next\", []], [\"next\", []], [\"hasNext\", []], [\"next\", []], [\"hasNext\", []], [\"next\", []], [\"hasNext\", []], [\"next\", []], [\"hasNext\", []]]",
+                "output": "[null, 3, 7, true, 9, true, 15, true, 20, false]"
+            }
+        ]
+    },
+    {
+        "id": 169,
+        "name": "Binary Tree Level Order Traversal",
+        "difficulty": "Medium",
+        "code": "levelOrder(root: TreeNode) -> List[List[int]]",
+        "description": "Return the level order traversal of its nodes' values (i.e., from left to right, level by level).",
+        "constraints": [
+            "`-1000 <= node.val <= 1000`",
+            "`0 <= tree.size <= 3000`"
+        ],
+        "examples": [
+            {
+                "input": "root = T[3, 9, 20, null, null, 15, 7]",
+                "output": "[[3], [9, 20], [15, 7]]"
+            },
+            {
+                "input": "root = T[1]",
+                "output": "[[1]]"
+            },
+            {
+                "input": "root = T[]",
+                "output": "[]"
+            }
+        ]
+    },
+    {
+        "id": 170,
+        "name": "Binary Tree Right Side View",
+        "difficulty": "Medium",
+        "code": "rightSideView(root: TreeNode) -> List[int]",
+        "description": "Return the values of the nodes you can see ordered from top to bottom when standing on the right side of the tree.",
+        "constraints": [
+            "`-100 <= node.val <= 100`",
+            "`0 <= tree.size <= 1000`"
+        ],
+        "examples": [
+            {
+                "input": "root = T[1, 2, 3, null, 5, null, 4]",
+                "output": "[1, 3, 4]"
+            },
+            {
+                "input": "root = T[1, null, 3]",
+                "output": "[1, 3]"
+            },
+            {
+                "input": "root = T[]",
+                "output": "[]"
+            }
+        ]
+    },
+    {
+        "id": 171,
+        "name": "Count Good Nodes In Binary Tree",
+        "difficulty": "Medium",
+        "code": "goodNodes(root: TreeNode) -> int",
+        "description": "Count the number of 'good' nodes (nodes where in the path from root to that node there are no nodes with a value greater than it).",
+        "constraints": [
+            "`-10^4 <= node.val <= 10^4`",
+            "`1 <= tree.size <= 1.2 * 10^5`"
+        ],
+        "examples": [
+            {
+                "input": "root = T[3, 1, 4, 3, null, 1, 5]",
+                "output": "4"
+            },
+            {
+                "input": "root = T[3, 3, null, 4, 2]",
+                "output": "3"
+            },
+            {
+                "input": "root = T[1]",
+                "output": "1"
+            }
+        ]
+    },
+    {
+        "id": 172,
+        "name": "Validate Binary Search Tree",
+        "difficulty": "Medium",
+        "code": "isValidBST(root: TreeNode) -> bool",
+        "description": "Determine if a binary tree is a valid Binary Search Tree (BST).",
+        "constraints": [
+            "`-2^31 <= node.val <= 2^31 - 1`",
+            "`1 <= tree.size <= 1.2 * 10^4`"
+        ],
+        "examples": [
+            {
+                "input": "root = T[2, 1, 3]",
+                "output": "true"
+            },
+            {
+                "input": "root = T[5, 1, 4, null, null, 3, 6]",
+                "output": "false"
+            },
+            {
+                "input": "root = T[1, 1]",
+                "output": "false"
+            }
+        ]
+    },
+    {
+        "id": 173,
+        "name": "Kth Smallest Element In a Bst",
+        "difficulty": "Medium",
+        "code": "kthSmallest(root: TreeNode, k: int) -> int",
+        "description": "Find the `k`th smallest element (1-indexed) in a BST.",
+        "constraints": [
+            "`0 <= node.val <= 10^4`",
+            "`1 <= tree.size <= 1.2 * 10^4`",
+            "`1 <= k <= tree.size`"
+        ],
+        "examples": [
+            {
+                "input": "root = T[3, 1, 4, null, 2], k = 1",
+                "output": "1"
+            },
+            {
+                "input": "root = T[5, 3, 6, 2, 4, null, null, 1], k = 3",
+                "output": "3"
+            },
+            {
+                "input": "root = T[1], k = 1",
+                "output": "1"
+            }
+        ]
+    },
+    {
+        "id": 174,
+        "name": "Construct Binary Tree From Preorder And Inorder Traversal",
+        "difficulty": "Medium",
+        "code": "buildTree(preorder: List[int], inorder: List[int]) -> TreeNode",
+        "description": "Construct and return the binary tree from its preorder and inorder traversals.",
+        "constraints": [
+            "`-3000 <= node.val <= 3000`",
+            "`1 <= tree.size <= 4000`"
+        ],
+        "examples": [
+            {
+                "input": "preorder = [3, 9, 20, 15, 7], inorder = [9, 3, 15, 20, 7]",
+                "output": "T[3, 9, 20, null, null, 15, 7]"
+            },
+            {
+                "input": "preorder = [-1], inorder = [-1]",
+                "output": "T[-1]"
+            }
+        ]
+    },
+    {
+        "id": 175,
+        "name": "House Robber III",
+        "difficulty": "Medium",
+        "code": "rob(root: TreeNode) -> int",
+        "description": "Find the maximum amount of money you can rob from binary tree nodes without robbing two directly-linked parent-child nodes.",
+        "constraints": [
+            "`0 <= node.val <= 10^4`",
+            "`1 <= tree.size <= 1.2 * 10^4`"
+        ],
+        "examples": [
+            {
+                "input": "root = T[3, 2, 3, null, 3, null, 1]",
+                "output": "7"
+            },
+            {
+                "input": "root = T[3, 4, 5, 1, 3, null, 1]",
+                "output": "9"
+            }
+        ]
+    },
+    {
+        "id": 176,
+        "name": "Delete Leaves With a Given Value",
+        "difficulty": "Medium",
+        "code": "removeLeafNodes(root: TreeNode, target: int) -> TreeNode",
+        "description": "Delete all leaf nodes with a value equal to `target` (and if deleting them produces new leaves of that value, delete those too).",
+        "constraints": [
+            "`1 <= node.val <= 1000`",
+            "`1 <= tree.size <= 1.2 * 10^4`",
+            "`1 <= target <= 1000`"
+        ],
+        "examples": [
+            {
+                "input": "root = T[1, 2, 3, 2, null, 2, 4], target = 2",
+                "output": "T[1, null, 3, null, 4]"
+            },
+            {
+                "input": "root = T[1, 3, 3, 3, 2], target = 3",
+                "output": "T[1, 3, null, null, 2]"
+            },
+            {
+                "input": "root = T[1, 2, null, 2, null, 2], target = 2",
+                "output": "T[1]"
+            }
+        ]
+    },
+    {
+        "id": 177,
+        "name": "Range Sum Query - Mutable",
+        "difficulty": "Medium",
+        "code": "class NumArray:\n    def __init__(self, nums: List[int]):\n        \n\n    def update(self, index: int, val: int) -> None:\n        \n\n    def sumRange(self, left: int, right: int) -> int:\n        ",
+        "description": "Implement an array class that supports single-element updates and range sum queries dynamically.",
+        "constraints": [
+            "`1 <= nums.length <= 4 * 10^4`",
+            "`1 <= operations.length <= 4 * 10^4`",
+            "`-100 <= nums[i] <= 100`"
+        ],
+        "examples": [
+            {
+                "input": "[[\"NumArray\", [[1, 3, 5]]], [\"sumRange\", [0, 2]], [\"update\", [1, 2]], [\"sumRange\", [0, 2]]]",
+                "output": "[null, 9, null, 8]"
+            }
+        ]
+    },
+    {
+        "id": 178,
+        "name": "Binary Tree Maximum Path Sum",
+        "difficulty": "Hard",
+        "code": "maxPathSum(root: TreeNode) -> int",
+        "description": "Find the maximum path sum of any non-empty path in a binary tree.",
+        "constraints": [
+            "`-1000 <= node.val <= 1000`",
+            "`1 <= tree.size <= 4 * 10^4`"
+        ],
+        "examples": [
+            {
+                "input": "root = T[1, 2, 3]",
+                "output": "6"
+            },
+            {
+                "input": "root = T[-10, 9, 20, null, null, 15, 7]",
+                "output": "42"
+            }
+        ]
+    },
+    {
+        "id": 179,
+        "name": "Serialize And Deserialize Binary Tree",
+        "difficulty": "Hard",
+        "code": "serializeAndDeserialize(root: TreeNode) -> TreeNode",
+        "description": "Design an algorithm to serialize and deserialize a binary tree.",
+        "constraints": [
+            "`-1000 <= node.val <= 1000`",
+            "`0 <= tree.size <= 1.2 * 10^4`"
+        ],
+        "examples": [
+            {
+                "input": "root = T[1, 2, 3, null, null, 4, 5]",
+                "output": "T[1, 2, 3, null, null, 4, 5]"
+            },
+            {
+                "input": "root = T[]",
+                "output": "null"
+            }
+        ]
+    },
+    {
+        "id": 180,
+        "name": "Count of Smaller Numbers After Self",
+        "difficulty": "Hard",
+        "code": "countSmaller(nums: List[int]) -> List[int]",
+        "description": "Given an integer array `nums`, return an integer array `counts` where `counts[i]` is the number of smaller elements to the right of `nums[i]`.",
+        "constraints": [
+            "`-10^4 <= nums[i] <= 10^4`",
+            "`1 <= nums.length <= 1.2 * 10^5`"
+        ],
+        "examples": [
+            {
+                "input": "nums = \"[5, 2, 6, 1]\"",
+                "output": "[10, 8, 3, 0, 5, 2, 0, 3, 1, 0, 0, 0]"
+            },
+            {
+                "input": "nums = \"[-1]\"",
+                "output": "[2, 0, 0, 0]"
+            },
+            {
+                "input": "nums = \"[-1, -1]\"",
+                "output": "[6, 2, 3, 1, 0, 0, 0, 0]"
+            }
+        ]
+    },
+    {
+        "id": 181,
+        "name": "AVL Tree",
+        "difficulty": "Hard",
+        "code": "class AVLTree:\n    def __init__(self):\n        \n\n    def insert(self, val: int) -> None:\n        \n\n    def delete(self, val: int) -> None:\n        \n\n    def getRoot(self) -> TreeNode:\n        ",
+        "description": "Design a self-balancing binary search tree (AVL tree) supporting insert, delete, and height maintenance.",
+        "constraints": [
+            "`1 <= operations.length <= 5000`",
+            "`-10^5 <= val <= 10^5`"
+        ],
+        "examples": [
+            {
+                "input": "[[\"AVLTree\", []], [\"insert\", [10]], [\"insert\", [20]], [\"insert\", [30]], [\"getRoot\", []]]",
+                "output": "[null, null, null, null, T[20, 10, 30]]"
+            }
+        ]
+    }
+]

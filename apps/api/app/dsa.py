@@ -113,11 +113,12 @@ def arr_I(root):
 
 
 def normalize_val(v):
-    if isinstance(v, ListNode):
+    name = v.__class__.__name__
+    if name == "ListNode":
         return arr_L(v)
-    if isinstance(v, TreeNode):
+    if name == "TreeNode":
         return arr_T(v)
-    if isinstance(v, TrieNode):
+    if name == "TrieNode":
         return arr_I(v)
     if isinstance(v, list):
         return [normalize_val(x) for x in v]
@@ -188,11 +189,12 @@ EVAL_GLOBALS = {
 
 
 def fmt_val(v):
-    if isinstance(v, ListNode):
+    name = v.__class__.__name__
+    if name == "ListNode":
         return "L" + fmt_val(arr_L(v))
-    if isinstance(v, TreeNode):
+    if name == "TreeNode":
         return "T" + fmt_val(arr_T(v))
-    if isinstance(v, TrieNode):
+    if name == "TrieNode":
         return "I" + fmt_val(arr_I(v))
     if v is True:
         return "True"
@@ -284,11 +286,12 @@ def args_from(input_str):
 
 
 def fmt_val_truncated(v):
-    if isinstance(v, ListNode):
+    name = v.__class__.__name__
+    if name == "ListNode":
         return "L" + fmt_val_truncated(arr_L(v))
-    if isinstance(v, TreeNode):
+    if name == "TreeNode":
         return "T" + fmt_val_truncated(arr_T(v))
-    if isinstance(v, TrieNode):
+    if name == "TrieNode":
         return "I" + fmt_val_truncated(arr_I(v))
     if v is True:
         return "True"
@@ -302,22 +305,39 @@ def fmt_val_truncated(v):
         return json.dumps(v)
     if isinstance(v, list):
         if len(v) > 30:
-            parts = [fmt_val_truncated(x) for x in v[:5]] + ["..."] + [fmt_val_truncated(x) for x in v[-5:]]
+            parts = (
+                [fmt_val_truncated(x) for x in v[:5]]
+                + ["..."]
+                + [fmt_val_truncated(x) for x in v[-5:]]
+            )
             return f"[{', '.join(parts)}] (len={len(v)})"
         return "[" + ", ".join(fmt_val_truncated(x) for x in v) + "]"
     if isinstance(v, tuple):
         if len(v) > 30:
-            parts = [fmt_val_truncated(x) for x in v[:5]] + ["..."] + [fmt_val_truncated(x) for x in v[-5:]]
+            parts = (
+                [fmt_val_truncated(x) for x in v[:5]]
+                + ["..."]
+                + [fmt_val_truncated(x) for x in v[-5:]]
+            )
             return f"({', '.join(parts)}) (len={len(v)})"
         return "(" + ", ".join(fmt_val_truncated(x) for x in v) + ")"
     if isinstance(v, dict):
         if len(v) > 30:
             items = list(v.items())
-            parts = [f"{json.dumps(k)}: {fmt_val_truncated(val)}" for k, val in items[:5]] + ["..."] + [f"{json.dumps(k)}: {fmt_val_truncated(val)}" for k, val in items[-5:]]
+            parts = (
+                [f"{json.dumps(k)}: {fmt_val_truncated(val)}" for k, val in items[:5]]
+                + ["..."]
+                + [
+                    f"{json.dumps(k)}: {fmt_val_truncated(val)}"
+                    for k, val in items[-5:]
+                ]
+            )
             return f"{{{', '.join(parts)}}} (len={len(v)})"
         return (
             "{"
-            + ", ".join(json.dumps(k) + ": " + fmt_val_truncated(val) for k, val in v.items())
+            + ", ".join(
+                json.dumps(k) + ": " + fmt_val_truncated(val) for k, val in v.items()
+            )
             + "}"
         )
     try:

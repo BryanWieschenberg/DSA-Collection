@@ -19,7 +19,7 @@ const parseMethodCall = (str) => {
     }
     try {
         return [methodName, JSON.parse("[" + argsStr + "]")];
-    } catch (e) {
+    } catch {
         const args = argsStr.split(",").map((s) => {
             const trimmed = s.trim();
             if (trimmed === "true") return true;
@@ -125,7 +125,7 @@ export default function BottomPanel({ activeProblem, code, isSoftSolveActive }) 
                         return { call: formattedCall, expected: formattedRet };
                     });
                 }
-            } catch (e) {
+            } catch {
                 ops = [];
             }
         }
@@ -133,7 +133,7 @@ export default function BottomPanel({ activeProblem, code, isSoftSolveActive }) 
             ops = [{ call: "", expected: "" }];
         }
         setLocalClassOps(ops);
-    }, [activeProblem, activeCase]);
+    }, [activeProblem, activeCase, isClass, testCases]);
 
     const resetTestCases = () => {
         const defaults = getDefaultCases(activeProblem);
@@ -161,7 +161,9 @@ export default function BottomPanel({ activeProblem, code, isSoftSolveActive }) 
                     setLocalClassOps(ops);
                     return;
                 }
-            } catch (e) {}
+            } catch {
+                void 0;
+            }
         }
         setLocalClassOps([{ call: "", expected: "" }]);
     };
@@ -205,7 +207,9 @@ export default function BottomPanel({ activeProblem, code, isSoftSolveActive }) 
                     setLocalClassOps(ops);
                     return;
                 }
-            } catch (e) {}
+            } catch {
+                void 0;
+            }
         }
         setLocalClassOps([{ call: "", expected: "" }]);
     };
@@ -327,7 +331,7 @@ export default function BottomPanel({ activeProblem, code, isSoftSolveActive }) 
                 ) {
                     isClassLayout = true;
                 }
-            } catch (e) {
+            } catch {
                 isClassLayout = false;
             }
         }
@@ -351,7 +355,7 @@ export default function BottomPanel({ activeProblem, code, isSoftSolveActive }) 
                                         Time
                                     </span>
                                     <span className="text-zinc-100 font-mono font-medium">
-                                        {r.timeMs.toFixed(0)}
+                                        {r.timeMs.toFixed(3)}
                                     </span>
                                     <span className="text-zinc-400 text-[10px]">ms</span>
                                 </div>
@@ -362,7 +366,7 @@ export default function BottomPanel({ activeProblem, code, isSoftSolveActive }) 
                                         Mem
                                     </span>
                                     <span className="text-zinc-100 font-mono font-medium">
-                                        {r.memMb.toFixed(2)}
+                                        {r.memMb.toFixed(3)}
                                     </span>
                                     <span className="text-zinc-400 text-[10px]">MB</span>
                                 </div>
@@ -485,7 +489,7 @@ export default function BottomPanel({ activeProblem, code, isSoftSolveActive }) 
                                                     : "bg-rose-950/30 border border-rose-900/40 text-rose-300"
                                             }`}
                                         >
-                                            {r.output}
+                                            {compactValue(pythonize(r.output))}
                                         </div>
                                     </div>
                                 )}
@@ -494,7 +498,7 @@ export default function BottomPanel({ activeProblem, code, isSoftSolveActive }) 
                                         Expected
                                     </span>
                                     <div className="bg-zinc-800/60 rounded-lg p-2 font-mono text-xs text-zinc-300 mt-1">
-                                        {r.expected || "-"}
+                                        {compactValue(pythonize(r.expected)) || "-"}
                                     </div>
                                 </div>
                             </>
@@ -522,14 +526,14 @@ export default function BottomPanel({ activeProblem, code, isSoftSolveActive }) 
             return [methodName, args];
         });
         const parsedOutputs = activeOps.map((op) => {
-            let exp = op.expected.trim();
+            const exp = op.expected.trim();
             if (exp === "None" || exp === "null" || exp === "") return null;
             if (exp === "true") return true;
             if (exp === "false") return false;
             if (!isNaN(exp)) return Number(exp);
             try {
                 return JSON.parse(exp);
-            } catch (e) {
+            } catch {
                 return exp;
             }
         });
@@ -547,14 +551,14 @@ export default function BottomPanel({ activeProblem, code, isSoftSolveActive }) 
             return [methodName, args];
         });
         const parsedOutputs = activeOps.map((op) => {
-            let exp = op.expected.trim();
+            const exp = op.expected.trim();
             if (exp === "None" || exp === "null" || exp === "") return null;
             if (exp === "true") return true;
             if (exp === "false") return false;
             if (!isNaN(exp)) return Number(exp);
             try {
                 return JSON.parse(exp);
-            } catch (e) {
+            } catch {
                 return exp;
             }
         });
@@ -573,14 +577,14 @@ export default function BottomPanel({ activeProblem, code, isSoftSolveActive }) 
             return [methodName, args];
         });
         const parsedOutputs = activeOps.map((op) => {
-            let exp = op.expected.trim();
+            const exp = op.expected.trim();
             if (exp === "None" || exp === "null" || exp === "") return null;
             if (exp === "true") return true;
             if (exp === "false") return false;
             if (!isNaN(exp)) return Number(exp);
             try {
                 return JSON.parse(exp);
-            } catch (e) {
+            } catch {
                 return exp;
             }
         });
@@ -829,7 +833,7 @@ export default function BottomPanel({ activeProblem, code, isSoftSolveActive }) 
                                                                 Time
                                                             </div>
                                                             <div className="text-base font-semibold text-zinc-100 font-mono mt-0.5">
-                                                                {maxTimeMs.toFixed(2)}
+                                                                {maxTimeMs.toFixed(3)}
                                                                 <span className="text-xs text-zinc-300 font-sans font-normal ml-1">
                                                                     ms
                                                                 </span>
@@ -868,7 +872,7 @@ export default function BottomPanel({ activeProblem, code, isSoftSolveActive }) 
                                                                 Memory
                                                             </div>
                                                             <div className="text-base font-semibold text-zinc-100 font-mono mt-0.5">
-                                                                {maxMemMb.toFixed(2)}
+                                                                {maxMemMb.toFixed(3)}
                                                                 <span className="text-xs text-zinc-300 font-sans font-normal ml-1">
                                                                     MB
                                                                 </span>

@@ -109,16 +109,19 @@ export const pythonMonarch = {
         fstring_expression: [
             [/{/, "delimiter.curly", "@fstring_expression"],
             [/}/, "delimiter.curly", "@pop"],
-            [/[a-zA-Z_]\w*/, {
-                cases: {
-                    "@keywords": "keyword",
-                    "self": "variable.predefined",
-                    "True": "constant",
-                    "False": "constant",
-                    "None": "constant",
-                    "@default": "identifier"
-                }
-            }],
+            [
+                /[a-zA-Z_]\w*/,
+                {
+                    cases: {
+                        "@keywords": "keyword",
+                        self: "variable.predefined",
+                        True: "constant",
+                        False: "constant",
+                        None: "constant",
+                        "@default": "identifier",
+                    },
+                },
+            ],
             [/[()[\]]/, "@brackets"],
             [/[<>!%&^*\-+=|~:]/, "operator"],
             [/\d+/, "number"],

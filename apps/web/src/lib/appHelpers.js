@@ -1,4 +1,4 @@
-import problemsData from "./problems.json";
+import problemsData from "../../problems.json";
 
 export const getTodayNY = () => {
     const options = {

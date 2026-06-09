@@ -1,4 +1,5 @@
 import sys
+sys.setrecursionlimit(200000)
 import os
 import json
 import inspect
@@ -7,12 +8,12 @@ from urllib.parse import urlparse
 from botocore.client import Config
 from dotenv import load_dotenv
 
+from tests.testgen import TestGen
+
 script_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.abspath(os.path.join(script_dir, ".."))
 if parent_dir not in sys.path:
     sys.path.insert(0, parent_dir)
-
-from tests.testgen import TestGen
 
 
 def main():
@@ -26,12 +27,13 @@ def main():
     load_dotenv(dotenv_path=os.path.join(workspace_root, ".env"))
 
     if "class " in generator.code:
-        method_name = generator.code.split("class ")[1].split(":")[0].split("(")[0].strip()
+        method_name = (
+            generator.code.split("class ")[1].split(":")[0].split("(")[0].strip()
+        )
     else:
         method_name = generator.code.split("(")[0].strip()
     solution_class = None
     is_class_design = False
-
 
     for attr_name in dir(generator):
         attr = getattr(generator, attr_name)
@@ -61,11 +63,31 @@ def main():
         sig = inspect.signature(oracle_method)
         params = list(sig.parameters.values())
 
+    from app.dsa import parse_val, normalize_val
+
+    def parse_case_val(v):
+        if (
+            isinstance(v, str)
+            and len(v) >= 3
+            and v[0] in "LTI"
+            and v[1] == "["
+            and v[-1] == "]"
+        ):
+            return parse_val(v)
+        if isinstance(v, list):
+            return [parse_case_val(x) for x in v]
+        if isinstance(v, tuple):
+            return tuple(parse_case_val(x) for x in v)
+        if isinstance(v, dict):
+            return {k: parse_case_val(val) for k, val in v.items()}
+        return v
+
     def run_case(case):
+        parsed_case = parse_case_val(case)
         if is_class_design:
             results = []
             obj = None
-            for m_name, args in case:
+            for m_name, args in parsed_case:
                 if obj is None:
                     obj = solution_class(*args)
                     results.append(None)
@@ -74,25 +96,61 @@ def main():
                     results.append(method(*args))
             return results
 
-        if isinstance(case, dict):
-            return oracle_method(**case)
+        if isinstance(parsed_case, dict):
+            return oracle_method(**parsed_case)
         if len(params) > 1:
-            if isinstance(case, (list, tuple)):
-                return oracle_method(*case)
-        return oracle_method(case)
+            if isinstance(parsed_case, (list, tuple)):
+                return oracle_method(*parsed_case)
+        return oracle_method(parsed_case)
+
+    def custom_json_dumps(val):
+        if (
+            isinstance(val, str)
+            and len(val) >= 3
+            and val[0] in "LTI"
+            and val[1] == "["
+            and val[-1] == "]"
+        ):
+            return val
+        return json.dumps(val)
+
+    def json_dumps_custom(v):
+        if v is None:
+            return "null"
+        if v is True:
+            return "true"
+        if v is False:
+            return "false"
+        name = v.__class__.__name__
+        if name == "ListNode":
+            from app.dsa import arr_L
+            return "L" + json_dumps_custom(arr_L(v))
+        if name == "TreeNode":
+            from app.dsa import arr_T
+            return "T" + json_dumps_custom(arr_T(v))
+        if name == "TrieNode":
+            from app.dsa import arr_I
+            return "I" + json_dumps_custom(arr_I(v))
+        if isinstance(v, list):
+            return "[" + ", ".join(json_dumps_custom(x) for x in v) + "]"
+        if isinstance(v, tuple):
+            return "[" + ", ".join(json_dumps_custom(x) for x in v) + "]"
+        if isinstance(v, dict):
+            return "{" + ", ".join(json.dumps(k) + ": " + json_dumps_custom(val) for k, val in v.items()) + "}"
+        return json.dumps(v)
 
     def format_input(case):
         if is_class_design:
             return json.dumps(case)
 
         if isinstance(case, dict):
-            return ", ".join(f"{k} = {json.dumps(v)}" for k, v in case.items())
+            return ", ".join(f"{k} = {custom_json_dumps(v)}" for k, v in case.items())
         if len(params) > 1 and isinstance(case, (list, tuple)):
             return ", ".join(
-                f"{p.name} = {json.dumps(val)}" for p, val in zip(params, case)
+                f"{p.name} = {custom_json_dumps(val)}" for p, val in zip(params, case)
             )
         param_name = params[0].name if params else "input"
-        return f"{param_name} = {json.dumps(case)}"
+        return f"{param_name} = {custom_json_dumps(case)}"
 
     public_inputs = generator.get_public_cases()
     private_inputs = generator.get_private_cases()
@@ -100,8 +158,8 @@ def main():
     examples = []
     for case in public_inputs:
         formatted_input = format_input(case)
-        output = run_case(case)
-        examples.append({"input": formatted_input, "output": json.dumps(output)})
+        output_str = json_dumps_custom(run_case(case))
+        examples.append({"input": formatted_input, "output": output_str})
 
     time_limit = getattr(generator, "timeLimit", getattr(generator, "time_limit", None))
     memory_limit = getattr(
@@ -109,7 +167,7 @@ def main():
     )
 
     problems_json_path = os.path.join(
-        project_root, "apps", "web", "src", "lib", "problems.json"
+        project_root, "apps", "web", "problems.json"
     )
     if os.path.exists(problems_json_path):
         with open(problems_json_path, "r") as f:
@@ -146,16 +204,15 @@ def main():
     else:
         problems.append(problem_obj)
 
+    problems.sort(key=lambda x: x.get("id", 0))
     with open(problems_json_path, "w") as f:
         json.dump(problems, f, indent=4)
 
     private_tests = []
     for case in private_inputs:
         formatted_input = format_input(case)
-        output = run_case(case)
-        private_tests.append(
-            {"input": formatted_input, "expected": json.dumps(output)}
-        )
+        output_str = json_dumps_custom(run_case(case))
+        private_tests.append({"input": formatted_input, "expected": output_str})
 
     hidden_data = {"tests": private_tests}
 
