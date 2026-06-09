@@ -3,10 +3,11 @@
     "version": "1.0.0",
     "description": "",
     "main": "index.js",
+    "type": "module",
     "scripts": {
-        "dev": "concurrently -n web,api -c yellow,blue \"cd apps/web && pnpm dev\" \"cd apps/api && uv run uvicorn app.main:app --reload\"",
+        "dev": "node art.js & concurrently -n web,api -c yellow,blue \"cd apps/web && pnpm dev\" \"cd apps/api && uv run uvicorn app.main:app --reload\"",
         "build": "cd apps/web && pnpm build",
-        "start": "concurrently -n web,api -c yellow,blue \"cd apps/web && pnpm preview\" \"cd apps/api && uv run uvicorn app.main:app\"",
+        "start": "node art.js & concurrently -n web,api -c yellow,blue \"cd apps/web && pnpm preview\" \"cd apps/api && uv run uvicorn app.main:app\"",
         "preview": "pnpm start",
         "format:read": "(cd apps/web && pnpm exec prettier --check .) && (cd apps/api && uv run ruff format --check .)",
         "format:write": "(cd apps/web && pnpm exec prettier --write .) && (cd apps/api && uv run ruff format .)",

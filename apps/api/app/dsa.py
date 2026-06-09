@@ -213,6 +213,8 @@ def fmt_val(v):
 
 
 def parse_val(s):
+    if not s or not s.strip():
+        return None
     s_pp = preprocess_input(s.strip())
     try:
         return json.loads(s)

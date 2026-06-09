@@ -1,53 +1,173 @@
+import sys
 import os
 import json
+import inspect
 import boto3
 from urllib.parse import urlparse
 from botocore.client import Config
 from dotenv import load_dotenv
 
-from testgen import TestGen
+script_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.abspath(os.path.join(script_dir, ".."))
+if parent_dir not in sys.path:
+    sys.path.insert(0, parent_dir)
+
+from tests.testgen import TestGen
 
 
 def main():
-    problem_id = 1
+    generator = TestGen()
+    problem_id = generator.id
 
     script_dir = os.path.dirname(os.path.abspath(__file__))
     workspace_root = os.path.abspath(os.path.join(script_dir, ".."))
+    project_root = os.path.abspath(os.path.join(script_dir, "..", "..", ".."))
 
     load_dotenv(dotenv_path=os.path.join(workspace_root, ".env"))
 
-    generator = TestGen()
-    test_cases = generator.get_cases()
+    if "class " in generator.code:
+        method_name = generator.code.split("class ")[1].split(":")[0].split("(")[0].strip()
+    else:
+        method_name = generator.code.split("(")[0].strip()
+    solution_class = None
+    is_class_design = False
 
-    oracle = generator.Solution()
-    tests_list = []
 
-    for _, nums in enumerate(test_cases):
-        expected_output = oracle.hasDuplicate(nums)
-        tests_list.append(
-            {
-                "input": f"nums = {json.dumps(nums)}",
-                "expected": json.dumps(expected_output),
-            }
+    for attr_name in dir(generator):
+        attr = getattr(generator, attr_name)
+        if isinstance(attr, type) and attr.__name__ == method_name:
+            solution_class = attr
+            is_class_design = True
+            break
+
+    if not solution_class:
+        for attr_name in dir(generator):
+            attr = getattr(generator, attr_name)
+            if isinstance(attr, type) and hasattr(attr, method_name):
+                solution_class = attr
+                break
+
+    if not solution_class:
+        solution_class = getattr(
+            generator, "Solution", getattr(TestGen, "Solution", None)
         )
 
-    output_data = [{"id": problem_id, "tests": tests_list}]
+    if is_class_design:
+        oracle_method = None
+        params = []
+    else:
+        oracle = solution_class()
+        oracle_method = getattr(oracle, method_name)
+        sig = inspect.signature(oracle_method)
+        params = list(sig.parameters.values())
 
-    local_file = os.path.join(
-        workspace_root, "src", "lib", f"hiddenTests-{problem_id}.json"
+    def run_case(case):
+        if is_class_design:
+            results = []
+            obj = None
+            for m_name, args in case:
+                if obj is None:
+                    obj = solution_class(*args)
+                    results.append(None)
+                else:
+                    method = getattr(obj, m_name)
+                    results.append(method(*args))
+            return results
+
+        if isinstance(case, dict):
+            return oracle_method(**case)
+        if len(params) > 1:
+            if isinstance(case, (list, tuple)):
+                return oracle_method(*case)
+        return oracle_method(case)
+
+    def format_input(case):
+        if is_class_design:
+            return json.dumps(case)
+
+        if isinstance(case, dict):
+            return ", ".join(f"{k} = {json.dumps(v)}" for k, v in case.items())
+        if len(params) > 1 and isinstance(case, (list, tuple)):
+            return ", ".join(
+                f"{p.name} = {json.dumps(val)}" for p, val in zip(params, case)
+            )
+        param_name = params[0].name if params else "input"
+        return f"{param_name} = {json.dumps(case)}"
+
+    public_inputs = generator.get_public_cases()
+    private_inputs = generator.get_private_cases()
+
+    examples = []
+    for case in public_inputs:
+        output = run_case(case)
+        examples.append({"input": format_input(case), "output": json.dumps(output)})
+
+    time_limit = getattr(generator, "timeLimit", getattr(generator, "time_limit", None))
+    memory_limit = getattr(
+        generator, "memoryLimit", getattr(generator, "memory_limit", None)
     )
-    os.makedirs(os.path.dirname(local_file), exist_ok=True)
-    with open(local_file, "w") as f:
-        json.dump(output_data, f, indent=4)
 
-    print(f"Successfully generated {len(tests_list)} cases and wrote to {local_file}")
+    problems_json_path = os.path.join(
+        project_root, "apps", "web", "src", "lib", "problems.json"
+    )
+    if os.path.exists(problems_json_path):
+        with open(problems_json_path, "r") as f:
+            try:
+                problems = json.load(f)
+            except Exception:
+                problems = []
+    else:
+        problems = []
+
+    problem_idx = -1
+    for idx, prob in enumerate(problems):
+        if prob.get("id") == problem_id:
+            problem_idx = idx
+            break
+
+    problem_obj = {
+        "id": problem_id,
+        "name": generator.name,
+        "difficulty": generator.difficulty,
+        "code": generator.code,
+        "description": generator.description,
+        "constraints": generator.constraints,
+        "examples": examples,
+    }
+
+    if time_limit is not None:
+        problem_obj["timeLimit"] = time_limit
+    if memory_limit is not None:
+        problem_obj["memoryLimit"] = memory_limit
+
+    if problem_idx != -1:
+        problems[problem_idx] = problem_obj
+    else:
+        problems.append(problem_obj)
+
+    with open(problems_json_path, "w") as f:
+        json.dump(problems, f, indent=4)
+
+    private_tests = []
+    for case in private_inputs:
+        output = run_case(case)
+        private_tests.append(
+            {"input": format_input(case), "expected": json.dumps(output)}
+        )
+
+    hidden_data = {"tests": private_tests}
+
+    hidden_dir = os.path.join(script_dir, "hidden")
+    os.makedirs(hidden_dir, exist_ok=True)
+    local_file = os.path.join(hidden_dir, f"hiddenTests-{problem_id}.json")
+    with open(local_file, "w") as f:
+        json.dump(hidden_data, f, indent=4)
 
     full_endpoint = os.getenv("R2_ENDPOINT_URL")
     aws_access_key_id = os.getenv("R2_ACCESS_KEY_ID")
     aws_secret_access_key = os.getenv("R2_SECRET_KEY")
 
     if not all([full_endpoint, aws_access_key_id, aws_secret_access_key]):
-        print("Error: Missing one or more R2 environment variables in .env.")
         return
 
     parsed = urlparse(full_endpoint)
@@ -55,9 +175,6 @@ def main():
     endpoint_url = f"{parsed.scheme}://{parsed.netloc}"
     object_name = f"hiddenTests-{problem_id}.json"
 
-    print(
-        f"Uploading {object_name} to R2 bucket '{bucket_name}' via endpoint '{endpoint_url}'..."
-    )
     try:
         s3_client = boto3.client(
             "s3",
@@ -67,9 +184,8 @@ def main():
             config=Config(signature_version="s3v4"),
         )
         s3_client.upload_file(local_file, bucket_name, object_name)
-        print("Upload completed successfully!")
-    except Exception as e:
-        print(f"Error uploading to Cloudflare R2: {e}")
+    except Exception:
+        pass
 
 
 if __name__ == "__main__":

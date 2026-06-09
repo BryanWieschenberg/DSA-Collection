@@ -2,7 +2,10 @@ export const renderMarkdown = (text) => {
     if (!text) return "";
     const lines = text.split("\n");
     return lines.map((line, lineIdx) => {
-        const parts = line.split("`");
+        const bulletMatch = line.match(/^(\s*)(?:-\s+|\*\s+)(.*)/);
+        const textToProcess = bulletMatch ? bulletMatch[2] : line;
+
+        const parts = textToProcess.split("`");
         const renderedLine = parts.map((part, index) => {
             if (index % 2 === 1) {
                 return (
@@ -36,6 +39,17 @@ export const renderMarkdown = (text) => {
                 });
             });
         });
+
+        if (bulletMatch) {
+            const indent = bulletMatch[1].length;
+            const plClass = indent >= 2 ? "pl-8" : "pl-4";
+            return (
+                <div key={lineIdx} className={`flex gap-3.5 ${plClass} ${lineIdx > 0 ? "mt-3" : ""}`}>
+                    <span className="select-none shrink-0">•</span>
+                    <div className="flex-1">{renderedLine}</div>
+                </div>
+            );
+        }
 
         return (
             <p key={lineIdx} className={lineIdx > 0 ? "mt-3" : ""}>

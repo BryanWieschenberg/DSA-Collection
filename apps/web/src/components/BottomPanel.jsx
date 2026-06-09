@@ -4,6 +4,54 @@ import { getLimits, compactValue, pythonize } from "../lib/appHelpers";
 import SuccessAnimation from "./SuccessAnimation";
 import FailureAnimation from "./FailureAnimation";
 
+const parseMethodCall = (str) => {
+    str = str.trim();
+    const openParen = str.indexOf("(");
+    if (openParen === -1) {
+        return [str, []];
+    }
+    const methodName = str.slice(0, openParen).trim();
+    let closeParen = str.lastIndexOf(")");
+    if (closeParen === -1) closeParen = str.length;
+    const argsStr = str.slice(openParen + 1, closeParen).trim();
+    if (!argsStr) {
+        return [methodName, []];
+    }
+    try {
+        return [methodName, JSON.parse("[" + argsStr + "]")];
+    } catch (e) {
+        const args = argsStr.split(",").map((s) => {
+            const trimmed = s.trim();
+            if (trimmed === "true") return true;
+            if (trimmed === "false") return false;
+            if (trimmed === "null" || trimmed === "None") return null;
+            if (!isNaN(trimmed) && trimmed !== "") return Number(trimmed);
+            if (
+                (trimmed.startsWith('"') && trimmed.endsWith('"')) ||
+                (trimmed.startsWith("'") && trimmed.endsWith("'"))
+            ) {
+                return trimmed.slice(1, -1);
+            }
+            return trimmed;
+        });
+        return [methodName, args];
+    }
+};
+
+const depythonize = (str) => {
+    if (!str) return str;
+    return str.replace(/"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|\b(?:True|False|None)\b/g, (match) => {
+        if (match[0] === '"' || match[0] === "'") return match;
+        return match === "True"
+            ? "true"
+            : match === "False"
+              ? "false"
+              : match === "None"
+                ? "null"
+                : match;
+    });
+};
+
 const getDefaultCases = (problem) => {
     const defaults = (problem.examples || []).map((ex) => ({
         input: compactValue(pythonize(ex.input)),
@@ -13,9 +61,11 @@ const getDefaultCases = (problem) => {
 };
 
 export default function BottomPanel({ activeProblem, code, isSoftSolveActive }) {
+    const isClass = activeProblem.code && activeProblem.code.trim().startsWith("class");
     const [activeTab, setActiveTab] = useState("testcases");
     const [testCases, setTestCases] = useState(() => getDefaultCases(activeProblem));
     const [activeCase, setActiveCase] = useState(0);
+    const [localClassOps, setLocalClassOps] = useState([]);
     const [results, setResults] = useState(null);
     const [running, setRunning] = useState(false);
     const [hoveredCase, setHoveredCase] = useState(null);
@@ -55,11 +105,65 @@ export default function BottomPanel({ activeProblem, code, isSoftSolveActive }) 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    useEffect(() => {
+        let ops = [];
+        if (isClass && testCases[activeCase]) {
+            try {
+                const parsedInputs = JSON.parse(depythonize(testCases[activeCase].input));
+                const parsedOutputs = JSON.parse(depythonize(testCases[activeCase].expected));
+                if (Array.isArray(parsedInputs)) {
+                    ops = parsedInputs.map((call, i) => {
+                        const [methodName, args] = call;
+                        const argsStr = args
+                            .map((arg) => compactValue(pythonize(JSON.stringify(arg))))
+                            .join(", ");
+                        const formattedCall = `${methodName}(${argsStr})`;
+                        const formattedRet =
+                            parsedOutputs && i < parsedOutputs.length
+                                ? compactValue(pythonize(JSON.stringify(parsedOutputs[i])))
+                                : "None";
+                        return { call: formattedCall, expected: formattedRet };
+                    });
+                }
+            } catch (e) {
+                ops = [];
+            }
+        }
+        if (ops.length === 0) {
+            ops = [{ call: "", expected: "" }];
+        }
+        setLocalClassOps(ops);
+    }, [activeProblem, activeCase]);
+
     const resetTestCases = () => {
-        setTestCases(getDefaultCases(activeProblem));
+        const defaults = getDefaultCases(activeProblem);
+        setTestCases(defaults);
         setActiveCase(0);
         setActiveResultCase(0);
         setResults(null);
+        if (isClass && defaults[0]) {
+            try {
+                const parsedInputs = JSON.parse(depythonize(defaults[0].input));
+                const parsedOutputs = JSON.parse(depythonize(defaults[0].expected));
+                if (Array.isArray(parsedInputs)) {
+                    const ops = parsedInputs.map((call, i) => {
+                        const [methodName, args] = call;
+                        const argsStr = args
+                            .map((arg) => compactValue(pythonize(JSON.stringify(arg))))
+                            .join(", ");
+                        const formattedCall = `${methodName}(${argsStr})`;
+                        const formattedRet =
+                            parsedOutputs && i < parsedOutputs.length
+                                ? compactValue(pythonize(JSON.stringify(parsedOutputs[i])))
+                                : "None";
+                        return { call: formattedCall, expected: formattedRet };
+                    });
+                    setLocalClassOps(ops);
+                    return;
+                }
+            } catch (e) {}
+        }
+        setLocalClassOps([{ call: "", expected: "" }]);
     };
 
     const updateCase = (idx, field, value) => {
@@ -76,8 +180,34 @@ export default function BottomPanel({ activeProblem, code, isSoftSolveActive }) 
         if (testCases.length <= 1) return;
         const next = testCases.filter((_, i) => i !== idx);
         setTestCases(next);
-        if (activeCase >= next.length) setActiveCase(next.length - 1);
-        else if (activeCase > idx) setActiveCase(activeCase - 1);
+        let targetCase = activeCase;
+        if (activeCase >= next.length) targetCase = next.length - 1;
+        else if (activeCase > idx) targetCase = activeCase - 1;
+        setActiveCase(targetCase);
+
+        if (isClass && next[targetCase]) {
+            try {
+                const parsedInputs = JSON.parse(depythonize(next[targetCase].input));
+                const parsedOutputs = JSON.parse(depythonize(next[targetCase].expected));
+                if (Array.isArray(parsedInputs)) {
+                    const ops = parsedInputs.map((call, i) => {
+                        const [methodName, args] = call;
+                        const argsStr = args
+                            .map((arg) => compactValue(pythonize(JSON.stringify(arg))))
+                            .join(", ");
+                        const formattedCall = `${methodName}(${argsStr})`;
+                        const formattedRet =
+                            parsedOutputs && i < parsedOutputs.length
+                                ? compactValue(pythonize(JSON.stringify(parsedOutputs[i])))
+                                : "None";
+                        return { call: formattedCall, expected: formattedRet };
+                    });
+                    setLocalClassOps(ops);
+                    return;
+                }
+            } catch (e) {}
+        }
+        setLocalClassOps([{ call: "", expected: "" }]);
     };
 
     const simulateRun = async (isSubmit) => {
@@ -178,108 +308,274 @@ export default function BottomPanel({ activeProblem, code, isSoftSolveActive }) 
         return status;
     };
 
-    const renderCaseResult = (r, hideStatus = false) => (
-        <div key={r.caseNum} className="space-y-2 text-sm">
-            <div className="flex items-center gap-2">
-                <span className="text-zinc-300 font-semibold">
-                    {r.label || `Case ${r.caseNum}`}
-                </span>
-                {!hideStatus && (
-                    <span className={`font-semibold ${statusColor(r.status)}`}>
-                        {statusLabel(r.status)}
+    const renderCaseResult = (r, hideStatus = false) => {
+        const isClass = activeProblem.code && activeProblem.code.trim().startsWith("class");
+        let isClassLayout = false;
+        let parsedInput = null;
+        let parsedOutput = null;
+        let parsedExpected = null;
+
+        if (isClass) {
+            try {
+                parsedInput = JSON.parse(depythonize(r.input));
+                parsedExpected = JSON.parse(depythonize(r.expected));
+                parsedOutput = r.output !== null ? JSON.parse(depythonize(r.output)) : null;
+                if (
+                    Array.isArray(parsedInput) &&
+                    Array.isArray(parsedExpected) &&
+                    parsedInput.length === parsedExpected.length
+                ) {
+                    isClassLayout = true;
+                }
+            } catch (e) {
+                isClassLayout = false;
+            }
+        }
+
+        return (
+            <div key={r.caseNum} className="space-y-2 text-sm">
+                <div className="flex items-center gap-2">
+                    <span className="text-zinc-300 font-semibold">
+                        {r.label || `Case ${r.caseNum}`}
                     </span>
-                )}
-                {(typeof r.timeMs === "number" || typeof r.memMb === "number") && (
-                    <div className="flex items-center gap-1.5 ml-auto">
-                        {typeof r.timeMs === "number" && (
-                            <div className="flex items-center gap-1 px-2 py-0.5 bg-zinc-900/50 border border-zinc-800/50 rounded-md text-[11px] select-none">
-                                <span className="text-[9px] font-semibold text-zinc-500 uppercase tracking-wider">
-                                    Time
-                                </span>
-                                <span className="text-zinc-100 font-mono font-medium">
-                                    {r.timeMs.toFixed(0)}
-                                </span>
-                                <span className="text-zinc-400 text-[10px]">ms</span>
-                            </div>
-                        )}
-                        {typeof r.memMb === "number" && (
-                            <div className="flex items-center gap-1 px-2 py-0.5 bg-zinc-900/50 border border-zinc-800/50 rounded-md text-[11px] select-none">
-                                <span className="text-[9px] font-semibold text-zinc-500 uppercase tracking-wider">
-                                    Mem
-                                </span>
-                                <span className="text-zinc-100 font-mono font-medium">
-                                    {r.memMb.toFixed(0)}
-                                </span>
-                                <span className="text-zinc-400 text-[10px]">MB</span>
-                            </div>
-                        )}
+                    {!hideStatus && (
+                        <span className={`font-semibold ${statusColor(r.status)}`}>
+                            {statusLabel(r.status)}
+                        </span>
+                    )}
+                    {(typeof r.timeMs === "number" || typeof r.memMb === "number") && (
+                        <div className="flex items-center gap-1.5 ml-auto">
+                            {typeof r.timeMs === "number" && (
+                                <div className="flex items-center gap-1 px-2 py-0.5 bg-zinc-900/50 border border-zinc-800/50 rounded-md text-[11px] select-none">
+                                    <span className="text-[9px] font-semibold text-zinc-500 uppercase tracking-wider">
+                                        Time
+                                    </span>
+                                    <span className="text-zinc-100 font-mono font-medium">
+                                        {r.timeMs.toFixed(0)}
+                                    </span>
+                                    <span className="text-zinc-400 text-[10px]">ms</span>
+                                </div>
+                            )}
+                            {typeof r.memMb === "number" && (
+                                <div className="flex items-center gap-1 px-2 py-0.5 bg-zinc-900/50 border border-zinc-800/50 rounded-md text-[11px] select-none">
+                                    <span className="text-[9px] font-semibold text-zinc-500 uppercase tracking-wider">
+                                        Mem
+                                    </span>
+                                    <span className="text-zinc-100 font-mono font-medium">
+                                        {r.memMb.toFixed(0)}
+                                    </span>
+                                    <span className="text-zinc-400 text-[10px]">MB</span>
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </div>
+                {r.hidden ? (
+                    <div className="flex items-center gap-1.5 text-zinc-500 text-xs bg-zinc-800/60 rounded-lg p-2.5">
+                        <svg
+                            className="w-3.5 h-3.5"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                        >
+                            <rect x="3" y="11" width="18" height="11" rx="2" />
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                        </svg>
+                        Hidden test (input and expected output are not shown).
                     </div>
+                ) : (
+                    <>
+                        {r.error && r.error !== statusLabel(r.status) && (
+                            <div className="bg-rose-950/30 border border-rose-900/40 rounded-lg p-3 font-mono text-xs text-rose-300">
+                                {r.error}
+                            </div>
+                        )}
+                        {r.stdout && (
+                            <div>
+                                <span className="text-zinc-500 text-xs font-medium">Stdout</span>
+                                <div className="bg-zinc-800/60 rounded-lg p-2 font-mono text-xs text-zinc-300 mt-1">
+                                    {r.stdout}
+                                </div>
+                            </div>
+                        )}
+                        {isClassLayout ? (
+                            <div className="grid grid-cols-3 gap-4 mt-1.5">
+                                <div>
+                                    <span className="text-zinc-500 text-xs font-medium mb-1 block">
+                                        Input
+                                    </span>
+                                    <div className="bg-zinc-800/60 rounded-lg p-2.5 font-mono text-xs text-zinc-300 space-y-1.5">
+                                        {parsedInput.map((call, i) => {
+                                            const [methodName, args] = call;
+                                            const argsStr = args
+                                                .map((arg) =>
+                                                    compactValue(pythonize(JSON.stringify(arg))),
+                                                )
+                                                .join(", ");
+                                            return (
+                                                <div
+                                                    key={i}
+                                                    className="truncate"
+                                                    title={`${methodName}(${argsStr})`}
+                                                >{`${methodName}(${argsStr})`}</div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                                <div>
+                                    <span className="text-zinc-500 text-xs font-medium mb-1 block">
+                                        Output
+                                    </span>
+                                    <div
+                                        className={`rounded-lg p-2.5 font-mono text-xs space-y-1.5 ${
+                                            r.status === "AC"
+                                                ? "bg-emerald-950/30 border border-emerald-900/40 text-emerald-300"
+                                                : "bg-rose-950/30 border border-rose-900/40 text-rose-300"
+                                        }`}
+                                    >
+                                        {parsedOutput
+                                            ? parsedOutput.map((outVal, i) => {
+                                                  const formattedOut = compactValue(
+                                                      pythonize(JSON.stringify(outVal)),
+                                                  );
+                                                  return <div key={i}>{formattedOut}</div>;
+                                              })
+                                            : "-"}
+                                    </div>
+                                </div>
+                                <div>
+                                    <span className="text-zinc-500 text-xs font-medium mb-1 block">
+                                        Expected
+                                    </span>
+                                    <div className="bg-zinc-800/60 rounded-lg p-2.5 font-mono text-xs text-zinc-300 space-y-1.5">
+                                        {parsedExpected.map((expVal, i) => {
+                                            const formattedExp = compactValue(
+                                                pythonize(JSON.stringify(expVal)),
+                                            );
+                                            return <div key={i}>{formattedExp}</div>;
+                                        })}
+                                    </div>
+                                </div>
+                            </div>
+                        ) : (
+                            <>
+                                <div>
+                                    <span className="text-zinc-500 text-xs font-medium">Input</span>
+                                    <div className="bg-zinc-800/60 rounded-lg p-2 font-mono text-xs text-zinc-300 mt-1">
+                                        {r.input || "-"}
+                                    </div>
+                                </div>
+                                {r.output !== null && (
+                                    <div>
+                                        <span className="text-zinc-500 text-xs font-medium">
+                                            Output
+                                        </span>
+                                        <div
+                                            className={`rounded-lg p-2 font-mono text-xs mt-1 ${
+                                                r.status === "AC"
+                                                    ? "bg-emerald-950/30 border border-emerald-900/40 text-emerald-300"
+                                                    : "bg-rose-950/30 border border-rose-900/40 text-rose-300"
+                                            }`}
+                                        >
+                                            {r.output}
+                                        </div>
+                                    </div>
+                                )}
+                                <div>
+                                    <span className="text-zinc-500 text-xs font-medium">
+                                        Expected
+                                    </span>
+                                    <div className="bg-zinc-800/60 rounded-lg p-2 font-mono text-xs text-zinc-300 mt-1">
+                                        {r.expected || "-"}
+                                    </div>
+                                </div>
+                            </>
+                        )}
+                        <div className="mt-4 invisible" />
+                    </>
                 )}
             </div>
-            {r.hidden ? (
-                <div className="flex items-center gap-1.5 text-zinc-500 text-xs bg-zinc-800/60 rounded-lg p-2.5">
-                    <svg
-                        className="w-3.5 h-3.5"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                    >
-                        <rect x="3" y="11" width="18" height="11" rx="2" />
-                        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                    </svg>
-                    Hidden test (input and expected output are not shown).
-                </div>
-            ) : (
-                <>
-                    {r.error && r.error !== statusLabel(r.status) && (
-                        <div className="bg-rose-950/30 border border-rose-900/40 rounded-lg p-3 font-mono text-xs text-rose-300">
-                            {r.error}
-                        </div>
-                    )}
-                    {r.stdout && (
-                        <div>
-                            <span className="text-zinc-500 text-xs font-medium">Stdout</span>
-                            <div className="bg-zinc-800/60 rounded-lg p-2 font-mono text-xs text-zinc-300 mt-1">
-                                {r.stdout}
-                            </div>
-                        </div>
-                    )}
-                    <div>
-                        <span className="text-zinc-500 text-xs font-medium">Input</span>
-                        <div className="bg-zinc-800/60 rounded-lg p-2 font-mono text-xs text-zinc-300 mt-1">
-                            {r.input || "-"}
-                        </div>
-                    </div>
-                    {r.output !== null && (
-                        <div>
-                            <span className="text-zinc-500 text-xs font-medium">Output</span>
-                            <div
-                                className={`rounded-lg p-2 font-mono text-xs mt-1 ${
-                                    r.status === "AC"
-                                        ? "bg-emerald-950/30 border border-emerald-900/40 text-emerald-300"
-                                        : "bg-rose-950/30 border border-rose-900/40 text-rose-300"
-                                }`}
-                            >
-                                {r.output}
-                            </div>
-                        </div>
-                    )}
-                    <div>
-                        <span className="text-zinc-500 text-xs font-medium">Expected</span>
-                        <div className="bg-zinc-800/60 rounded-lg p-2 font-mono text-xs text-zinc-300 mt-1">
-                            {r.expected || "-"}
-                        </div>
-                    </div>
-                    <div className="mt-4 invisible" />
-                </>
-            )}
-        </div>
-    );
+        );
+    };
 
     const autoRows = (text) => {
         if (!text) return 1;
         return Math.max(1, text.split("\n").length);
+    };
+
+    const handleOpChange = (index, field, value) => {
+        const newOps = [...localClassOps];
+        newOps[index][field] = value;
+        setLocalClassOps(newOps);
+
+        const parsedInputs = newOps.map((op) => {
+            const [methodName, args] = parseMethodCall(op.call);
+            return [methodName, args];
+        });
+        const parsedOutputs = newOps.map((op) => {
+            let exp = op.expected.trim();
+            if (exp === "None" || exp === "null" || exp === "") return null;
+            if (exp === "true") return true;
+            if (exp === "false") return false;
+            if (!isNaN(exp)) return Number(exp);
+            try {
+                return JSON.parse(exp);
+            } catch (e) {
+                return exp;
+            }
+        });
+        updateCase(activeCase, "input", JSON.stringify(parsedInputs));
+        updateCase(activeCase, "expected", JSON.stringify(parsedOutputs));
+    };
+
+    const addLocalOp = () => {
+        const newOps = [...localClassOps, { call: "", expected: "" }];
+        setLocalClassOps(newOps);
+
+        const parsedInputs = newOps.map((op) => {
+            const [methodName, args] = parseMethodCall(op.call);
+            return [methodName, args];
+        });
+        const parsedOutputs = newOps.map((op) => {
+            let exp = op.expected.trim();
+            if (exp === "None" || exp === "null" || exp === "") return null;
+            if (exp === "true") return true;
+            if (exp === "false") return false;
+            if (!isNaN(exp)) return Number(exp);
+            try {
+                return JSON.parse(exp);
+            } catch (e) {
+                return exp;
+            }
+        });
+        updateCase(activeCase, "input", JSON.stringify(parsedInputs));
+        updateCase(activeCase, "expected", JSON.stringify(parsedOutputs));
+    };
+
+    const deleteLocalOp = (index) => {
+        if (localClassOps.length <= 1) return;
+        const newOps = localClassOps.filter((_, idx) => idx !== index);
+        setLocalClassOps(newOps);
+
+        const parsedInputs = newOps.map((op) => {
+            const [methodName, args] = parseMethodCall(op.call);
+            return [methodName, args];
+        });
+        const parsedOutputs = newOps.map((op) => {
+            let exp = op.expected.trim();
+            if (exp === "None" || exp === "null" || exp === "") return null;
+            if (exp === "true") return true;
+            if (exp === "false") return false;
+            if (!isNaN(exp)) return Number(exp);
+            try {
+                return JSON.parse(exp);
+            } catch (e) {
+                return exp;
+            }
+        });
+        updateCase(activeCase, "input", JSON.stringify(parsedInputs));
+        updateCase(activeCase, "expected", JSON.stringify(parsedOutputs));
     };
 
     return (
@@ -370,38 +666,101 @@ export default function BottomPanel({ activeProblem, code, isSoftSolveActive }) 
                             </button>
                         </div>
 
-                        {testCases[activeCase] && (
-                            <div className="space-y-3">
+                        {testCases[activeCase] &&
+                            (isClass ? (
                                 <div>
-                                    <span className="text-zinc-500 text-xs font-medium mb-1 block">
-                                        Input
-                                    </span>
-                                    <textarea
-                                        value={testCases[activeCase].input}
-                                        onChange={(e) =>
-                                            updateCase(activeCase, "input", e.target.value)
-                                        }
-                                        className="w-full bg-zinc-800/60 border border-zinc-700/40 rounded-lg p-2.5 font-mono text-sm text-zinc-200 resize-none focus:outline-none focus:border-zinc-600"
-                                        rows={autoRows(testCases[activeCase].input)}
-                                        spellCheck={false}
-                                    />
+                                    <div className="grid grid-cols-11 gap-2 text-zinc-500 text-xs font-medium mb-1 select-none">
+                                        <div className="col-span-5">Input</div>
+                                        <div className="col-span-5">Expected Output</div>
+                                        <div className="col-span-1"></div>
+                                    </div>
+                                    <div className="space-y-2 max-h-[300px] overflow-y-auto desc-scrollbar pr-1">
+                                        {localClassOps.map((op, i) => (
+                                            <div
+                                                key={i}
+                                                className="grid grid-cols-11 gap-2 items-center"
+                                            >
+                                                <div className="col-span-5">
+                                                    <input
+                                                        type="text"
+                                                        value={op.call}
+                                                        onChange={(e) =>
+                                                            handleOpChange(
+                                                                i,
+                                                                "call",
+                                                                e.target.value,
+                                                            )
+                                                        }
+                                                        className="w-full bg-zinc-800/60 border border-zinc-700/40 rounded-lg px-2.5 py-1.5 font-mono text-sm text-zinc-200 focus:outline-none focus:border-zinc-600"
+                                                        spellCheck={false}
+                                                    />
+                                                </div>
+                                                <div className="col-span-5">
+                                                    <input
+                                                        type="text"
+                                                        value={op.expected}
+                                                        onChange={(e) =>
+                                                            handleOpChange(
+                                                                i,
+                                                                "expected",
+                                                                e.target.value,
+                                                            )
+                                                        }
+                                                        className="w-full bg-zinc-800/60 border border-zinc-700/40 rounded-lg px-2.5 py-1.5 font-mono text-sm text-zinc-200 focus:outline-none focus:border-zinc-600"
+                                                        spellCheck={false}
+                                                    />
+                                                </div>
+                                                <div className="col-span-1 flex justify-center">
+                                                    <button
+                                                        onClick={() => deleteLocalOp(i)}
+                                                        disabled={localClassOps.length <= 1}
+                                                        className="w-7 h-7 flex items-center justify-center rounded-lg text-zinc-500 hover:text-rose-400 hover:bg-zinc-800/50 disabled:opacity-30 disabled:hover:text-zinc-500 disabled:hover:bg-transparent transition-all cursor-pointer focus:outline-none"
+                                                    >
+                                                        ✕
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <button
+                                        onClick={addLocalOp}
+                                        className="mt-2 flex items-center gap-1.5 text-xs text-zinc-400 hover:text-zinc-200 transition-colors cursor-pointer focus:outline-none"
+                                    >
+                                        + Add Operation
+                                    </button>
                                 </div>
-                                <div>
-                                    <span className="text-zinc-500 text-xs font-medium mb-1 block">
-                                        Expected Output
-                                    </span>
-                                    <textarea
-                                        value={testCases[activeCase].expected}
-                                        onChange={(e) =>
-                                            updateCase(activeCase, "expected", e.target.value)
-                                        }
-                                        className="w-full bg-zinc-800/60 border border-zinc-700/40 rounded-lg p-2.5 font-mono text-sm text-zinc-200 resize-none focus:outline-none focus:border-zinc-600"
-                                        rows={autoRows(testCases[activeCase].expected)}
-                                        spellCheck={false}
-                                    />
+                            ) : (
+                                <div className="space-y-3">
+                                    <div>
+                                        <span className="text-zinc-500 text-xs font-medium mb-1 block">
+                                            Input
+                                        </span>
+                                        <textarea
+                                            value={testCases[activeCase].input}
+                                            onChange={(e) =>
+                                                updateCase(activeCase, "input", e.target.value)
+                                            }
+                                            className="w-full bg-zinc-800/60 border border-zinc-700/40 rounded-lg px-2.5 py-1.5 font-mono text-sm text-zinc-200 resize-none focus:outline-none focus:border-zinc-600"
+                                            rows={autoRows(testCases[activeCase].input)}
+                                            spellCheck={false}
+                                        />
+                                    </div>
+                                    <div>
+                                        <span className="text-zinc-500 text-xs font-medium mb-1 block">
+                                            Expected Output
+                                        </span>
+                                        <textarea
+                                            value={testCases[activeCase].expected}
+                                            onChange={(e) =>
+                                                updateCase(activeCase, "expected", e.target.value)
+                                            }
+                                            className="w-full bg-zinc-800/60 border border-zinc-700/40 rounded-lg px-2.5 py-1.5 font-mono text-sm text-zinc-200 resize-none focus:outline-none focus:border-zinc-600"
+                                            rows={autoRows(testCases[activeCase].expected)}
+                                            spellCheck={false}
+                                        />
+                                    </div>
                                 </div>
-                            </div>
-                        )}
+                            ))}
                     </div>
                 )}
 
