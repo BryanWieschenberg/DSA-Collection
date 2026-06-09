@@ -40,7 +40,7 @@ export default function Editor({ value, onChange, onMount }) {
                 { token: "entity.name.function", foreground: "DCDCAA" },
                 { token: "entity.name.class", foreground: "34D399" },
                 { token: "string", foreground: "CE9178" },
-                { token: "comment", foreground: "6A9955", fontStyle: "italic" },
+                { token: "comment", foreground: "6A9955" },
                 { token: "number", foreground: "B5CEA8" },
             ],
             colors: {

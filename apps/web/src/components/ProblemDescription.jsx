@@ -111,22 +111,16 @@ export default function ProblemDescription({ activeProblem }) {
                                         </div>
                                     ) : (
                                         <div className="space-y-1.5 font-mono text-sm text-zinc-300">
-                                            <div className="flex gap-2">
-                                                <span className="shrink-0 select-none">
-                                                    <span style={{ color: "#34D399" }}>Input</span>
-                                                    <span className="text-zinc-200">:</span>
-                                                </span>
+                                            <div className="whitespace-pre-wrap">
+                                                <span className="select-none" style={{ color: "#34D399" }}>Input: </span>
                                                 <span className="text-zinc-200">
                                                     {highlightValue(
                                                         compactValue(pythonize(ex.input)),
                                                     )}
                                                 </span>
                                             </div>
-                                            <div className="flex gap-2">
-                                                <span className="shrink-0 select-none">
-                                                    <span style={{ color: "#34D399" }}>Output</span>
-                                                    <span className="text-zinc-200">:</span>
-                                                </span>
+                                            <div className="whitespace-pre-wrap">
+                                                <span className="select-none" style={{ color: "#34D399" }}>Output: </span>
                                                 <span className="text-zinc-200">
                                                     {highlightValue(
                                                         compactValue(pythonize(ex.output)),

@@ -80,7 +80,7 @@
             "`1 <= capacity <= 100`",
             "`-1000 <= val <= 1000`",
             "`0 <= i < size` for `get` and `set` calls.",
-            "At most `2 * 10^3` method calls in total."
+            "At most `5000` method calls in total."
         ],
         "examples": [
             {
@@ -99,7 +99,10 @@
         "difficulty": "Easy",
         "code": "findMaxConsecutiveOnes(nums: List[int]) -> int",
         "description": "Find the length of the longest contiguous subarray consisting only of the number `1` within a binary array `nums` containing only `0`s and `1`s.",
-        "constraints": ["`1 <= nums.length <= 10^5`", "`nums[i]` is either `0` or `1`."],
+        "constraints": [
+            "`1 <= nums.length <= 10^5`",
+            "`nums[i]` is either `0` or `1`."
+        ],
         "examples": [
             {
                 "input": "nums = [1, 1, 0, 1, 1, 1]",
@@ -107,6 +110,115 @@
             },
             {
                 "input": "nums = [1, 0, 1, 1, 0, 1]",
+                "output": "2"
+            }
+        ]
+    },
+    {
+        "id": 6,
+        "name": "Longest Common Prefix",
+        "difficulty": "Easy",
+        "code": "longestCommonPrefix(strs: List[str]) -> str",
+        "description": "Find the longest common prefix string amongst an array of strings `strs`. If there is no common prefix, return an empty string.",
+        "constraints": [
+            "`1 <= strs.length <= 200`",
+            "`0 <= strs[i].length <= 200`",
+            "`strs[i]` consists of only lowercase English letters."
+        ],
+        "examples": [
+            {
+                "input": "strs = [\"flower\", \"flow\", \"flight\"]",
+                "output": "\"fl\""
+            },
+            {
+                "input": "strs = [\"dog\", \"racecar\", \"car\"]",
+                "output": "\"\""
+            }
+        ]
+    },
+    {
+        "id": 7,
+        "name": "Replace Elements With Greatest Element On Right Side",
+        "difficulty": "Easy",
+        "code": "replaceElements(arr: List[int]) -> List[int]",
+        "description": "Given an array `arr`, replace each element with the largest element among the elements to its right, and replace the last element with `-1`. Return the modified array.",
+        "constraints": [
+            "`1 <= arr.length <= 10^4`",
+            "`-10^5 <= arr[i] <= 10^5`"
+        ],
+        "examples": [
+            {
+                "input": "arr = [17, 18, 5, 4, 6, 1]",
+                "output": "[18, 6, 6, 6, 1, -1]"
+            },
+            {
+                "input": "arr = [400]",
+                "output": "[-1]"
+            }
+        ]
+    },
+    {
+        "id": 8,
+        "name": "Remove Element",
+        "difficulty": "Easy",
+        "code": "removeElement(nums: List[int], val: int) -> int",
+        "description": "Given an integer array `nums` and an integer `val`, remove all occurrences of `val` in-place. The order of the elements may be changed. Return the number of elements in `nums` which are not equal to `val`.",
+        "constraints": [
+            "`0 <= nums.length <= 100`",
+            "`0 <= nums[i] <= 50`",
+            "`0 <= val <= 100`"
+        ],
+        "examples": [
+            {
+                "input": "nums = [3, 2, 2, 3], val = 3",
+                "output": "2"
+            },
+            {
+                "input": "nums = [0, 1, 2, 2, 3, 0, 4, 2], val = 2",
+                "output": "5"
+            }
+        ]
+    },
+    {
+        "id": 9,
+        "name": "Number of Students Unable to Eat Lunch",
+        "difficulty": "Easy",
+        "code": "countStudents(students: List[int], sandwiches: List[int]) -> int",
+        "description": "You are given two integer arrays `students` and `sandwiches` where `sandwiches[i]` is the type of the sandwich in the stack and `students[j]` is the preference of the student in the queue. Return the number of students unable to eat.",
+        "constraints": [
+            "`1 <= students.length, sandwiches.length <= 100`",
+            "`students.length == sandwiches.length`",
+            "`students[i]` is either `0` or `1`.",
+            "`sandwiches[i]` is either `0` or `1`."
+        ],
+        "examples": [
+            {
+                "input": "students = [1, 1, 0, 0], sandwiches = [0, 1, 0, 1]",
+                "output": "0"
+            },
+            {
+                "input": "students = [1, 1, 1, 0, 0, 1], sandwiches = [1, 0, 0, 0, 1, 1]",
+                "output": "3"
+            }
+        ]
+    },
+    {
+        "id": 10,
+        "name": "Majority Element",
+        "difficulty": "Easy",
+        "code": "majorityElement(nums: List[int]) -> int",
+        "description": "Given an array `nums` of size `n`, return the majority element. The majority element is the element that appears more than `\u230an / 2\u230b` times. You may assume that the majority element always exists in the array.",
+        "constraints": [
+            "`1 <= nums.length <= 5 * 10^4`",
+            "`-10^9 <= nums[i] <= 10^9`"
+        ],
+        "examples": [
+            {
+                "input": "nums = [3, 2, 3]",
+                "output": "3"
+            },
+            {
+                "input": "nums = [2, 2, 1, 1, 1, 2, 2]",
                 "output": "2"
             }
         ]

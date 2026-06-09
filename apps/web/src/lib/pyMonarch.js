@@ -11,6 +11,10 @@ export const pythonMonarch = {
     ],
     tokenizer: {
         root: [
+            [/[fF]"/, "string", "@fstring_double"],
+            [/[fF]'/, "string", "@fstring_single"],
+            [/"/, "string", "@string_double"],
+            [/'/, "string", "@string_single"],
             [/(def)(\s+)([a-zA-Z_]\w*)/, ["keyword", "white", "entity.name.function"]],
             [/(class)(\s+)([a-zA-Z_]\w*)/, ["keyword", "white", "entity.name.class"]],
             [/[a-zA-Z_]\w*(?=\()/, "entity.name.function"],
@@ -71,8 +75,6 @@ export const pythonMonarch = {
             [/\d+/, "number"],
             [/"([^"\\]|\\.)*$/, "string.invalid"],
             [/'([^'\\]|\\.)*$/, "string.invalid"],
-            [/"/, "string", "@string_double"],
-            [/'/, "string", "@string_single"],
         ],
         whitespace: [
             [/[ \t\r\n]+/, "white"],
@@ -87,6 +89,42 @@ export const pythonMonarch = {
             [/[^\\']+/, "string"],
             [/\\./, "string.escape"],
             [/'/, "string", "@pop"],
+        ],
+        fstring_double: [
+            [/{{/, "string"],
+            [/}}/, "string"],
+            [/{/, "delimiter.curly", "@fstring_expression"],
+            [/[^\\"{}]+/, "string"],
+            [/\\./, "string.escape"],
+            [/"/, "string", "@pop"],
+        ],
+        fstring_single: [
+            [/{{/, "string"],
+            [/}}/, "string"],
+            [/{/, "delimiter.curly", "@fstring_expression"],
+            [/[^\\'{}]+/, "string"],
+            [/\\./, "string.escape"],
+            [/'/, "string", "@pop"],
+        ],
+        fstring_expression: [
+            [/{/, "delimiter.curly", "@fstring_expression"],
+            [/}/, "delimiter.curly", "@pop"],
+            [/[a-zA-Z_]\w*/, {
+                cases: {
+                    "@keywords": "keyword",
+                    "self": "variable.predefined",
+                    "True": "constant",
+                    "False": "constant",
+                    "None": "constant",
+                    "@default": "identifier"
+                }
+            }],
+            [/[()[\]]/, "@brackets"],
+            [/[<>!%&^*\-+=|~:]/, "operator"],
+            [/\d+/, "number"],
+            [/".*?"/, "string"],
+            [/'.*?'/, "string"],
+            [/[ \t\r\n]+/, "white"],
         ],
     },
 };

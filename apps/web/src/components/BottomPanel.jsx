@@ -509,11 +509,12 @@ export default function BottomPanel({ activeProblem, code, isSoftSolveActive }) 
         newOps[index][field] = value;
         setLocalClassOps(newOps);
 
-        const parsedInputs = newOps.map((op) => {
+        const activeOps = newOps.filter((op) => op.call.trim() !== "");
+        const parsedInputs = activeOps.map((op) => {
             const [methodName, args] = parseMethodCall(op.call);
             return [methodName, args];
         });
-        const parsedOutputs = newOps.map((op) => {
+        const parsedOutputs = activeOps.map((op) => {
             let exp = op.expected.trim();
             if (exp === "None" || exp === "null" || exp === "") return null;
             if (exp === "true") return true;
@@ -533,11 +534,12 @@ export default function BottomPanel({ activeProblem, code, isSoftSolveActive }) 
         const newOps = [...localClassOps, { call: "", expected: "" }];
         setLocalClassOps(newOps);
 
-        const parsedInputs = newOps.map((op) => {
+        const activeOps = newOps.filter((op) => op.call.trim() !== "");
+        const parsedInputs = activeOps.map((op) => {
             const [methodName, args] = parseMethodCall(op.call);
             return [methodName, args];
         });
-        const parsedOutputs = newOps.map((op) => {
+        const parsedOutputs = activeOps.map((op) => {
             let exp = op.expected.trim();
             if (exp === "None" || exp === "null" || exp === "") return null;
             if (exp === "true") return true;
@@ -558,11 +560,12 @@ export default function BottomPanel({ activeProblem, code, isSoftSolveActive }) 
         const newOps = localClassOps.filter((_, idx) => idx !== index);
         setLocalClassOps(newOps);
 
-        const parsedInputs = newOps.map((op) => {
+        const activeOps = newOps.filter((op) => op.call.trim() !== "");
+        const parsedInputs = activeOps.map((op) => {
             const [methodName, args] = parseMethodCall(op.call);
             return [methodName, args];
         });
-        const parsedOutputs = newOps.map((op) => {
+        const parsedOutputs = activeOps.map((op) => {
             let exp = op.expected.trim();
             if (exp === "None" || exp === "null" || exp === "") return null;
             if (exp === "true") return true;

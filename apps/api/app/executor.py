@@ -90,6 +90,8 @@ def execute_case(
                 }
             )
             ops = eval("[" + pp + "]", eval_globals)
+            if len(ops) == 1 and isinstance(ops[0], list) and ops[0] and isinstance(ops[0][0], list):
+                ops = ops[0]
             cls = ns.get(ops[0][0])
             if cls is None:
                 raise RuntimeError(f"Class '{ops[0][0]}' is not defined.")
@@ -97,10 +99,12 @@ def execute_case(
             tracemalloc.start()
             t0 = time.perf_counter()
 
-            obj = cls(*ops[0][1:])
+            constructor_args = ops[0][1] if len(ops[0]) > 1 and isinstance(ops[0][1], list) else ops[0][1:]
+            obj = cls(*constructor_args)
             out = [None]
             for op in ops[1:]:
-                out.append(getattr(obj, op[0])(*op[1:]))
+                method_args = op[1] if len(op) > 1 and isinstance(op[1], list) else op[1:]
+                out.append(getattr(obj, op[0])(*method_args))
             result = out
 
             elapsed_ms = (time.perf_counter() - t0) * 1000.0
