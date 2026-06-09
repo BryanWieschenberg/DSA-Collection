@@ -41,4 +41,5 @@ Fuzzed Random (private),3–5 cases,Randomized inputs generated with uniform dis
 
 ## Output Format
 
-`testgen.py`
+- `testgen.py`
+- Add the canonical solution to `solutions.json`

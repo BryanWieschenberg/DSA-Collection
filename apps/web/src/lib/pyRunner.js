@@ -17,15 +17,16 @@ export async function driver({
         const c = isHidden ? null : cases[i];
 
         if (isHidden) {
+            const showDetails = r.status === "RE" || r.status === "WA";
             return {
                 ...r,
-                hidden: true,
+                hidden: !showDetails,
                 label: `Test ${i + 1}`,
-                input: null,
-                expected: null,
-                output: null,
-                stdout: "",
-                error: r.status === "RE" ? "Error in hidden test." : (r.error ?? null),
+                input: showDetails ? (r.input ?? null) : null,
+                expected: showDetails ? (r.expected ?? null) : null,
+                output: showDetails ? (r.output ?? null) : null,
+                stdout: showDetails ? (r.stdout ?? "") : "",
+                error: r.error ?? null,
             };
         }
         return {

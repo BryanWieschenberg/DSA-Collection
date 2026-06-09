@@ -488,6 +488,29 @@ export default function App() {
                 e.stopPropagation();
                 const isSubmit = !e.shiftKey;
                 window.dispatchEvent(new CustomEvent("trigger-dsa-run", { detail: { isSubmit } }));
+            } else if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === "s") {
+                e.preventDefault();
+                e.stopPropagation();
+                if (activeProblemRef.current) {
+                    fetch(`http://127.0.0.1:8000/solution/${activeProblemRef.current.id}`)
+                        .then((res) => {
+                            if (!res.ok) throw new Error("Failed to fetch solution");
+                            return res.json();
+                        })
+                        .then((data) => {
+                            if (data.solution) {
+                                setCode(data.solution);
+                                localStorage.setItem(
+                                    `dsa-code-${activeProblemRef.current.id}`,
+                                    data.solution,
+                                );
+                                setTabSwitched(true);
+                            }
+                        })
+                        .catch((err) => {
+                            console.error(err);
+                        });
+                }
             }
         };
         window.addEventListener("keydown", handleKeyDown, true);

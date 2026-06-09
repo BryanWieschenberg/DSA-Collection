@@ -134,16 +134,22 @@ def preprocess_input(s):
     i = 0
     n = len(s)
     qch = None
+    escaped = False
     while i < n:
         ch = s[i]
         if qch:
             out.append(ch)
-            if ch == qch and (i == 0 or s[i - 1] != chr(92)):
+            if escaped:
+                escaped = False
+            elif ch == "\\":
+                escaped = True
+            elif ch == qch:
                 qch = None
             i += 1
             continue
         if ch in ('"', "'"):
             qch = ch
+            escaped = False
             out.append(ch)
             i += 1
             continue
@@ -230,14 +236,19 @@ def split_top(s):
     parts = []
     depth = 0
     quote = None
+    escaped = False
     start = 0
-    prev_ch = ""
     for idx, ch in enumerate(s):
         if quote:
-            if ch == quote and prev_ch != "\\":
+            if escaped:
+                escaped = False
+            elif ch == "\\":
+                escaped = True
+            elif ch == quote:
                 quote = None
         elif ch in "\"'":
             quote = ch
+            escaped = False
         elif ch in "([{":
             depth += 1
         elif ch in ")]}":
@@ -245,7 +256,6 @@ def split_top(s):
         elif ch == "," and depth == 0:
             parts.append(s[start:idx])
             start = idx + 1
-        prev_ch = ch
 
     last_part = s[start:]
     if last_part.strip():
@@ -271,3 +281,71 @@ def args_from(input_str):
     if parts:
         return [parse_val(p.strip()) for p in parts]
     return [parse_val(pp)]
+
+
+def fmt_val_truncated(v):
+    if isinstance(v, ListNode):
+        return "L" + fmt_val_truncated(arr_L(v))
+    if isinstance(v, TreeNode):
+        return "T" + fmt_val_truncated(arr_T(v))
+    if isinstance(v, TrieNode):
+        return "I" + fmt_val_truncated(arr_I(v))
+    if v is True:
+        return "True"
+    if v is False:
+        return "False"
+    if v is None:
+        return "None"
+    if isinstance(v, str):
+        if len(v) > 30:
+            return f'"{v[:10]}...{v[-10:]}" (len={len(v)})'
+        return json.dumps(v)
+    if isinstance(v, list):
+        if len(v) > 30:
+            parts = [fmt_val_truncated(x) for x in v[:5]] + ["..."] + [fmt_val_truncated(x) for x in v[-5:]]
+            return f"[{', '.join(parts)}] (len={len(v)})"
+        return "[" + ", ".join(fmt_val_truncated(x) for x in v) + "]"
+    if isinstance(v, tuple):
+        if len(v) > 30:
+            parts = [fmt_val_truncated(x) for x in v[:5]] + ["..."] + [fmt_val_truncated(x) for x in v[-5:]]
+            return f"({', '.join(parts)}) (len={len(v)})"
+        return "(" + ", ".join(fmt_val_truncated(x) for x in v) + ")"
+    if isinstance(v, dict):
+        if len(v) > 30:
+            items = list(v.items())
+            parts = [f"{json.dumps(k)}: {fmt_val_truncated(val)}" for k, val in items[:5]] + ["..."] + [f"{json.dumps(k)}: {fmt_val_truncated(val)}" for k, val in items[-5:]]
+            return f"{{{', '.join(parts)}}} (len={len(v)})"
+        return (
+            "{"
+            + ", ".join(json.dumps(k) + ": " + fmt_val_truncated(val) for k, val in v.items())
+            + "}"
+        )
+    try:
+        return json.dumps(v)
+    except Exception:
+        return repr(v)
+
+
+def truncate_str_repr(s):
+    if not s:
+        return s
+    s = s.strip()
+    pp = preprocess_input(s)
+    parts = split_top(pp)
+    out_parts = []
+    for part in parts:
+        part = part.strip()
+        if "=" in part:
+            try:
+                name, val_str = part.split("=", 1)
+                val = parse_val(val_str.strip())
+                out_parts.append(f"{name.strip()} = {fmt_val_truncated(val)}")
+            except Exception:
+                out_parts.append(part)
+        else:
+            try:
+                val = parse_val(part)
+                out_parts.append(fmt_val_truncated(val))
+            except Exception:
+                out_parts.append(part)
+    return ", ".join(out_parts)

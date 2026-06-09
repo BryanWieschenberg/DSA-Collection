@@ -1,3 +1,14 @@
+const formatMathText = (str) => {
+    return str
+        .replace(/\\times/g, "×")
+        .replace(/\\lfloor/g, "⌊")
+        .replace(/\\rfloor/g, "⌋")
+        .replace(/\\lceil/g, "⌈")
+        .replace(/\\rceil/g, "⌉")
+        .replace(/\\le/g, "≤")
+        .replace(/\\ge/g, "≥");
+};
+
 export const renderMarkdown = (text) => {
     if (!text) return "";
     const lines = text.split("\n");
@@ -17,25 +28,54 @@ export const renderMarkdown = (text) => {
                     </code>
                 );
             }
-            const boldParts = part.split("**");
-            return boldParts.map((subPart, subIndex) => {
-                if (subIndex % 2 === 1) {
+
+            const doubleDollarParts = part.split("$$");
+            return doubleDollarParts.map((ddPart, ddIdx) => {
+                if (ddIdx % 2 === 1) {
                     return (
-                        <strong key={subIndex} className="font-bold text-zinc-100">
-                            {subPart}
-                        </strong>
+                        <div
+                            key={`dd-${ddIdx}`}
+                            className="my-3 text-center font-serif text-lg text-zinc-200/90 bg-zinc-800/20 py-2 rounded border border-zinc-700/30"
+                        >
+                            {formatMathText(ddPart)}
+                        </div>
                     );
                 }
-                const italicParts = subPart.split("*");
-                return italicParts.map((item, itemIdx) => {
-                    if (itemIdx % 2 === 1) {
+
+                const dollarParts = ddPart.split("$");
+                return dollarParts.map((dPart, dIdx) => {
+                    if (dIdx % 2 === 1) {
                         return (
-                            <em key={itemIdx} className="italic">
-                                {item}
-                            </em>
+                            <span
+                                key={`d-${dIdx}`}
+                                className="font-serif italic text-zinc-100/90 mx-0.5"
+                            >
+                                {formatMathText(dPart)}
+                            </span>
                         );
                     }
-                    return item;
+
+                    const boldParts = dPart.split("**");
+                    return boldParts.map((subPart, subIndex) => {
+                        if (subIndex % 2 === 1) {
+                            return (
+                                <strong key={`b-${subIndex}`} className="font-bold text-zinc-100">
+                                    {subPart}
+                                </strong>
+                            );
+                        }
+                        const italicParts = subPart.split("*");
+                        return italicParts.map((item, itemIdx) => {
+                            if (itemIdx % 2 === 1) {
+                                return (
+                                    <em key={`i-${itemIdx}`} className="italic">
+                                        {item}
+                                    </em>
+                                );
+                            }
+                            return item;
+                        });
+                    });
                 });
             });
         });
@@ -44,7 +84,10 @@ export const renderMarkdown = (text) => {
             const indent = bulletMatch[1].length;
             const plClass = indent >= 2 ? "pl-8" : "pl-4";
             return (
-                <div key={lineIdx} className={`flex gap-3.5 ${plClass} ${lineIdx > 0 ? "mt-3" : ""}`}>
+                <div
+                    key={lineIdx}
+                    className={`flex gap-3.5 ${plClass} ${lineIdx > 0 ? "mt-3" : ""}`}
+                >
                     <span className="select-none shrink-0">•</span>
                     <div className="flex-1">{renderedLine}</div>
                 </div>

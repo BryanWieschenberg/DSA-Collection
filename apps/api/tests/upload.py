@@ -99,8 +99,9 @@ def main():
 
     examples = []
     for case in public_inputs:
+        formatted_input = format_input(case)
         output = run_case(case)
-        examples.append({"input": format_input(case), "output": json.dumps(output)})
+        examples.append({"input": formatted_input, "output": json.dumps(output)})
 
     time_limit = getattr(generator, "timeLimit", getattr(generator, "time_limit", None))
     memory_limit = getattr(
@@ -150,9 +151,10 @@ def main():
 
     private_tests = []
     for case in private_inputs:
+        formatted_input = format_input(case)
         output = run_case(case)
         private_tests.append(
-            {"input": format_input(case), "expected": json.dumps(output)}
+            {"input": formatted_input, "expected": json.dumps(output)}
         )
 
     hidden_data = {"tests": private_tests}

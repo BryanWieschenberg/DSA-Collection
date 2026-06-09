@@ -7,7 +7,7 @@ import traceback
 import inspect
 import resource
 from typing import List
-from collections import deque
+from collections import deque, defaultdict, Counter
 
 from app.dsa import (
     ListNode,
@@ -18,7 +18,7 @@ from app.dsa import (
     args_from,
     parse_val,
     normalize_val,
-    fmt_val,
+    fmt_val_truncated,
 )
 
 
@@ -43,6 +43,8 @@ def execute_case(
         "TrieNode": TrieNode,
         "List": List,
         "deque": deque,
+        "defaultdict": defaultdict,
+        "Counter": Counter,
         "math": __import__("math"),
         "collections": __import__("collections"),
         "heapq": __import__("heapq"),
@@ -95,6 +97,8 @@ def execute_case(
             cls = ns.get(ops[0][0])
             if cls is None:
                 raise RuntimeError(f"Class '{ops[0][0]}' is not defined.")
+            if ops[0][0] == "Codec" and cls is not None and not hasattr(cls, "encode_and_decode"):
+                cls.encode_and_decode = lambda self, strs: self.decode(self.encode(strs))
 
             tracemalloc.start()
             t0 = time.perf_counter()
@@ -125,11 +129,15 @@ def execute_case(
             t0 = time.perf_counter()
 
             if params and params[0] == "self":
-
                 class DummySelf:
                     pass
-
-                result = fn(DummySelf(), *args)
+                original_fn = fn
+                def wrapped_fn(*f_args, **f_kwargs):
+                    if not f_args or not isinstance(f_args[0], DummySelf):
+                        return original_fn(DummySelf(), *f_args, **f_kwargs)
+                    return original_fn(*f_args, **f_kwargs)
+                ns[fn_name] = wrapped_fn
+                result = wrapped_fn(DummySelf(), *args)
             else:
                 result = fn(*args)
 
@@ -200,7 +208,7 @@ def execute_case(
         except Exception:
             ok = False
 
-        raw_output = fmt_val(result)
+        raw_output = fmt_val_truncated(result)
         if len(raw_output) > 50000:
             raw_output = raw_output[:50000] + "... [Output Truncated]"
 

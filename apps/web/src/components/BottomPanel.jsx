@@ -362,7 +362,7 @@ export default function BottomPanel({ activeProblem, code, isSoftSolveActive }) 
                                         Mem
                                     </span>
                                     <span className="text-zinc-100 font-mono font-medium">
-                                        {r.memMb.toFixed(0)}
+                                        {r.memMb.toFixed(2)}
                                     </span>
                                     <span className="text-zinc-400 text-[10px]">MB</span>
                                 </div>
@@ -371,18 +371,25 @@ export default function BottomPanel({ activeProblem, code, isSoftSolveActive }) 
                     )}
                 </div>
                 {r.hidden ? (
-                    <div className="flex items-center gap-1.5 text-zinc-500 text-xs bg-zinc-800/60 rounded-lg p-2.5">
-                        <svg
-                            className="w-3.5 h-3.5"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                        >
-                            <rect x="3" y="11" width="18" height="11" rx="2" />
-                            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                        </svg>
-                        Hidden test (input and expected output are not shown).
+                    <div className="space-y-3">
+                        <div className="flex items-center gap-1.5 text-zinc-500 text-xs bg-zinc-800/60 rounded-lg p-2.5">
+                            <svg
+                                className="w-3.5 h-3.5"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                            >
+                                <rect x="3" y="11" width="18" height="11" rx="2" />
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                            </svg>
+                            Hidden test (input and expected output are not shown).
+                        </div>
+                        {r.error && r.error !== statusLabel(r.status) && (
+                            <div className="bg-rose-950/30 border border-rose-900/40 rounded-lg p-3 font-mono text-xs text-rose-300">
+                                {r.error}
+                            </div>
+                        )}
                     </div>
                 ) : (
                     <>
@@ -677,7 +684,7 @@ export default function BottomPanel({ activeProblem, code, isSoftSolveActive }) 
                                         <div className="col-span-5">Expected Output</div>
                                         <div className="col-span-1"></div>
                                     </div>
-                                    <div className="space-y-2 max-h-[300px] overflow-y-auto desc-scrollbar pr-1">
+                                    <div className="space-y-2 pr-1">
                                         {localClassOps.map((op, i) => (
                                             <div
                                                 key={i}
@@ -822,7 +829,7 @@ export default function BottomPanel({ activeProblem, code, isSoftSolveActive }) 
                                                                 Time
                                                             </div>
                                                             <div className="text-base font-semibold text-zinc-100 font-mono mt-0.5">
-                                                                {maxTimeMs.toFixed(0)}
+                                                                {maxTimeMs.toFixed(2)}
                                                                 <span className="text-xs text-zinc-300 font-sans font-normal ml-1">
                                                                     ms
                                                                 </span>
@@ -861,7 +868,7 @@ export default function BottomPanel({ activeProblem, code, isSoftSolveActive }) 
                                                                 Memory
                                                             </div>
                                                             <div className="text-base font-semibold text-zinc-100 font-mono mt-0.5">
-                                                                {maxMemMb.toFixed(0)}
+                                                                {maxMemMb.toFixed(2)}
                                                                 <span className="text-xs text-zinc-300 font-sans font-normal ml-1">
                                                                     MB
                                                                 </span>

@@ -73,7 +73,7 @@ export default function ProblemDescription({ activeProblem }) {
                                 <div className="bg-zinc-900/40 border border-zinc-800/60 rounded-xl p-4">
                                     {isClassLayout ? (
                                         <div className="space-y-1.5 font-mono text-sm text-zinc-300">
-                                            <div className="grid grid-cols-2 gap-4 pb-1 mb-1 border-zinc-800/40 select-none">
+                                            <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-4 pb-1 mb-1 border-zinc-800/40 select-none">
                                                 <div>
                                                     <span style={{ color: "#34D399" }}>Input</span>
                                                     <span className="text-zinc-200">:</span>
@@ -98,11 +98,14 @@ export default function ProblemDescription({ activeProblem }) {
                                                     pythonize(JSON.stringify(retVal)),
                                                 );
                                                 return (
-                                                    <div key={i} className="grid grid-cols-2 gap-4">
-                                                        <div className="text-zinc-200">
+                                                    <div
+                                                        key={i}
+                                                        className="grid grid-cols-[minmax(0,1fr)_auto] gap-4"
+                                                    >
+                                                        <div className="text-zinc-200 wrap-break-word">
                                                             {highlightValue(formattedCall)}
                                                         </div>
-                                                        <div className="text-zinc-200">
+                                                        <div className="text-zinc-200 shrink-0">
                                                             {highlightValue(formattedRet)}
                                                         </div>
                                                     </div>
@@ -112,7 +115,12 @@ export default function ProblemDescription({ activeProblem }) {
                                     ) : (
                                         <div className="space-y-1.5 font-mono text-sm text-zinc-300">
                                             <div className="whitespace-pre-wrap">
-                                                <span className="select-none" style={{ color: "#34D399" }}>Input: </span>
+                                                <span
+                                                    className="select-none"
+                                                    style={{ color: "#34D399" }}
+                                                >
+                                                    Input:{" "}
+                                                </span>
                                                 <span className="text-zinc-200">
                                                     {highlightValue(
                                                         compactValue(pythonize(ex.input)),
@@ -120,7 +128,12 @@ export default function ProblemDescription({ activeProblem }) {
                                                 </span>
                                             </div>
                                             <div className="whitespace-pre-wrap">
-                                                <span className="select-none" style={{ color: "#34D399" }}>Output: </span>
+                                                <span
+                                                    className="select-none"
+                                                    style={{ color: "#34D399" }}
+                                                >
+                                                    Output:{" "}
+                                                </span>
                                                 <span className="text-zinc-200">
                                                     {highlightValue(
                                                         compactValue(pythonize(ex.output)),
