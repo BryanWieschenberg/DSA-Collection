@@ -115,7 +115,7 @@ export default function Navbar({
                 {!isHardSolved && (
                     <>
                         <div className="w-28 flex items-center justify-end">
-                            <div className="flex items-center gap-2 text-zinc-200 text-lg">
+                            <div className="flex items-center gap-1 text-zinc-200 text-lg">
                                 <svg
                                     className={`w-5 h-5 ${timerRunning ? "text-emerald-400" : "text-zinc-400"}`}
                                     fill="none"

@@ -67,14 +67,11 @@ def main():
         params = list(sig.parameters.values())
 
     def parse_case_val(v):
-        if (
-            isinstance(v, str)
-            and len(v) >= 3
-            and v[0] in "LT"
-            and v[1] == "["
-            and v[-1] == "]"
-        ):
-            return parse_val(v)
+        if isinstance(v, str):
+            if (v.startswith("L[") or v.startswith("T[")) and v.endswith("]"):
+                return parse_val(v)
+            if v.startswith("[") and v.endswith("]"):
+                return parse_val(v)
         if isinstance(v, list):
             return [parse_case_val(x) for x in v]
         if isinstance(v, tuple):
@@ -105,14 +102,11 @@ def main():
         return oracle_method(parsed_case)
 
     def custom_json_dumps(val):
-        if (
-            isinstance(val, str)
-            and len(val) >= 3
-            and val[0] in "LT"
-            and val[1] == "["
-            and val[-1] == "]"
-        ):
-            return val
+        if isinstance(val, str):
+            if (val.startswith("L[") or val.startswith("T[")) and val.endswith("]"):
+                return val
+            if val.startswith("[") and val.endswith("]"):
+                return val
         return json.dumps(val)
 
     def json_dumps_custom(v):

@@ -3,6 +3,36 @@ import { driver, preloadPyodide } from "../lib/pyRunner";
 import { getLimits, compactValue, pythonize, depythonize } from "../lib/appHelpers";
 import SuccessAnimation from "./SuccessAnimation";
 import FailureAnimation from "./FailureAnimation";
+import { GridVisualizer, parseGrids } from "./GridVisualizer";
+import { BinaryTreeSvg, parseTreeInput } from "./ProblemDescription";
+
+function AutoHeightTextarea({ value, onChange, className, spellCheck }) {
+    const ref = useRef(null);
+    useEffect(() => {
+        const adjustHeight = () => {
+            if (ref.current) {
+                ref.current.style.height = "auto";
+                if (ref.current.scrollHeight > ref.current.clientHeight) {
+                    ref.current.style.height = ref.current.scrollHeight + "px";
+                }
+            }
+        };
+        adjustHeight();
+        window.addEventListener("resize", adjustHeight);
+        return () => window.removeEventListener("resize", adjustHeight);
+    }, [value]);
+    return (
+        <textarea
+            ref={ref}
+            value={value}
+            onChange={onChange}
+            className={className}
+            rows={1}
+            style={{ overflowY: "hidden" }}
+            spellCheck={spellCheck}
+        />
+    );
+}
 
 const parseMethodCall = (str) => {
     str = str.trim();
@@ -115,11 +145,17 @@ export default function BottomPanel({ activeProblem, code, isSoftSolveActive }) 
                 ops = [];
             }
         }
-        if (ops.length === 0) {
-            ops = [{ call: "", expected: "" }];
+        const activeLocal = localClassOps.filter((op) => op.call.trim() !== "");
+        const norm = (s) => (!s || s.trim() === "" || s.trim() === "None" || s.trim() === "null") ? "None" : s.trim();
+        const activeLocalNorm = activeLocal.map((op) => ({ call: op.call.trim(), expected: norm(op.expected) }));
+        const opsNorm = ops.map((op) => ({ call: op.call.trim(), expected: norm(op.expected) }));
+        if (JSON.stringify(activeLocalNorm) !== JSON.stringify(opsNorm)) {
+            if (ops.length === 0) {
+                ops = [{ call: "", expected: "" }];
+            }
+            setLocalClassOps(ops);
         }
-        setLocalClassOps(ops);
-    }, [activeProblem, activeCase, isClass, testCases]);
+    }, [activeProblem, activeCase, isClass, testCases, localClassOps]);
 
     const resetTestCases = () => {
         const defaults = getDefaultCases(activeProblem);
@@ -397,68 +433,142 @@ export default function BottomPanel({ activeProblem, code, isSoftSolveActive }) 
                             </div>
                         )}
                         {isClassLayout ? (
-                            <div className="grid grid-cols-3 gap-4 mt-1.5">
-                                <div>
-                                    <span className="text-zinc-500 text-xs font-medium mb-1 block">
-                                        Input
-                                    </span>
-                                    <div className="bg-zinc-800/60 rounded-lg p-2.5 font-mono text-xs text-zinc-300 space-y-1.5">
-                                        {parsedInput.map((call, i) => {
-                                            const [methodName, args] = call;
-                                            const argsStr = args
-                                                .map((arg) =>
-                                                    compactValue(pythonize(JSON.stringify(arg))),
-                                                )
-                                                .join(", ");
-                                            return (
-                                                <div
-                                                    key={i}
-                                                    className="truncate"
-                                                    title={`${methodName}(${argsStr})`}
-                                                >{`${methodName}(${argsStr})`}</div>
-                                            );
-                                        })}
+                            <>
+                                <div className="grid grid-cols-3 gap-4 mt-1.5">
+                                    <div>
+                                        <span className="text-zinc-500 text-xs font-medium mb-1 block">
+                                            Input
+                                        </span>
+                                        <div className="bg-zinc-800/60 rounded-lg p-2.5 font-mono text-xs text-zinc-300 space-y-1.5">
+                                            {parsedInput.map((call, i) => {
+                                                const [methodName, args] = call;
+                                                const argsStr = args
+                                                    .map((arg) =>
+                                                        compactValue(pythonize(JSON.stringify(arg))),
+                                                    )
+                                                    .join(", ");
+                                                return (
+                                                    <div
+                                                        key={i}
+                                                        className="truncate"
+                                                        title={`${methodName}(${argsStr})`}
+                                                    >{`${methodName}(${argsStr})`}</div>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <span className="text-zinc-500 text-xs font-medium mb-1 block">
+                                            Output
+                                        </span>
+                                        <div
+                                            className={`rounded-lg p-2.5 font-mono text-xs space-y-1.5 ${
+                                                r.status === "AC"
+                                                    ? "bg-emerald-950/30 border border-emerald-900/40 text-emerald-300"
+                                                    : "bg-rose-950/30 border border-rose-900/40 text-rose-300"
+                                            }`}
+                                        >
+                                            {parsedOutput
+                                                ? parsedOutput.map((outVal, i) => {
+                                                      const formattedOut = compactValue(
+                                                          pythonize(JSON.stringify(outVal)),
+                                                      );
+                                                      return <div key={i}>{formattedOut}</div>;
+                                                  })
+                                                : "-"}
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <span className="text-zinc-500 text-xs font-medium mb-1 block">
+                                            Expected
+                                        </span>
+                                        <div className="bg-zinc-800/60 rounded-lg p-2.5 font-mono text-xs text-zinc-300 space-y-1.5">
+                                            {parsedExpected.map((expVal, i) => {
+                                                const formattedExp = compactValue(
+                                                    pythonize(JSON.stringify(expVal)),
+                                                );
+                                                return <div key={i}>{formattedExp}</div>;
+                                            })}
+                                        </div>
                                     </div>
                                 </div>
-                                <div>
-                                    <span className="text-zinc-500 text-xs font-medium mb-1 block">
-                                        Output
-                                    </span>
-                                    <div
-                                        className={`rounded-lg p-2.5 font-mono text-xs space-y-1.5 ${
-                                            r.status === "AC"
-                                                ? "bg-emerald-950/30 border border-emerald-900/40 text-emerald-300"
-                                                : "bg-rose-950/30 border border-rose-900/40 text-rose-300"
-                                        }`}
-                                    >
-                                        {parsedOutput
-                                            ? parsedOutput.map((outVal, i) => {
-                                                  const formattedOut = compactValue(
-                                                      pythonize(JSON.stringify(outVal)),
-                                                  );
-                                                  return <div key={i}>{formattedOut}</div>;
-                                              })
-                                            : "-"}
-                                    </div>
-                                </div>
-                                <div>
-                                    <span className="text-zinc-500 text-xs font-medium mb-1 block">
-                                        Expected
-                                    </span>
-                                    <div className="bg-zinc-800/60 rounded-lg p-2.5 font-mono text-xs text-zinc-300 space-y-1.5">
-                                        {parsedExpected.map((expVal, i) => {
-                                            const formattedExp = compactValue(
-                                                pythonize(JSON.stringify(expVal)),
-                                            );
-                                            return <div key={i}>{formattedExp}</div>;
-                                        })}
-                                    </div>
-                                </div>
-                            </div>
+                                {(() => {
+                                    if (activeProblem.graphic === null) return null;
+                                    const outGrids = parseGrids(r.output, "Output");
+                                    const outTrees = parseTreeInput(r.output, "Output");
+                                    const expGrids = r.status !== "AC" ? parseGrids(r.expected, "Expected") : [];
+                                    const expTrees = r.status !== "AC" ? parseTreeInput(r.expected, "Expected") : [];
+                                    if (outGrids.length === 0 && outTrees.length === 0 && expGrids.length === 0 && expTrees.length === 0) {
+                                        return null;
+                                    }
+                                    return (
+                                        <div className="flex flex-wrap gap-6 justify-start items-start mt-3">
+                                            {outGrids.map((g, idx) => (
+                                                <GridVisualizer
+                                                    key={idx}
+                                                    label={outGrids.length > 1 ? g.label : "Output"}
+                                                    grid={g.grid}
+                                                />
+                                            ))}
+                                            {outTrees.map((t, idx) => (
+                                                <BinaryTreeSvg
+                                                    key={idx}
+                                                    label={outTrees.length > 1 ? t.label : "Output"}
+                                                    arr={t.arr}
+                                                    showRootLabel={true}
+                                                />
+                                            ))}
+                                            {expGrids.map((g, idx) => (
+                                                <GridVisualizer
+                                                    key={idx}
+                                                    label={expGrids.length > 1 ? g.label : "Expected"}
+                                                    grid={g.grid}
+                                                />
+                                            ))}
+                                            {expTrees.map((t, idx) => (
+                                                <BinaryTreeSvg
+                                                    key={idx}
+                                                    label={expTrees.length > 1 ? t.label : "Expected"}
+                                                    arr={t.arr}
+                                                    showRootLabel={true}
+                                                />
+                                            ))}
+                                        </div>
+                                    );
+                                })()}
+                            </>
                         ) : (
                             <>
                                 <div>
                                     <span className="text-zinc-500 text-xs font-medium">Input</span>
+                                    {(() => {
+                                        if (activeProblem.graphic === null) return null;
+                                        const grids = parseGrids(r.input, "Input");
+                                        const trees = parseTreeInput(r.input, "Input");
+                                        if (grids.length === 0 && trees.length === 0) return null;
+                                        return (
+                                            <div
+                                                className="flex flex-wrap gap-6 justify-start items-start"
+                                                style={{ marginTop: "2px" }}
+                                            >
+                                                {grids.map((g, idx) => (
+                                                    <GridVisualizer
+                                                        key={idx}
+                                                        label={grids.length > 1 ? g.label : ""}
+                                                        grid={g.grid}
+                                                    />
+                                                ))}
+                                                {trees.map((t, idx) => (
+                                                    <BinaryTreeSvg
+                                                        key={idx}
+                                                        label={t.label}
+                                                        arr={t.arr}
+                                                        showRootLabel={trees.length > 1}
+                                                    />
+                                                ))}
+                                            </div>
+                                        );
+                                    })()}
                                     <div className="bg-zinc-800/60 rounded-lg p-2 font-mono text-xs text-zinc-300 mt-1">
                                         {r.input || "-"}
                                     </div>
@@ -468,6 +578,35 @@ export default function BottomPanel({ activeProblem, code, isSoftSolveActive }) 
                                         <span className="text-zinc-500 text-xs font-medium">
                                             Output
                                         </span>
+                                        {(() => {
+                                            if (activeProblem.graphic === null) return null;
+                                            const grids = parseGrids(r.output, "Output");
+                                            const trees = parseTreeInput(r.output, "Output");
+                                            if (grids.length === 0 && trees.length === 0)
+                                                return null;
+                                            return (
+                                                <div
+                                                    className="flex flex-wrap gap-6 justify-start items-start"
+                                                    style={{ marginTop: "2px" }}
+                                                >
+                                                    {grids.map((g, idx) => (
+                                                        <GridVisualizer
+                                                            key={idx}
+                                                            label={grids.length > 1 ? g.label : ""}
+                                                            grid={g.grid}
+                                                        />
+                                                    ))}
+                                                    {trees.map((t, idx) => (
+                                                        <BinaryTreeSvg
+                                                            key={idx}
+                                                            label={t.label}
+                                                            arr={t.arr}
+                                                            showRootLabel={trees.length > 1}
+                                                        />
+                                                    ))}
+                                                </div>
+                                            );
+                                        })()}
                                         <div
                                             className={`rounded-lg p-2 font-mono text-xs mt-1 ${
                                                 r.status === "AC"
@@ -483,6 +622,35 @@ export default function BottomPanel({ activeProblem, code, isSoftSolveActive }) 
                                     <span className="text-zinc-500 text-xs font-medium">
                                         Expected
                                     </span>
+                                    {(() => {
+                                        if (activeProblem.graphic === null) return null;
+                                        if (r.status === "AC") return null;
+                                        const grids = parseGrids(r.expected, "Expected");
+                                        const trees = parseTreeInput(r.expected, "Expected");
+                                        if (grids.length === 0 && trees.length === 0) return null;
+                                        return (
+                                            <div
+                                                className="flex flex-wrap gap-6 justify-start items-start"
+                                                style={{ marginTop: "2px" }}
+                                            >
+                                                {grids.map((g, idx) => (
+                                                    <GridVisualizer
+                                                        key={idx}
+                                                        label={grids.length > 1 ? g.label : ""}
+                                                        grid={g.grid}
+                                                    />
+                                                ))}
+                                                {trees.map((t, idx) => (
+                                                    <BinaryTreeSvg
+                                                        key={idx}
+                                                        label={t.label}
+                                                        arr={t.arr}
+                                                        showRootLabel={trees.length > 1}
+                                                    />
+                                                ))}
+                                            </div>
+                                        );
+                                    })()}
                                     <div className="bg-zinc-800/60 rounded-lg p-2 font-mono text-xs text-zinc-300 mt-1">
                                         {compactValue(pythonize(r.expected)) || "-"}
                                     </div>
@@ -728,6 +896,32 @@ export default function BottomPanel({ activeProblem, code, isSoftSolveActive }) 
                                     >
                                         + Add Operation
                                     </button>
+                                    {(() => {
+                                        if (activeProblem.graphic === null) return null;
+                                        const expectedStr = JSON.stringify(localClassOps.map((op) => op.expected));
+                                        const grids = parseGrids(expectedStr, "Expected");
+                                        const trees = parseTreeInput(expectedStr, "Expected");
+                                        if (grids.length === 0 && trees.length === 0) return null;
+                                        return (
+                                            <div className="flex flex-wrap gap-6 justify-start items-start mt-3 mb-1.5">
+                                                {grids.map((g, idx) => (
+                                                    <GridVisualizer
+                                                        key={idx}
+                                                        label={grids.length > 1 ? g.label : ""}
+                                                        grid={g.grid}
+                                                    />
+                                                ))}
+                                                {trees.map((t, idx) => (
+                                                    <BinaryTreeSvg
+                                                        key={idx}
+                                                        label={trees.length > 1 ? t.label : ""}
+                                                        arr={t.arr}
+                                                        showRootLabel={true}
+                                                    />
+                                                ))}
+                                            </div>
+                                        );
+                                    })()}
                                 </div>
                             ) : (
                                 <div className="space-y-3">
@@ -735,13 +929,47 @@ export default function BottomPanel({ activeProblem, code, isSoftSolveActive }) 
                                         <span className="text-zinc-500 text-xs font-medium mb-1 block">
                                             Input
                                         </span>
-                                        <textarea
+                                        {(() => {
+                                            if (activeProblem.graphic === null) return null;
+                                            const grids = parseGrids(
+                                                testCases[activeCase].input,
+                                                "Input",
+                                            );
+                                            const trees = parseTreeInput(
+                                                testCases[activeCase].input,
+                                                "Input",
+                                             );
+                                            if (grids.length === 0 && trees.length === 0)
+                                                return null;
+                                            return (
+                                                <div
+                                                    className="flex flex-wrap gap-6 justify-start items-start mb-1.5"
+                                                    style={{ marginTop: "2px" }}
+                                                >
+                                                    {grids.map((g, idx) => (
+                                                        <GridVisualizer
+                                                            key={idx}
+                                                            label={grids.length > 1 ? g.label : ""}
+                                                            grid={g.grid}
+                                                        />
+                                                    ))}
+                                                    {trees.map((t, idx) => (
+                                                        <BinaryTreeSvg
+                                                            key={idx}
+                                                            label={t.label}
+                                                            arr={t.arr}
+                                                            showRootLabel={trees.length > 1}
+                                                        />
+                                                    ))}
+                                                </div>
+                                            );
+                                        })()}
+                                        <AutoHeightTextarea
                                             value={testCases[activeCase].input}
                                             onChange={(e) =>
                                                 updateCase(activeCase, "input", e.target.value)
                                             }
                                             className="w-full bg-zinc-800/60 border border-zinc-700/40 rounded-lg px-2.5 py-1.5 font-mono text-sm text-zinc-200 resize-none focus:outline-none focus:border-zinc-600"
-                                            rows={autoRows(testCases[activeCase].input)}
                                             spellCheck={false}
                                         />
                                     </div>
@@ -749,13 +977,47 @@ export default function BottomPanel({ activeProblem, code, isSoftSolveActive }) 
                                         <span className="text-zinc-500 text-xs font-medium mb-1 block">
                                             Expected Output
                                         </span>
-                                        <textarea
+                                        {(() => {
+                                            if (activeProblem.graphic === null) return null;
+                                            const grids = parseGrids(
+                                                testCases[activeCase].expected,
+                                                "Expected",
+                                            );
+                                            const trees = parseTreeInput(
+                                                testCases[activeCase].expected,
+                                                "Expected",
+                                            );
+                                            if (grids.length === 0 && trees.length === 0)
+                                                return null;
+                                            return (
+                                                <div
+                                                    className="flex flex-wrap gap-6 justify-start items-start mb-1.5"
+                                                    style={{ marginTop: "2px" }}
+                                                >
+                                                    {grids.map((g, idx) => (
+                                                        <GridVisualizer
+                                                            key={idx}
+                                                            label={grids.length > 1 ? g.label : ""}
+                                                            grid={g.grid}
+                                                        />
+                                                    ))}
+                                                    {trees.map((t, idx) => (
+                                                        <BinaryTreeSvg
+                                                            key={idx}
+                                                            label={t.label}
+                                                            arr={t.arr}
+                                                            showRootLabel={trees.length > 1}
+                                                        />
+                                                    ))}
+                                                </div>
+                                            );
+                                        })()}
+                                        <AutoHeightTextarea
                                             value={testCases[activeCase].expected}
                                             onChange={(e) =>
                                                 updateCase(activeCase, "expected", e.target.value)
                                             }
                                             className="w-full bg-zinc-800/60 border border-zinc-700/40 rounded-lg px-2.5 py-1.5 font-mono text-sm text-zinc-200 resize-none focus:outline-none focus:border-zinc-600"
-                                            rows={autoRows(testCases[activeCase].expected)}
                                             spellCheck={false}
                                         />
                                     </div>

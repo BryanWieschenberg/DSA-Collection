@@ -99,5 +99,11 @@ export const depythonize = (str) => {
                     : match;
         },
     );
-    return processed.replace(/([TLQIG]\[.*?\])/g, '"$1"');
+    return processed.replace(
+        /"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|([TLQIG]\[.*?\])/g,
+        (match, g1) => {
+            if (g1) return '"' + g1 + '"';
+            return match;
+        },
+    );
 };

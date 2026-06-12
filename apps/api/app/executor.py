@@ -130,7 +130,7 @@ def execute_case(
     if mem_limit_mb:
         try:
             current_vms = get_vms_bytes()
-            limit_bytes = current_vms + (mem_limit_mb * 1024 * 1024)
+            limit_bytes = current_vms + max(512, mem_limit_mb * 2) * 1024 * 1024
             soft_h, hard_h = resource.getrlimit(resource.RLIMIT_AS)
             limit_bytes = (
                 min(limit_bytes, hard_h)

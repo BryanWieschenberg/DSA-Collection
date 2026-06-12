@@ -153,6 +153,7 @@ export default function App() {
     const codeRef = useRef(code);
     const activeProblemRef = useRef(activeProblem);
     const softSolvedProblemsRef = useRef(softSolvedProblems);
+    const backtickPressedRef = useRef(false);
 
     useEffect(() => {
         codeRef.current = code;
@@ -224,6 +225,7 @@ export default function App() {
         if (currentSlug !== targetSlug) {
             window.history.replaceState(null, "", `/${targetSlug}`);
         }
+        document.title = `${activeProblem.id}. ${activeProblem.name} | GET A JOB`;
     }, [activeProblem]);
 
     const handleEditorChange = (value) => {
@@ -231,8 +233,39 @@ export default function App() {
     };
 
     const handleSelectProblem = (newProblem) => {
-        if (activeProblem) {
-            localStorage.setItem(`dsa-code-${activeProblem.id}`, code);
+        const currentIndex = allProblems.findIndex((p) => p.id === activeProblemRef.current?.id);
+        const newIndex = allProblems.findIndex((p) => p.id === newProblem.id);
+        let slideFrom = "right";
+        if (currentIndex !== -1 && newIndex !== -1) {
+            if (newIndex < currentIndex) {
+                slideFrom = "left";
+                if (newIndex === 0 && currentIndex === allProblems.length - 1) slideFrom = "right";
+            } else {
+                if (newIndex === allProblems.length - 1 && currentIndex === 0) slideFrom = "left";
+            }
+        }
+
+        const el = containerRef.current;
+        let clone = null;
+        if (el) {
+            const rect = el.getBoundingClientRect();
+            clone = el.cloneNode(true);
+            clone.style.position = "fixed";
+            clone.style.top = rect.top + "px";
+            clone.style.left = rect.left + "px";
+            clone.style.width = rect.width + "px";
+            clone.style.height = rect.height + "px";
+            clone.style.zIndex = "50";
+            clone.style.margin = "0";
+            clone.style.flex = "none";
+            clone.style.pointerEvents = "none";
+            clone.style.transform = "translateX(0)";
+            clone.style.transition = "none";
+            document.body.appendChild(clone);
+        }
+
+        if (activeProblemRef.current) {
+            localStorage.setItem(`dsa-code-${activeProblemRef.current.id}`, codeRef.current);
         }
         setActiveProblem(newProblem);
         localStorage.setItem("dsa-active-problem-id", newProblem.id.toString());
@@ -245,6 +278,27 @@ export default function App() {
             setCode(getTemplateCode(newProblem));
         }
         setSidebarOpen(false);
+
+        if (el && clone) {
+            const newOffset = slideFrom === "right" ? "100%" : "-100%";
+            const oldExit = slideFrom === "right" ? "-100%" : "100%";
+            const timing = "transform 0.3s cubic-bezier(0.2, 1, 0.3, 1)";
+
+            el.style.transition = "none";
+            el.style.transform = `translateX(${newOffset})`;
+
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    el.style.transition = timing;
+                    el.style.transform = "translateX(0)";
+
+                    clone.style.transition = timing;
+                    clone.style.transform = `translateX(${oldExit})`;
+
+                    clone.addEventListener("transitionend", () => clone.remove(), { once: true });
+                });
+            });
+        }
     };
 
     const handleResetCode = () => {
@@ -517,10 +571,45 @@ export default function App() {
                             console.error(err);
                         });
                 }
+            } else if (
+                e.ctrlKey &&
+                backtickPressedRef.current &&
+                (e.key === "ArrowLeft" || e.key === "ArrowRight")
+            ) {
+                e.preventDefault();
+                e.stopPropagation();
+                const currentIndex = allProblems.findIndex(
+                    (p) => p.id === activeProblemRef.current.id,
+                );
+                if (currentIndex !== -1) {
+                    const diff = e.key === "ArrowLeft" ? -1 : 1;
+                    const nextIndex =
+                        (currentIndex + diff + allProblems.length) % allProblems.length;
+                    handleSelectProblem(allProblems[nextIndex]);
+                }
+            } else if (e.key === "`" || e.code === "Backquote") {
+                backtickPressedRef.current = true;
             }
         };
+
+        const handleKeyUp = (e) => {
+            if (e.key === "`" || e.code === "Backquote") {
+                backtickPressedRef.current = false;
+            }
+        };
+
+        const handleBlur = () => {
+            backtickPressedRef.current = false;
+        };
+
         window.addEventListener("keydown", handleKeyDown, true);
-        return () => window.removeEventListener("keydown", handleKeyDown, true);
+        window.addEventListener("keyup", handleKeyUp, true);
+        window.addEventListener("blur", handleBlur, true);
+        return () => {
+            window.removeEventListener("keydown", handleKeyDown, true);
+            window.removeEventListener("keyup", handleKeyUp, true);
+            window.removeEventListener("blur", handleBlur, true);
+        };
     }, []);
 
     useEffect(() => {
@@ -530,8 +619,6 @@ export default function App() {
         window.addEventListener("trigger-dsa-run", handleTriggerRun);
         return () => window.removeEventListener("trigger-dsa-run", handleTriggerRun);
     }, []);
-
-
 
     const consoleOpen = topHeight < 100;
     const toggleConsole = () => setTopHeight((h) => (h >= 100 ? 50 : 100));

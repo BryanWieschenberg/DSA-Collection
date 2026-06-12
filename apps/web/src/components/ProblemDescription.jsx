@@ -1,6 +1,7 @@
 import { useRef, useEffect } from "react";
 import { renderMarkdown } from "./RenderMarkdown";
 import { compactValue, pythonize, depythonize } from "../lib/appHelpers";
+import { GridVisualizer, parseGrids } from "./GridVisualizer";
 
 const VALUE_TOKEN =
     /("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|\b(?:true|false|null|True|False|None)\b|-?\d+(?:\.\d+)?)/g;
@@ -103,14 +104,15 @@ function collectTreeElements(layoutNode, nodes, edges) {
     }
 }
 
-function parseTreeInput(inputStr) {
+/* eslint-disable react-refresh/only-export-components */
+export function parseTreeInput(inputStr, defaultLabel = "") {
     const trees = [];
     const treeRegex = /(?:[a-zA-Z_]\w*\s*=\s*)?T\[(.*?)\]/g;
     let match;
     while ((match = treeRegex.exec(inputStr)) !== null) {
         const fullMatch = match[0];
         const content = match[1].trim();
-        let label = "";
+        let label = defaultLabel;
         if (fullMatch.includes("=")) {
             label = fullMatch.split("=")[0].trim();
         }
@@ -129,7 +131,7 @@ function parseTreeInput(inputStr) {
     return trees;
 }
 
-function BinaryTreeSvg({ label, arr, showRootLabel }) {
+export function BinaryTreeSvg({ label, arr, showRootLabel }) {
     if (!arr || arr.length === 0) return null;
     const tree = parseLevelOrder(arr);
     if (!tree) return null;
@@ -160,10 +162,16 @@ function BinaryTreeSvg({ label, arr, showRootLabel }) {
         x2: e.x2 - minX + padding,
         y2: e.y2 - minY + padding,
     }));
+    const isOutputLabel =
+        label && (label.toLowerCase() === "output" || label.toLowerCase() === "expected");
+    const labelStyle = isOutputLabel ? { color: "#34D399" } : { color: "#E4E4E7" };
+
     return (
         <div className="flex flex-col items-center">
-            {label && (showRootLabel || label.toLowerCase() !== "root") && (
-                <div className="text-xs font-mono text-zinc-400 mb-1.5 font-semibold">{label}</div>
+            {label && (showRootLabel || !["root", "input", "output", "expected"].includes(label.toLowerCase())) && (
+                <div className="text-xs font-mono mb-0.5" style={labelStyle}>
+                    {label}
+                </div>
             )}
             <div className="overflow-auto max-w-full">
                 <svg
@@ -196,9 +204,9 @@ function BinaryTreeSvg({ label, arr, showRootLabel }) {
                             <text
                                 x={n.x}
                                 y={n.y}
-                                dy="4"
+                                dy="5"
                                 textAnchor="middle"
-                                className="fill-zinc-100 font-mono font-semibold text-xs"
+                                className="fill-zinc-100 font-mono text-md"
                             >
                                 {n.val}
                             </text>
@@ -265,11 +273,15 @@ export default function ProblemDescription({ activeProblem }) {
 
                         return (
                             <div key={idx} className="space-y-2">
-                                <h3 className="text-base font-semibold text-zinc-100">
+                                <h3 className="text-base font-semibold text-zinc-100 m-0">
                                     Example {idx + 1}:
                                 </h3>
                                 {(() => {
-                                    const parsedTrees = parseTreeInput(ex.input);
+                                    if (activeProblem.graphic === null) return null;
+                                    const parsedTrees = [
+                                        ...parseTreeInput(ex.input, "Input"),
+                                        ...parseTreeInput(ex.output, "Output"),
+                                    ];
                                     const hasMultipleElementsTree = parsedTrees.some(
                                         (t) => t.arr && t.arr.length > 1,
                                     );
@@ -290,6 +302,29 @@ export default function ProblemDescription({ activeProblem }) {
                                                     label={t.label}
                                                     arr={t.arr}
                                                     showRootLabel={parsedTrees.length > 1}
+                                                />
+                                            ))}
+                                        </div>
+                                    );
+                                })()}
+                                {(() => {
+                                    if (activeProblem.graphic === null) return null;
+                                    if (ex.graphic === null) return null;
+                                    const parsedGrids = [
+                                        ...parseGrids(ex.input, "Input"),
+                                        ...parseGrids(ex.output, "Output"),
+                                    ];
+                                    if (parsedGrids.length === 0) return null;
+                                    return (
+                                        <div
+                                            className="flex flex-wrap gap-6 justify-center items-start mb-1"
+                                            style={{ marginTop: "2px" }}
+                                        >
+                                            {parsedGrids.map((g, idx) => (
+                                                <GridVisualizer
+                                                    key={idx}
+                                                    label={parsedGrids.length > 1 ? g.label : ""}
+                                                    grid={g.grid}
                                                 />
                                             ))}
                                         </div>
