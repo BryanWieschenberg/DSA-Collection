@@ -270,18 +270,18 @@ def fmt_val_truncated(v):
     if isinstance(v, list):
         if len(v) > 30:
             parts = (
-                [fmt_val_truncated(x) for x in v[:5]]
+                [fmt_val_truncated(x) for x in v[:3]]
                 + ["..."]
-                + [fmt_val_truncated(x) for x in v[-5:]]
+                + [fmt_val_truncated(x) for x in v[-3:]]
             )
             return f"[{', '.join(parts)}] (len={len(v)})"
         return "[" + ", ".join(fmt_val_truncated(x) for x in v) + "]"
     if isinstance(v, tuple):
         if len(v) > 30:
             parts = (
-                [fmt_val_truncated(x) for x in v[:5]]
+                [fmt_val_truncated(x) for x in v[:3]]
                 + ["..."]
-                + [fmt_val_truncated(x) for x in v[-5:]]
+                + [fmt_val_truncated(x) for x in v[-3:]]
             )
             return f"({', '.join(parts)}) (len={len(v)})"
         return "(" + ", ".join(fmt_val_truncated(x) for x in v) + ")"
@@ -289,11 +289,11 @@ def fmt_val_truncated(v):
         if len(v) > 30:
             items = list(v.items())
             parts = (
-                [f"{json.dumps(k)}: {fmt_val_truncated(val)}" for k, val in items[:5]]
+                [f"{json.dumps(k)}: {fmt_val_truncated(val)}" for k, val in items[:3]]
                 + ["..."]
                 + [
                     f"{json.dumps(k)}: {fmt_val_truncated(val)}"
-                    for k, val in items[-5:]
+                    for k, val in items[-3:]
                 ]
             )
             return f"{{{', '.join(parts)}}} (len={len(v)})"

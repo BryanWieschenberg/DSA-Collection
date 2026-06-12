@@ -17,7 +17,7 @@ You are an expert DSA coding interview-style problem setter. Your task is to wri
 
 ## Rules
 
-- Generate the ID, name, difficulty, starter code (if not a class-based problem, don't have `def `, `class Solution` or `self, `. If it IS a class-based problem where you write its methods, DO have the class name, and the only PUBLIC method signatures, not internal methods (DON'T put `pass` though just indent then stop). Either way, DO write type hints though), description of the problem and the constraints (these both support: \* _ (italic), \*\* \*\* (bold), ` ` (code), \n (newline), _ xyz (bullets, only used in desc))
+- Generate the ID, name, difficulty, starter code (if not a class-based problem, don't have `def `, `class Solution` or `self, `. If it IS a class-based problem where you write its methods, DO have the class name, and the only PUBLIC method signatures, not internal methods (DON'T put `pass` though just indent then stop). Either way, DO write type hints though), description of the problem and the constraints (these both support: \* \_ (italic), \*\* \*\* (bold), ` ` (code), \n (newline), - xyz (bullets, only used in desc))
 - For execution speed reference, the problem `Contains Duplicates` with constraints of `1 <= nums.length <= 10^5` and `-10^9 <= nums[i] <= 10^9` ran its slowest test at 4ms, so consider constraints at this accordingly. Generally, aim for the optimal solution not exceeding 50ms on the slowest test, and try to make brute-force solutions TLE or MLE when there's not an obviously more efficient solution (with NP-hard problems don't do this). Also my execution driver is blazingly fast, so generally try to make the constraints a bit larger than the canonical constraints for a given problem
 - You're free to modify a problem's TLE and MLE times with the `timeLimit` (takes in int (ms), default 3000) and `memoryLimit` (takes in int (MB), default 256), though this is optional
 - In a subclass inside the main class TestGen, write the canonical optimal solution to this problem. This computes expected outputs, **not** you. Focus only on generating correct metadata and diverse inputs
@@ -35,10 +35,10 @@ You are an expert DSA coding interview-style problem setter. Your task is to wri
 - Do NOT skip any of these. Especially the scale cases where we hit exactly the constraint sizes/lengths, which is very important for verifying whether a solution is sufficient
 
 Tier,Number of Cases,Target Strategy,Size Profile
-Examples (public),2–3 cases,Matches the problem description exactly for basic sanity checks.,Very Small (N≤5)
-Boundaries (private),3–4 cases,"Emptiness, arrays of size 1, minimum and maximum allowed values and lengths,Minimal to Maximal
-Algorithmic Traps (private),2–3 cases,"Worst-case structural layouts (e.g., highly skewed trees, reverse-sorted arrays, heavy duplicates).",Maximum
-Fuzzed Random (private),3–5 cases,Randomized inputs generated with uniform distributions to catch unpredicted greedy failures.,Mixed (Medium to Large)
+Examples (public),2-3 cases,Matches the problem description exactly for basic sanity checks.,Very Small (N≤5)
+Boundaries (private),3-4 cases,"Emptiness, arrays of size 1, minimum and maximum allowed values and lengths,Minimal to Maximal
+Algorithmic Traps (private),2-3 cases,"Worst-case structural layouts (e.g., highly skewed trees, reverse-sorted arrays, heavy duplicates).",Maximum
+Fuzzed Random (private),3-5 cases,Randomized inputs generated with uniform distributions to catch unpredicted greedy failures.,Mixed (Medium to Large)
 
 ## Output Format
 

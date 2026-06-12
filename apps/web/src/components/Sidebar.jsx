@@ -32,6 +32,7 @@ export default function Sidebar({
     ).length;
 
     const [confirmReset, setConfirmReset] = useState(false);
+    const [showShortcuts, setShowShortcuts] = useState(false);
     const activeItemRef = useRef(null);
     const containerRef = useRef(null);
 
@@ -51,9 +52,10 @@ export default function Sidebar({
     }, [sidebarOpen]);
     const [confirmResetSoft, setConfirmResetSoft] = useState(false);
 
-    if (!sidebarOpen && (confirmReset || confirmResetSoft)) {
+    if (!sidebarOpen && (confirmReset || confirmResetSoft || showShortcuts)) {
         setConfirmReset(false);
         setConfirmResetSoft(false);
+        setShowShortcuts(false);
     }
 
     const handleResetAllClick = () => {
@@ -158,6 +160,135 @@ export default function Sidebar({
                         </div>
 
                         <div className="w-px h-4 bg-zinc-800 mx-0.5" />
+
+                        <div className="relative flex items-center">
+                            <button
+                                onClick={() => setShowShortcuts(!showShortcuts)}
+                                className={`p-1.5 rounded transition-colors cursor-pointer focus:outline-none group ${
+                                    showShortcuts
+                                        ? "bg-zinc-800 text-zinc-100"
+                                        : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800"
+                                }`}
+                            >
+                                <svg
+                                    className="w-4 h-4 transition-transform duration-500 group-hover:rotate-90"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                >
+                                    <circle cx="12" cy="12" r="3" />
+                                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                                </svg>
+                            </button>
+                            {showShortcuts && (
+                                <div className="absolute right-0 top-full mt-2 w-[410px] bg-zinc-950 border border-zinc-800 rounded-xl p-5 shadow-2xl z-50 text-xs text-zinc-300 space-y-4">
+                                    <div className="font-semibold text-zinc-100 flex items-center justify-between pb-2 border-b border-zinc-800/80 select-none">
+                                        <span>Keyboard Shortcuts</span>
+                                        <button
+                                            onClick={() => setShowShortcuts(false)}
+                                            className="text-zinc-500 hover:text-zinc-400 focus:outline-none"
+                                        >
+                                            ✕
+                                        </button>
+                                    </div>
+                                    <div className="space-y-3.5">
+                                        <div className="flex items-center justify-between gap-6">
+                                            <span className="text-zinc-400 font-medium">
+                                                Submit Code
+                                            </span>
+                                            <div className="flex items-center gap-1 shrink-0">
+                                                <kbd className="px-1.5 py-0.5 bg-zinc-800 border border-zinc-700/60 rounded text-[10px] font-mono text-zinc-200">
+                                                    Ctrl
+                                                </kbd>
+                                                <span className="text-[10px] text-zinc-500">+</span>
+                                                <kbd className="px-1.5 py-0.5 bg-zinc-800 border border-zinc-700/60 rounded text-[10px] font-mono text-zinc-200">
+                                                    Enter
+                                                </kbd>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center justify-between gap-6">
+                                            <span className="text-zinc-400 font-medium">
+                                                Run Tests
+                                            </span>
+                                            <div className="flex items-center gap-1 shrink-0">
+                                                <kbd className="px-1.5 py-0.5 bg-zinc-800 border border-zinc-700/60 rounded text-[10px] font-mono text-zinc-200">
+                                                    Ctrl
+                                                </kbd>
+                                                <span className="text-[10px] text-zinc-500">+</span>
+                                                <kbd className="px-1.5 py-0.5 bg-zinc-800 border border-zinc-700/60 rounded text-[10px] font-mono text-zinc-200">
+                                                    Shift
+                                                </kbd>
+                                                <span className="text-[10px] text-zinc-500">+</span>
+                                                <kbd className="px-1.5 py-0.5 bg-zinc-800 border border-zinc-700/60 rounded text-[10px] font-mono text-zinc-200">
+                                                    Enter
+                                                </kbd>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center justify-between gap-6">
+                                            <span className="text-zinc-400 font-medium">
+                                                Canonical Solution
+                                            </span>
+                                            <div className="flex items-center gap-1 shrink-0">
+                                                <kbd className="px-1.5 py-0.5 bg-zinc-800 border border-zinc-700/60 rounded text-[10px] font-mono text-zinc-200">
+                                                    Ctrl
+                                                </kbd>
+                                                <span className="text-[10px] text-zinc-500">+</span>
+                                                <kbd className="px-1.5 py-0.5 bg-zinc-800 border border-zinc-700/60 rounded text-[10px] font-mono text-zinc-200">
+                                                    Shift
+                                                </kbd>
+                                                <span className="text-[10px] text-zinc-500">+</span>
+                                                <kbd className="px-1.5 py-0.5 bg-zinc-800 border border-zinc-700/60 rounded text-[10px] font-mono text-zinc-200">
+                                                    S
+                                                </kbd>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center justify-between gap-6">
+                                            <span className="text-zinc-400 font-medium">
+                                                Navigate Problems
+                                            </span>
+                                            <div className="flex items-center gap-1 shrink-0">
+                                                <kbd className="px-1.5 py-0.5 bg-zinc-800 border border-zinc-700/60 rounded text-[10px] font-mono text-zinc-200">
+                                                    Ctrl
+                                                </kbd>
+                                                <span className="text-[10px] text-zinc-500">+</span>
+                                                <kbd className="px-1.5 py-0.5 bg-zinc-800 border border-zinc-700/60 rounded text-[10px] font-mono text-zinc-200">
+                                                    `
+                                                </kbd>
+                                                <span className="text-[10px] text-zinc-500">+</span>
+                                                <kbd className="px-1.5 py-0.5 bg-zinc-800 border border-zinc-700/60 rounded text-[10px] font-mono text-zinc-200">
+                                                    ←
+                                                </kbd>
+                                                <span className="text-[10px] text-zinc-500">/</span>
+                                                <kbd className="px-1.5 py-0.5 bg-zinc-800 border border-zinc-700/60 rounded text-[10px] font-mono text-zinc-200">
+                                                    →
+                                                </kbd>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center justify-between gap-6">
+                                            <span className="text-zinc-400 font-medium">
+                                                Auto-Run Suite
+                                            </span>
+                                            <div className="flex items-center gap-1 shrink-0">
+                                                <kbd className="px-1.5 py-0.5 bg-zinc-800 border border-zinc-700/60 rounded text-[10px] font-mono text-zinc-200">
+                                                    Ctrl
+                                                </kbd>
+                                                <span className="text-[10px] text-zinc-500">+</span>
+                                                <kbd className="px-1.5 py-0.5 bg-zinc-800 border border-zinc-700/60 rounded text-[10px] font-mono text-zinc-200">
+                                                    `
+                                                </kbd>
+                                                <span className="text-[10px] text-zinc-500">+</span>
+                                                <kbd className="px-1.5 py-0.5 bg-zinc-800 border border-zinc-700/60 rounded text-[10px] font-mono text-zinc-200">
+                                                    Space
+                                                </kbd>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
 
                         <button
                             onClick={onClose}

@@ -146,8 +146,12 @@ export default function BottomPanel({ activeProblem, code, isSoftSolveActive }) 
             }
         }
         const activeLocal = localClassOps.filter((op) => op.call.trim() !== "");
-        const norm = (s) => (!s || s.trim() === "" || s.trim() === "None" || s.trim() === "null") ? "None" : s.trim();
-        const activeLocalNorm = activeLocal.map((op) => ({ call: op.call.trim(), expected: norm(op.expected) }));
+        const norm = (s) =>
+            !s || s.trim() === "" || s.trim() === "None" || s.trim() === "null" ? "None" : s.trim();
+        const activeLocalNorm = activeLocal.map((op) => ({
+            call: op.call.trim(),
+            expected: norm(op.expected),
+        }));
         const opsNorm = ops.map((op) => ({ call: op.call.trim(), expected: norm(op.expected) }));
         if (JSON.stringify(activeLocalNorm) !== JSON.stringify(opsNorm)) {
             if (ops.length === 0) {
@@ -441,10 +445,22 @@ export default function BottomPanel({ activeProblem, code, isSoftSolveActive }) 
                                         </span>
                                         <div className="bg-zinc-800/60 rounded-lg p-2.5 font-mono text-xs text-zinc-300 space-y-1.5">
                                             {parsedInput.map((call, i) => {
+                                                if (typeof call === "string") {
+                                                    return (
+                                                        <div
+                                                            key={i}
+                                                            className="text-zinc-500 font-semibold truncate"
+                                                        >
+                                                            {call}
+                                                        </div>
+                                                    );
+                                                }
                                                 const [methodName, args] = call;
                                                 const argsStr = args
                                                     .map((arg) =>
-                                                        compactValue(pythonize(JSON.stringify(arg))),
+                                                        compactValue(
+                                                            pythonize(JSON.stringify(arg)),
+                                                        ),
                                                     )
                                                     .join(", ");
                                                 return (
@@ -496,9 +512,18 @@ export default function BottomPanel({ activeProblem, code, isSoftSolveActive }) 
                                     if (activeProblem.graphic === null) return null;
                                     const outGrids = parseGrids(r.output, "Output");
                                     const outTrees = parseTreeInput(r.output, "Output");
-                                    const expGrids = r.status !== "AC" ? parseGrids(r.expected, "Expected") : [];
-                                    const expTrees = r.status !== "AC" ? parseTreeInput(r.expected, "Expected") : [];
-                                    if (outGrids.length === 0 && outTrees.length === 0 && expGrids.length === 0 && expTrees.length === 0) {
+                                    const expGrids =
+                                        r.status !== "AC" ? parseGrids(r.expected, "Expected") : [];
+                                    const expTrees =
+                                        r.status !== "AC"
+                                            ? parseTreeInput(r.expected, "Expected")
+                                            : [];
+                                    if (
+                                        outGrids.length === 0 &&
+                                        outTrees.length === 0 &&
+                                        expGrids.length === 0 &&
+                                        expTrees.length === 0
+                                    ) {
                                         return null;
                                     }
                                     return (
@@ -521,14 +546,18 @@ export default function BottomPanel({ activeProblem, code, isSoftSolveActive }) 
                                             {expGrids.map((g, idx) => (
                                                 <GridVisualizer
                                                     key={idx}
-                                                    label={expGrids.length > 1 ? g.label : "Expected"}
+                                                    label={
+                                                        expGrids.length > 1 ? g.label : "Expected"
+                                                    }
                                                     grid={g.grid}
                                                 />
                                             ))}
                                             {expTrees.map((t, idx) => (
                                                 <BinaryTreeSvg
                                                     key={idx}
-                                                    label={expTrees.length > 1 ? t.label : "Expected"}
+                                                    label={
+                                                        expTrees.length > 1 ? t.label : "Expected"
+                                                    }
                                                     arr={t.arr}
                                                     showRootLabel={true}
                                                 />
@@ -662,11 +691,6 @@ export default function BottomPanel({ activeProblem, code, isSoftSolveActive }) 
                 )}
             </div>
         );
-    };
-
-    const autoRows = (text) => {
-        if (!text) return 1;
-        return Math.max(1, text.split("\n").length);
     };
 
     const handleOpChange = (index, field, value) => {
@@ -898,7 +922,9 @@ export default function BottomPanel({ activeProblem, code, isSoftSolveActive }) 
                                     </button>
                                     {(() => {
                                         if (activeProblem.graphic === null) return null;
-                                        const expectedStr = JSON.stringify(localClassOps.map((op) => op.expected));
+                                        const expectedStr = JSON.stringify(
+                                            localClassOps.map((op) => op.expected),
+                                        );
                                         const grids = parseGrids(expectedStr, "Expected");
                                         const trees = parseTreeInput(expectedStr, "Expected");
                                         if (grids.length === 0 && trees.length === 0) return null;
@@ -938,7 +964,7 @@ export default function BottomPanel({ activeProblem, code, isSoftSolveActive }) 
                                             const trees = parseTreeInput(
                                                 testCases[activeCase].input,
                                                 "Input",
-                                             );
+                                            );
                                             if (grids.length === 0 && trees.length === 0)
                                                 return null;
                                             return (

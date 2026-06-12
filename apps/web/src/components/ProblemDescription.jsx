@@ -168,11 +168,13 @@ export function BinaryTreeSvg({ label, arr, showRootLabel }) {
 
     return (
         <div className="flex flex-col items-center">
-            {label && (showRootLabel || !["root", "input", "output", "expected"].includes(label.toLowerCase())) && (
-                <div className="text-xs font-mono mb-0.5" style={labelStyle}>
-                    {label}
-                </div>
-            )}
+            {label &&
+                (showRootLabel ||
+                    !["root", "input", "output", "expected"].includes(label.toLowerCase())) && (
+                    <div className="text-xs font-mono mb-0.5" style={labelStyle}>
+                        {label}
+                    </div>
+                )}
             <div className="overflow-auto max-w-full">
                 <svg
                     width={width}
@@ -344,6 +346,30 @@ export default function ProblemDescription({ activeProblem }) {
                                                 </div>
                                             </div>
                                             {parsedInput.map((call, i) => {
+                                                if (typeof call === "string") {
+                                                    return (
+                                                        <div
+                                                            key={i}
+                                                            className="grid grid-cols-[minmax(0,1fr)_auto] gap-4"
+                                                        >
+                                                            <div className="text-zinc-500 font-semibold">
+                                                                {call}
+                                                            </div>
+                                                            <div className="text-zinc-500 font-semibold">
+                                                                {parsedOutput &&
+                                                                parsedOutput[i] !== undefined
+                                                                    ? compactValue(
+                                                                          pythonize(
+                                                                              JSON.stringify(
+                                                                                  parsedOutput[i],
+                                                                              ),
+                                                                          ),
+                                                                      )
+                                                                    : ""}
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                }
                                                 const [methodName, args] = call;
                                                 const argsStr = args
                                                     .map((arg) =>
@@ -353,10 +379,15 @@ export default function ProblemDescription({ activeProblem }) {
                                                     )
                                                     .join(", ");
                                                 const formattedCall = `${methodName}(${argsStr})`;
-                                                const retVal = parsedOutput[i];
-                                                const formattedRet = compactValue(
-                                                    pythonize(JSON.stringify(retVal)),
-                                                );
+                                                const retVal = parsedOutput
+                                                    ? parsedOutput[i]
+                                                    : undefined;
+                                                const formattedRet =
+                                                    retVal !== undefined
+                                                        ? compactValue(
+                                                              pythonize(JSON.stringify(retVal)),
+                                                          )
+                                                        : "";
                                                 return (
                                                     <div
                                                         key={i}

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import Editor from "./components/Editor";
 import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
@@ -154,6 +154,8 @@ export default function App() {
     const activeProblemRef = useRef(activeProblem);
     const softSolvedProblemsRef = useRef(softSolvedProblems);
     const backtickPressedRef = useRef(false);
+    const [autoRunActive, setAutoRunActive] = useState(false);
+    const autoRunActiveRef = useRef(false);
 
     useEffect(() => {
         codeRef.current = code;
@@ -232,7 +234,7 @@ export default function App() {
         setCode(value || "");
     };
 
-    const handleSelectProblem = (newProblem) => {
+    const handleSelectProblem = useCallback((newProblem) => {
         const currentIndex = allProblems.findIndex((p) => p.id === activeProblemRef.current?.id);
         const newIndex = allProblems.findIndex((p) => p.id === newProblem.id);
         let slideFrom = "right";
@@ -299,7 +301,72 @@ export default function App() {
                 });
             });
         }
-    };
+    }, []);
+
+    const runAutoStep = useCallback(() => {
+        if (!autoRunActiveRef.current) return;
+        const prob = activeProblemRef.current;
+        if (!prob) return;
+        fetch(`http://127.0.0.1:8000/solution/${prob.id}`)
+            .then((res) => {
+                if (!res.ok) throw new Error("Failed to fetch solution");
+                return res.json();
+            })
+            .then((data) => {
+                if (data.solution) {
+                    setCode(data.solution);
+                    localStorage.setItem(`dsa-code-${prob.id}`, data.solution);
+                    setTabSwitched(true);
+                    setTimeout(() => {
+                        if (!autoRunActiveRef.current) return;
+                        window.dispatchEvent(
+                            new CustomEvent("trigger-dsa-run", { detail: { isSubmit: true } }),
+                        );
+                    }, 150);
+                }
+            })
+            .catch((err) => {
+                console.error(err);
+                autoRunActiveRef.current = false;
+                setAutoRunActive(false);
+            });
+    }, []);
+
+    const toggleAutoRun = useCallback(() => {
+        const nextState = !autoRunActiveRef.current;
+        autoRunActiveRef.current = nextState;
+        setAutoRunActive(nextState);
+        if (nextState) {
+            runAutoStep();
+        }
+    }, [runAutoStep]);
+
+    useEffect(() => {
+        const handleExecutionEnd = () => {
+            if (!autoRunActiveRef.current) return;
+            setTimeout(() => {
+                if (!autoRunActiveRef.current) return;
+                const currentIndex = allProblems.findIndex(
+                    (p) => p.id === activeProblemRef.current.id,
+                );
+                if (currentIndex !== -1 && currentIndex < allProblems.length - 1) {
+                    handleSelectProblem(allProblems[currentIndex + 1]);
+                    setTimeout(() => {
+                        runAutoStep();
+                    }, 500);
+                } else {
+                    autoRunActiveRef.current = false;
+                    setAutoRunActive(false);
+                }
+            }, 600);
+        };
+        window.addEventListener("dsa-problem-solved", handleExecutionEnd);
+        window.addEventListener("dsa-problem-wrong", handleExecutionEnd);
+        return () => {
+            window.removeEventListener("dsa-problem-solved", handleExecutionEnd);
+            window.removeEventListener("dsa-problem-wrong", handleExecutionEnd);
+        };
+    }, [handleSelectProblem, runAutoStep]);
 
     const handleResetCode = () => {
         const defaultCode = getTemplateCode(activeProblem);
@@ -587,6 +654,14 @@ export default function App() {
                         (currentIndex + diff + allProblems.length) % allProblems.length;
                     handleSelectProblem(allProblems[nextIndex]);
                 }
+            } else if (
+                e.ctrlKey &&
+                backtickPressedRef.current &&
+                (e.key === " " || e.code === "Space")
+            ) {
+                e.preventDefault();
+                e.stopPropagation();
+                toggleAutoRun();
             } else if (e.key === "`" || e.code === "Backquote") {
                 backtickPressedRef.current = true;
             }
@@ -610,7 +685,7 @@ export default function App() {
             window.removeEventListener("keyup", handleKeyUp, true);
             window.removeEventListener("blur", handleBlur, true);
         };
-    }, []);
+    }, [toggleAutoRun, handleSelectProblem]);
 
     useEffect(() => {
         const handleTriggerRun = () => {
@@ -626,7 +701,19 @@ export default function App() {
     const isDragging = isDraggingH || isDraggingV;
 
     return (
-        <div className="h-screen w-screen flex flex-col overflow-hidden font-sans">
+        <div className="h-screen w-screen flex flex-col overflow-hidden font-sans relative">
+            {autoRunActive && (
+                <div className="absolute top-16 left-1/2 -translate-x-1/2 bg-amber-500/90 text-zinc-950 font-bold px-4 py-2 rounded-full shadow-lg z-50 text-xs tracking-wider uppercase animate-pulse select-none flex items-center gap-2">
+                    <span className="relative flex h-2 w-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-zinc-950 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-zinc-950"></span>
+                    </span>
+                    <span>Auto-Running</span>
+                    <span className="text-[10px] text-zinc-800 font-medium normal-case">
+                        (Ctrl + ` + Space to Stop)
+                    </span>
+                </div>
+            )}
             <Navbar
                 key={activeProblem.id}
                 onOpenSidebar={() => setSidebarOpen(true)}

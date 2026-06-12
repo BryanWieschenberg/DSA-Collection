@@ -86,7 +86,12 @@ export const compactValue = (text) => {
 
 export const depythonize = (str) => {
     if (!str) return str;
-    const processed = str.replace(
+    let s = str.replace(/\s*\(len=\d+\)/g, "");
+    s = s.replace(/,\s*\.\.\.\s*,/g, ', "...", ');
+    s = s.replace(/\[\s*\.\.\.\s*,/g, '[ "...", ');
+    s = s.replace(/,\s*\.\.\.\s*\]/g, ', "..." ]');
+    s = s.replace(/\{\s*\.\.\.\s*,/g, '{ "...", ');
+    const processed = s.replace(
         /"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|\b(?:True|False|None)\b/g,
         (match) => {
             if (match[0] === '"' || match[0] === "'") return match;
