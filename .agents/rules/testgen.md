@@ -26,6 +26,7 @@ You are an expert DSA coding interview-style problem setter. Your task is to wri
 - If any problem has specialized data structures as input (linked list, binary tree, trie), express its input as a list prepended by the letter **L**, **T**, or **I**, respectively (ex: head = L[1, 2, 3, 4], which means the driver will parse this input and tranform it to a linked list). The literal string for these containers MUST include the prepended letter
 - Any number constraint of length > 4 must be expressed using `x^y` syntax, else use the regular number (e.g. do `2000`, but do `10^4`)
 - Do NOT copy description text or constraints exactly from other sources who may use similar problems in their platforms, though for constraints DO use the concise `2 <= nums.length <= 10^4`-like syntax
+- Refer to array as "lists" in the problem descriptions"
 
 ## Test Suite Requirements
 
@@ -41,5 +42,5 @@ Fuzzed Random (private),3–5 cases,Randomized inputs generated with uniform dis
 
 ## Output Format
 
-- `testgen.py`
+- `testgen.py` (or if I give u multiple problems, do it in a batch file)
 - Add the canonical solution to `solutions.json`

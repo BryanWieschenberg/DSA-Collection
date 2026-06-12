@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { driver, preloadPyodide } from "../lib/pyRunner";
-import { getLimits, compactValue, pythonize } from "../lib/appHelpers";
+import { getLimits, compactValue, pythonize, depythonize } from "../lib/appHelpers";
 import SuccessAnimation from "./SuccessAnimation";
 import FailureAnimation from "./FailureAnimation";
 
@@ -36,20 +36,6 @@ const parseMethodCall = (str) => {
         });
         return [methodName, args];
     }
-};
-
-const depythonize = (str) => {
-    if (!str) return str;
-    return str.replace(/"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|\b(?:True|False|None)\b/g, (match) => {
-        if (match[0] === '"' || match[0] === "'") return match;
-        return match === "True"
-            ? "true"
-            : match === "False"
-              ? "false"
-              : match === "None"
-                ? "null"
-                : match;
-    });
 };
 
 const getDefaultCases = (problem) => {
@@ -304,11 +290,11 @@ export default function BottomPanel({ activeProblem, code, isSoftSolveActive }) 
     };
 
     const statusLabel = (status) => {
-        if (status === "AC") return "Accepted";
-        if (status === "WA") return "Wrong Answer";
-        if (status === "TLE") return "Time Limit Exceeded";
-        if (status === "MLE") return "Memory Limit Exceeded";
-        if (status === "RE") return "Runtime Error";
+        if (status === "AC") return "Correct";
+        if (status === "WA") return "WRONG";
+        if (status === "TLE") return "TOO SLOW";
+        if (status === "MLE") return "TOO MUCH MEMORY";
+        if (status === "RE") return "Error";
         return status;
     };
 

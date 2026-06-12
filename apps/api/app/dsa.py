@@ -52,18 +52,6 @@ def mk_T(arr):
     return root
 
 
-def mk_I(arr):
-    root = TrieNode()
-    for word in arr:
-        curr = root
-        for ch in word:
-            if ch not in curr.children:
-                curr.children[ch] = TrieNode()
-            curr = curr.children[ch]
-        curr.end = True
-    return root
-
-
 def arr_L(head):
     if head is None:
         return []
@@ -95,31 +83,12 @@ def arr_T(root):
     return res
 
 
-def arr_I(root):
-    if root is None:
-        return []
-    words = []
-
-    def dfs(node, path):
-        if node.end:
-            words.append("".join(path))
-        for ch in sorted(node.children):
-            path.append(ch)
-            dfs(node.children[ch], path)
-            path.pop()
-
-    dfs(root, [])
-    return words
-
-
 def normalize_val(v):
     name = v.__class__.__name__
     if name == "ListNode":
         return arr_L(v)
     if name == "TreeNode":
         return arr_T(v)
-    if name == "TrieNode":
-        return arr_I(v)
     if isinstance(v, list):
         return [normalize_val(x) for x in v]
     if isinstance(v, tuple):
@@ -128,7 +97,7 @@ def normalize_val(v):
 
 
 def preprocess_input(s):
-    if not re.search(r"(?<![A-Za-z0-9_])[LTI]\[", s):
+    if not re.search(r"(?<![A-Za-z0-9_])[LT]\[", s):
         return s
 
     out = []
@@ -154,7 +123,7 @@ def preprocess_input(s):
             out.append(ch)
             i += 1
             continue
-        if ch in "LTI" and i + 1 < n and s[i + 1] == "[":
+        if ch in "LT" and i + 1 < n and s[i + 1] == "[":
             if i > 0 and (s[i - 1].isalnum() or s[i - 1] == "_"):
                 out.append(ch)
                 i += 1
@@ -184,7 +153,6 @@ EVAL_GLOBALS = {
     "null": None,
     "__mk_L": mk_L,
     "__mk_T": mk_T,
-    "__mk_I": mk_I,
 }
 
 
@@ -194,8 +162,6 @@ def fmt_val(v):
         return "L" + fmt_val(arr_L(v))
     if name == "TreeNode":
         return "T" + fmt_val(arr_T(v))
-    if name == "TrieNode":
-        return "I" + fmt_val(arr_I(v))
     if v is True:
         return "True"
     if v is False:
@@ -291,8 +257,6 @@ def fmt_val_truncated(v):
         return "L" + fmt_val_truncated(arr_L(v))
     if name == "TreeNode":
         return "T" + fmt_val_truncated(arr_T(v))
-    if name == "TrieNode":
-        return "I" + fmt_val_truncated(arr_I(v))
     if v is True:
         return "True"
     if v is False:

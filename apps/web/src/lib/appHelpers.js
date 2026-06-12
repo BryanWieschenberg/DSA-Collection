@@ -36,8 +36,8 @@ export const findProblemById = (id) => {
 
 export const allProblems = problemsData;
 
-export const DEFAULT_TIME_LIMIT_MS = 3000;
-export const DEFAULT_MEMORY_LIMIT_MB = 256;
+export const DEFAULT_TIME_LIMIT_MS = 1000;
+export const DEFAULT_MEMORY_LIMIT_MB = 128;
 
 export const getLimits = (problem) => ({
     timeLimitMs: problem.timeLimit ?? DEFAULT_TIME_LIMIT_MS,
@@ -49,10 +49,14 @@ export const getHiddenTests = (problem) =>
 
 export const pythonize = (text) => {
     if (!text) return text;
-    return text.replace(/"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|\b(?:true|false|null)\b/g, (match) => {
-        if (match[0] === '"' || match[0] === "'") return match;
-        return match === "true" ? "True" : match === "false" ? "False" : "None";
-    });
+    const processed = text.replace(/\\?["']([TLQIG]\[.*?\])\\?["']/g, "$1");
+    return processed.replace(
+        /"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|\b(?:true|false|null)\b/g,
+        (match) => {
+            if (match[0] === '"' || match[0] === "'") return match;
+            return match === "true" ? "True" : match === "false" ? "False" : "None";
+        },
+    );
 };
 
 export const compactValue = (text) => {
@@ -78,4 +82,22 @@ export const compactValue = (text) => {
         out += ch;
     }
     return out;
+};
+
+export const depythonize = (str) => {
+    if (!str) return str;
+    const processed = str.replace(
+        /"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|\b(?:True|False|None)\b/g,
+        (match) => {
+            if (match[0] === '"' || match[0] === "'") return match;
+            return match === "True"
+                ? "true"
+                : match === "False"
+                  ? "false"
+                  : match === "None"
+                    ? "null"
+                    : match;
+        },
+    );
+    return processed.replace(/([TLQIG]\[.*?\])/g, '"$1"');
 };

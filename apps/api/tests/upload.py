@@ -1,19 +1,22 @@
-import sys
-sys.setrecursionlimit(200000)
-import os
-import json
 import inspect
-import boto3
+import json
+import os
+import sys
 from urllib.parse import urlparse
+
+import boto3
 from botocore.client import Config
 from dotenv import load_dotenv
 
+from app.dsa import parse_val
 from tests.testgen import TestGen
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.abspath(os.path.join(script_dir, ".."))
 if parent_dir not in sys.path:
     sys.path.insert(0, parent_dir)
+
+sys.setrecursionlimit(200000)
 
 
 def main():
@@ -63,13 +66,11 @@ def main():
         sig = inspect.signature(oracle_method)
         params = list(sig.parameters.values())
 
-    from app.dsa import parse_val, normalize_val
-
     def parse_case_val(v):
         if (
             isinstance(v, str)
             and len(v) >= 3
-            and v[0] in "LTI"
+            and v[0] in "LT"
             and v[1] == "["
             and v[-1] == "]"
         ):
@@ -107,7 +108,7 @@ def main():
         if (
             isinstance(val, str)
             and len(val) >= 3
-            and val[0] in "LTI"
+            and val[0] in "LT"
             and val[1] == "["
             and val[-1] == "]"
         ):
@@ -124,19 +125,25 @@ def main():
         name = v.__class__.__name__
         if name == "ListNode":
             from app.dsa import arr_L
+
             return "L" + json_dumps_custom(arr_L(v))
         if name == "TreeNode":
             from app.dsa import arr_T
+
             return "T" + json_dumps_custom(arr_T(v))
-        if name == "TrieNode":
-            from app.dsa import arr_I
-            return "I" + json_dumps_custom(arr_I(v))
         if isinstance(v, list):
             return "[" + ", ".join(json_dumps_custom(x) for x in v) + "]"
         if isinstance(v, tuple):
             return "[" + ", ".join(json_dumps_custom(x) for x in v) + "]"
         if isinstance(v, dict):
-            return "{" + ", ".join(json.dumps(k) + ": " + json_dumps_custom(val) for k, val in v.items()) + "}"
+            return (
+                "{"
+                + ", ".join(
+                    json.dumps(k) + ": " + json_dumps_custom(val)
+                    for k, val in v.items()
+                )
+                + "}"
+            )
         return json.dumps(v)
 
     def format_input(case):
@@ -166,9 +173,7 @@ def main():
         generator, "memoryLimit", getattr(generator, "memory_limit", None)
     )
 
-    problems_json_path = os.path.join(
-        project_root, "apps", "web", "problems.json"
-    )
+    problems_json_path = os.path.join(project_root, "apps", "web", "problems.json")
     if os.path.exists(problems_json_path):
         with open(problems_json_path, "r") as f:
             try:

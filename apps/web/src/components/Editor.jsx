@@ -139,6 +139,40 @@ export default function Editor({ value, onChange, onMount }) {
             },
         });
 
+        editor.onKeyDown((e) => {
+            if (e.keyCode === monaco.KeyCode.Backspace) {
+                const selection = editor.getSelection();
+                if (selection && selection.isEmpty()) {
+                    const position = editor.getPosition();
+                    const model = editor.getModel();
+                    if (position && model) {
+                        const lineContent = model.getLineContent(position.lineNumber);
+                        const charBefore = lineContent[position.column - 2];
+                        const charAfter = lineContent[position.column - 1];
+                        if (
+                            (charBefore === "(" && charAfter === ")") ||
+                            (charBefore === "[" && charAfter === "]") ||
+                            (charBefore === "{" && charAfter === "}")
+                        ) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            editor.executeEdits("backspace-bracket", [
+                                {
+                                    range: new monaco.Range(
+                                        position.lineNumber,
+                                        position.column - 1,
+                                        position.lineNumber,
+                                        position.column + 1,
+                                    ),
+                                    text: "",
+                                },
+                            ]);
+                        }
+                    }
+                }
+            }
+        });
+
         if (onMount) {
             onMount(editor, monaco);
         }

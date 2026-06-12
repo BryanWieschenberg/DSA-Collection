@@ -99,6 +99,12 @@ export default function App() {
     const [timerRunning, setTimerRunning] = useState(
         () => !completedProblems.has(activeProblem.id),
     );
+    const [isRunning, setIsRunning] = useState(false);
+    useEffect(() => {
+        const handleRunning = (e) => setIsRunning(e.detail.running);
+        window.addEventListener("dsa-running", handleRunning);
+        return () => window.removeEventListener("dsa-running", handleRunning);
+    }, []);
     const [lives, setLives] = useState(3);
     const [tabSwitched, setTabSwitched] = useState(false);
 
@@ -113,7 +119,7 @@ export default function App() {
 
     useEffect(() => {
         let interval = null;
-        if (timerRunning) {
+        if (timerRunning && !isRunning) {
             interval = setInterval(() => {
                 setTime((prev) => prev - 1);
             }, 1000);
@@ -121,7 +127,7 @@ export default function App() {
         return () => {
             if (interval) clearInterval(interval);
         };
-    }, [timerRunning]);
+    }, [timerRunning, isRunning]);
 
     useEffect(() => {
         const handleVisibilityChange = () => {
@@ -525,12 +531,7 @@ export default function App() {
         return () => window.removeEventListener("trigger-dsa-run", handleTriggerRun);
     }, []);
 
-    const [isRunning, setIsRunning] = useState(false);
-    useEffect(() => {
-        const handleRunning = (e) => setIsRunning(e.detail.running);
-        window.addEventListener("dsa-running", handleRunning);
-        return () => window.removeEventListener("dsa-running", handleRunning);
-    }, []);
+
 
     const consoleOpen = topHeight < 100;
     const toggleConsole = () => setTopHeight((h) => (h >= 100 ? 50 : 100));

@@ -56,8 +56,8 @@ class RunRequest(BaseModel):
     functionName: Optional[str] = None
     isClass: bool
     cases: List[CaseItem]
-    timeLimitMs: int = 3000
-    memLimitMb: int = 256
+    timeLimitMs: int = 1000
+    memLimitMb: int = 128
     isSubmit: bool = False
     problemId: Optional[int] = None
 

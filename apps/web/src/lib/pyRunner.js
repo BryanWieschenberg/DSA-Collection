@@ -7,8 +7,8 @@ export async function driver({
     functionName,
     isClass,
     cases,
-    timeLimitMs = 3000,
-    memLimitMb = 256,
+    timeLimitMs = 1000,
+    memLimitMb = 128,
     isSubmit = false,
     problemId = null,
 }) {
@@ -17,7 +17,8 @@ export async function driver({
         const c = isHidden ? null : cases[i];
 
         if (isHidden) {
-            const showDetails = r.status === "RE" || r.status === "WA" || r.status === "TLE" || r.status === "MLE";
+            const showDetails =
+                r.status === "RE" || r.status === "WA" || r.status === "TLE" || r.status === "MLE";
             return {
                 ...r,
                 hidden: !showDetails,

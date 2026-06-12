@@ -1,26 +1,27 @@
-import os
-import sys
-sys.setrecursionlimit(200000)
-import io
-import time
-import tracemalloc
-import traceback
 import inspect
+import io
+import os
 import resource
-from typing import List, Optional, Dict, Tuple, Set, Union
-from collections import deque, defaultdict, Counter
+import sys
+import time
+import traceback
+import tracemalloc
+from collections import Counter, defaultdict, deque
+from typing import Dict, List, Optional, Set, Tuple, Union
 
 from app.dsa import (
+    EVAL_GLOBALS,
     ListNode,
     TreeNode,
     TrieNode,
-    preprocess_input,
-    EVAL_GLOBALS,
     args_from,
-    parse_val,
-    normalize_val,
     fmt_val_truncated,
+    normalize_val,
+    parse_val,
+    preprocess_input,
 )
+
+sys.setrecursionlimit(200000)
 
 
 def get_vms_bytes():
@@ -40,7 +41,7 @@ def execute_case(
     buf = io.StringIO()
     sys.stdout = buf
 
-    class MountainArray:
+    class MountainList:
         def __init__(self, arr):
             self.arr = arr
             self.calls = 0
@@ -48,14 +49,14 @@ def execute_case(
         def get(self, index: int) -> int:
             self.calls += 1
             if self.calls > 100:
-                raise RuntimeError("Too many calls to MountainArray.get")
+                raise RuntimeError("Too many calls to MountainList.get")
             return self.arr[index]
 
         def length(self) -> int:
             return len(self.arr)
 
     class Node:
-        def __init__(self, x: int, next: 'Node' = None, random: 'Node' = None):
+        def __init__(self, x: int, next: "Node" = None, random: "Node" = None):
             self.val = int(x)
             self.next = next
             self.random = random
@@ -85,7 +86,11 @@ def execute_case(
             idx += 1
         res = []
         for node in nodes:
-            rand_idx = node_to_idx[id(node.random)] if node.random and id(node.random) in node_to_idx else None
+            rand_idx = (
+                node_to_idx[id(node.random)]
+                if node.random and id(node.random) in node_to_idx
+                else None
+            )
             res.append([node.val, rand_idx])
         return res
 
@@ -111,7 +116,7 @@ def execute_case(
         "functools": __import__("functools"),
         "re": __import__("re"),
         "string": __import__("string"),
-        "MountainArray": MountainArray,
+        "MountainList": MountainList,
     }
 
     err = None
@@ -177,7 +182,7 @@ def execute_case(
                 if (
                     isinstance(v, str)
                     and len(v) >= 3
-                    and v[0] in "LTI"
+                    and v[0] in "LT"
                     and v[1] == "["
                     and v[-1] == "]"
                 ):
@@ -229,8 +234,8 @@ def execute_case(
 
                 ns["guess"] = guess
                 args = [args[0]]
-            elif fn_name == "findInMountainArray" and len(args) >= 2:
-                args[1] = ns["MountainArray"](args[1])
+            elif fn_name == "findInMountainList" and len(args) >= 2:
+                args[1] = ns["MountainList"](args[1])
             elif fn_name == "hasCycle" and len(args) >= 2:
                 head = args[0]
                 pos = args[1]
@@ -254,10 +259,14 @@ def execute_case(
                 root_node = args[0]
                 p_val = args[1]
                 q_val = args[2]
+
                 def find_node(node, val):
-                    if not node: return None
-                    if node.val == val: return node
+                    if not node:
+                        return None
+                    if node.val == val:
+                        return node
                     return find_node(node.left, val) or find_node(node.right, val)
+
                 if not isinstance(p_val, TreeNode) and root_node:
                     args[1] = find_node(root_node, p_val)
                 if not isinstance(q_val, TreeNode) and root_node:
@@ -351,9 +360,14 @@ def execute_case(
         expected = parse_val(expected_str)
         nr = normalize_val(result)
         ne = normalize_val(expected)
-        
+
         is_random_node = False
-        if is_class and ops and ops[0][0] == "Solution" and any(op[0] == "getRandom" for op in ops[1:]):
+        if (
+            is_class
+            and ops
+            and ops[0][0] == "Solution"
+            and any(op[0] == "getRandom" for op in ops[1:])
+        ):
             is_random_node = True
 
         if is_random_node:

@@ -44,6 +44,7 @@ export const dsaBuiltins = [
     "str",
     "int",
     "float",
+    "bool",
     "list",
     "dict",
     "set",

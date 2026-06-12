@@ -15,7 +15,7 @@ class TestGen:
         self.name: str = "Contains Duplicates"
         self.difficulty: Difficulty = "easy"
         self.code: str = "hasDuplicate(nums: List[int]) -> bool"
-        self.description: str = "Given an integer array `nums`, return `True` if any value appears at least twice in the array, and return `False` if every element is distinct."
+        self.description: str = "Given an integer list `nums`, return `True` if any value appears at least twice in the list, and return `False` if every element is distinct."
         self.constraints: List[str] = [
             "`1 <= nums.length <= 10^5`",
             "`-10^9 <= nums[i] <= 10^9`",

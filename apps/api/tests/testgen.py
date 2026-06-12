@@ -1,140 +1,78 @@
-import random
-from typing import List, Optional, Dict, Set, Union
-from app.dsa import TreeNode
+from random import randint, sample, shuffle
+from typing import List, Literal
+
+Difficulty = Literal["Easy", "Medium", "Hard", "Extreme"]
+
 
 class TestGen:
+    class Solution:
+        @staticmethod  # only make staticmethod if not a class implementation problem
+        def hasDuplicate(nums: List[int]) -> bool:
+            return len(set(nums)) != len(nums)
+
     def __init__(self):
-        self.id = 181
-        self.name = "AVL Tree"
-        self.difficulty = "Hard"
-        self.code = """class AVLTree:
-    def __init__(self):
-        
-
-    def insert(self, val: int) -> None:
-        
-
-    def delete(self, val: int) -> None:
-        
-
-    def getRoot(self) -> TreeNode:
-        """
-        self.description = "Design a self-balancing binary search tree (AVL tree) supporting insert, delete, and height maintenance."
-        self.constraints = [
-            "`1 <= operations.length <= 5000`",
-            "`-10^5 <= val <= 10^5`"
+        self.id: int = 2
+        self.name: str = "Contains Duplicates"
+        self.difficulty: Difficulty = "easy"
+        self.code: str = "hasDuplicate(nums: List[int]) -> bool"
+        self.description: str = "Given an integer list `nums`, return `True` if any value appears at least twice in the list, and return `False` if every element is distinct."
+        self.constraints: List[str] = [
+            "`1 <= nums.length <= 10^5`",
+            "`-10^9 <= nums[i] <= 10^9`",
         ]
 
-    def get_public_cases(self):
-        return [
-            [("AVLTree", []), ("insert", [10]), ("insert", [20]), ("insert", [30]), ("getRoot", [])]
-        ]
+        # Constraints
+        self.NUMS_MIN_LEN = 1
+        self.NUMS_MAX_LEN = 10**5
+        self.NUMS_MIN_VAL = -(10**9)
+        self.NUMS_MAX_VAL = 10**9
 
-    def get_private_cases(self):
+        # OPTIONAL: custom TLE/MLE limits
+        # self.time_limit = 1000
+        # self.memory_limit = 128
+
+    def _generate_uniform_random(self, size: int, force_duplicate: bool) -> List[int]:
+        if not force_duplicate:
+            return sample(range(self.NUMS_MIN_VAL, self.NUMS_MAX_VAL), size)
+        else:
+            nums = [randint(self.NUMS_MIN_VAL, self.NUMS_MAX_VAL) for _ in range(size)]
+            if size > 1:
+                idx1, idx2 = sample(range(size), 2)
+                nums[idx2] = nums[idx1]
+            return nums
+
+    def _generate_worst_case_unique(self) -> List[int]:
+        start = randint(self.NUMS_MIN_VAL, self.NUMS_MAX_VAL - self.NUMS_MAX_LEN)
+        nums = list(range(start, start + self.NUMS_MAX_LEN))
+        shuffle(nums)
+        return nums
+
+    def _generate_worst_case_late_duplicate(self) -> List[int]:
+        nums = self._generate_worst_case_unique()
+        nums[-1] = nums[0]
+        return nums
+
+    def _generate_high_frequency(self) -> List[int]:
+        size = randint(self.NUMS_MAX_LEN // 2, self.NUMS_MAX_LEN)
+        target = randint(self.NUMS_MIN_VAL, self.NUMS_MAX_VAL)
+        nums = [target] * size
+        for _ in range(size // 10):
+            idx = randint(0, size - 1)
+            nums[idx] = randint(self.NUMS_MIN_VAL, self.NUMS_MAX_VAL)
+        return nums
+
+    def get_public_cases(self) -> List[List[int]]:
         cases = []
-        for size in [1000, 2000, 3000, 4000, 5000]:
-            ops = [("AVLTree", [])]
-            inserted = []
-            for _ in range(size):
-                if inserted and random.random() < 0.3:
-                    val = random.choice(inserted)
-                    ops.append(("delete", [val]))
-                    inserted.remove(val)
-                else:
-                    val = random.randint(-100000, 100000)
-                    ops.append(("insert", [val]))
-                    inserted.append(val)
-            ops.append(("getRoot", []))
-            cases.append(ops)
+        cases.append([1, 2, 3, 1])
+        cases.append([1, 2, 3, 4])
         return cases
 
-    class AVLTree:
-        def __init__(self):
-            self.root = None
-
-        def get_height(self, node):
-            if not node: return 0
-            return getattr(node, 'height', 0)
-
-        def get_balance(self, node):
-            if not node: return 0
-            return self.get_height(node.left) - self.get_height(node.right)
-
-        def rotate_right(self, y):
-            x = y.left
-            T2 = x.right
-            x.right = y
-            y.left = T2
-            y.height = 1 + max(self.get_height(y.left), self.get_height(y.right))
-            x.height = 1 + max(self.get_height(x.left), self.get_height(x.right))
-            return x
-
-        def rotate_left(self, x):
-            y = x.right
-            T2 = y.left
-            y.left = x
-            x.right = T2
-            x.height = 1 + max(self.get_height(x.left), self.get_height(x.right))
-            y.height = 1 + max(self.get_height(y.left), self.get_height(y.right))
-            return y
-
-        def insert(self, val: int) -> None:
-            def _insert(node, val):
-                if not node:
-                    n = TreeNode(val)
-                    n.height = 1
-                    return n
-                if val < node.val:
-                    node.left = _insert(node.left, val)
-                else:
-                    node.right = _insert(node.right, val)
-                node.height = 1 + max(self.get_height(node.left), self.get_height(node.right))
-                balance = self.get_balance(node)
-                if balance > 1 and val < node.left.val:
-                    return self.rotate_right(node)
-                if balance < -1 and val > node.right.val:
-                    return self.rotate_left(node)
-                if balance > 1 and val > node.left.val:
-                    node.left = self.rotate_left(node.left)
-                    return self.rotate_right(node)
-                if balance < -1 and val < node.right.val:
-                    node.right = self.rotate_right(node.right)
-                    return self.rotate_left(node)
-                return node
-            self.root = _insert(self.root, val)
-
-        def delete(self, val: int) -> None:
-            def _delete(node, val):
-                if not node:
-                    return node
-                if val < node.val:
-                    node.left = _delete(node.left, val)
-                elif val > node.val:
-                    node.right = _delete(node.right, val)
-                else:
-                    if not node.left:
-                        return node.right
-                    elif not node.right:
-                        return node.left
-                    temp = node.right
-                    while temp.left:
-                        temp = temp.left
-                    node.val = temp.val
-                    node.right = _delete(node.right, temp.val)
-                node.height = 1 + max(self.get_height(node.left), self.get_height(node.right))
-                balance = self.get_balance(node)
-                if balance > 1 and self.get_balance(node.left) >= 0:
-                    return self.rotate_right(node)
-                if balance > 1 and self.get_balance(node.left) < 0:
-                    node.left = self.rotate_left(node.left)
-                    return self.rotate_right(node)
-                if balance < -1 and self.get_balance(node.right) <= 0:
-                    return self.rotate_left(node)
-                if balance < -1 and self.get_balance(node.right) > 0:
-                    node.right = self.rotate_right(node.right)
-                    return self.rotate_left(node)
-                return node
-            self.root = _delete(self.root, val)
-
-        def getRoot(self) -> TreeNode:
-            return self.root
+    def get_private_cases(self) -> List[List[int]]:
+        cases = []
+        for size in [10, 1000, 50000]:
+            cases.append(self._generate_uniform_random(size, force_duplicate=True))
+            cases.append(self._generate_uniform_random(size, force_duplicate=False))
+        cases.append(self._generate_worst_case_unique())
+        cases.append(self._generate_worst_case_late_duplicate())
+        cases.append(self._generate_high_frequency())
+        return cases

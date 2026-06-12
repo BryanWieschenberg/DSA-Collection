@@ -6,4 +6,5 @@ node_modules
 dist
 .vscode/*
 !.vscode/extensions.json
-batch_upload.py
+*batch*
+todos
